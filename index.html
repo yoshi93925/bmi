@@ -13,7 +13,7 @@
     <!-- ヘッダー -->
     <div class="space-y-3">
       <div class="flex justify-between items-center">
-        <!-- ワンタップで直接カレンダー起動 -->
+        <!-- カレンダー起動 -->
         <div class="relative inline-block">
           <button onclick="document.getElementById('directDatePicker').showPicker()" title="過去の記録をカレンダーで選ぶ" class="flex items-center space-x-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg border border-slate-200 transition active:scale-95">
             <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,9 +35,9 @@
             </button>
           </div>
 
-          <!-- 目標設定ボタン -->
+          <!-- 設定ボタン（⚙️） -->
           <button onclick="openTargetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 transition">
-            ⚙️ 目標
+            ⚙️ 設定
           </button>
         </div>
       </div>
@@ -198,10 +198,19 @@
     </div>
   </div>
 
-  <!-- 目標設定モーダル -->
+  <!-- 目標＆APIキー設定モーダル -->
   <div id="targetModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-xs w-full space-y-4">
-      <h3 class="text-base font-bold text-slate-800 border-b pb-2">1日の目標値の設定</h3>
+      <h3 class="text-base font-bold text-slate-800 border-b pb-2">⚙️ 目標＆Gemini API設定</h3>
+      
+      <!-- APIキー設定エリア -->
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+        <label class="block text-xs font-bold text-slate-700">🔑 Gemini APIキー</label>
+        <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+        <p class="text-[10px] text-slate-400">※Googleログイン時、あなたのアカウントに安全に同期・保存されます。</p>
+      </div>
+
+      <!-- PFC目標設定エリア -->
       <div>
         <label class="block text-xs font-bold text-slate-600 mb-1">目標カロリー (kcal)</label>
         <input type="number" id="inputTargetCalories" placeholder="2000" class="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
@@ -308,21 +317,15 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // ログイン状態保持の設定
     setPersistence(auth, browserLocalPersistence).catch(console.error);
 
     let currentUser = null;
     let unsubscribeSnapshot = null;
 
-// ポップアップログイン（スマホのCookie制限を回避して確実にログインを完了させる）
     window.loginWithGoogle = async function() {
       try {
-        const result = await signInWithPopup(auth, provider);
-        if (result && result.user) {
-          console.log("Logged in:", result.user);
-        }
+        await signInWithPopup(auth, provider);
       } catch (err) {
-        // ポップアップがブロックされた場合はリダイレクトを実行
         if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
           await signInWithRedirect(auth, provider);
         } else {
@@ -331,18 +334,12 @@
       }
     };
 
-    // リダイレクト結果の受け取り
-    getRedirectResult(auth).then((result) => {
-      if (result && result.user) {
-        console.log("Logged in via redirect:", result.user);
-      }
-    }).catch((err) => {
+    getRedirectResult(auth).catch((err) => {
       if (err.code !== 'auth/popup-closed-by-user') {
         console.error("Redirect Result Error:", err);
       }
     });
 
-    // ログアウト
     window.logoutFromGoogle = async function() {
       try {
         await signOut(auth);
@@ -352,7 +349,6 @@
       }
     };
 
-    // ログイン状態監視
     onAuthStateChanged(auth, (user) => {
       const syncStatus = document.getElementById('syncStatus');
 
@@ -373,7 +369,6 @@
       }
     });
 
-    // クラウド（Firestore）とのリアルタイム同期
     function subscribeCloudData(uid) {
       if (unsubscribeSnapshot) unsubscribeSnapshot();
 
@@ -384,6 +379,10 @@
           if (data.foodLogs) window.foodLogs = data.foodLogs;
           if (data.userTargets) window.userTargets = data.userTargets;
           if (data.favoritesList) window.favoritesList = data.favoritesList;
+          if (data.geminiApiKey) {
+            window.userGeminiApiKey = data.geminiApiKey;
+            localStorage.setItem('user_gemini_api_key', data.geminiApiKey);
+          }
           
           window.updateUI();
           window.renderWeekDays();
@@ -393,7 +392,6 @@
       });
     }
 
-    // クラウド保存
     window.syncDataToCloud = async function() {
       if (!currentUser) return;
       try {
@@ -402,6 +400,7 @@
           foodLogs: window.foodLogs || [],
           userTargets: window.userTargets || {},
           favoritesList: window.favoritesList || [],
+          geminiApiKey: window.userGeminiApiKey || "",
           updatedAt: new Date().toISOString()
         }, { merge: true });
       } catch (err) {
@@ -412,13 +411,13 @@
 
   <!-- アプリ基本ロジック -->
   <script>
-    const API_KEY = "AIzaSyBZ3ZCbCIaD2LjvH8xC86GID3HdXE12LTY";
     const CLEANUP_DAYS = 30;
 
     let base64Image = null;
     window.foodLogs = [];
     let editingLogId = null;
     let selectedDateStr = "";
+    window.userGeminiApiKey = localStorage.getItem('user_gemini_api_key') || "";
 
     window.userTargets = {
       calories: 2000,
@@ -497,7 +496,19 @@
       updateUI();
     }
 
+    function getActiveGeminiApiKey() {
+      const apiKey = window.userGeminiApiKey || localStorage.getItem('user_gemini_api_key');
+      if (!apiKey) {
+        alert("Gemini APIキーが設定されていません。右上の「⚙️ 設定」アイコンからキーを入力してください。");
+        return null;
+      }
+      return apiKey.trim();
+    }
+
     async function analyzePhotoAndFillForm(event) {
+      const activeKey = getActiveGeminiApiKey();
+      if (!activeKey) return;
+
       const file = event.target.files[0];
       if (!file) return;
 
@@ -532,7 +543,7 @@
 
         for (const model of candidateModels) {
           try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`;
             const response = await fetch(endpoint, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -568,7 +579,7 @@
 
             aiStatusBadge.classList.remove('hidden');
           } else {
-            alert('写真の解析に失敗しました。直接入力してください。');
+            alert('写真の解析に失敗しました。APIキーまたは写真をご確認ください。');
           }
         } catch (err) {
           alert('解析データの取得に失敗しました。');
@@ -588,12 +599,15 @@
     }
 
     async function callGeminiTextAPI(promptText) {
+      const activeKey = getActiveGeminiApiKey();
+      if (!activeKey) throw new Error("Gemini APIキーが設定されていません。");
+
       const candidateModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-1.5-flash"];
       let lastError = null;
 
       for (const model of candidateModels) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${activeKey}`;
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -655,7 +669,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
           if (f === null) f = parseFloat(parsed.fat) || 0;
           if (c === null) c = parseFloat(parsed.carbs) || 0;
         } catch (err) {
-          alert('AIによる栄養成分の自動推定に失敗しました: ' + err.message);
+          alert('AIによる自動推定に失敗しました: ' + err.message);
           manualLoading.classList.add('hidden');
           manualAddBtn.disabled = false;
           return;
@@ -809,6 +823,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     }
 
     window.openTargetModal = function() {
+      document.getElementById('inputGeminiApiKey').value = window.userGeminiApiKey || "";
       document.getElementById('inputTargetCalories').value = window.userTargets.calories;
       document.getElementById('inputTargetProtein').value = window.userTargets.protein;
       document.getElementById('inputTargetFat').value = window.userTargets.fat;
@@ -821,6 +836,10 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
 
     window.saveTargetValues = function() {
+      const apiKeyVal = document.getElementById('inputGeminiApiKey').value.trim();
+      window.userGeminiApiKey = apiKeyVal;
+      localStorage.setItem('user_gemini_api_key', apiKeyVal);
+
       const cal = parseFloat(document.getElementById('inputTargetCalories').value) || 2000;
       const p = parseFloat(document.getElementById('inputTargetProtein').value) || 100;
       const f = parseFloat(document.getElementById('inputTargetFat').value) || 50;
@@ -960,7 +979,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const roundedF = Math.round(totalF * 10) / 10;
       const roundedC = Math.round(totalC * 10) / 10;
 
-      // カロリー判定
       const totalCalEl = document.getElementById('totalCalories');
       const barCalEl = document.getElementById('barCalories');
       totalCalEl.textContent = roundedCal;
@@ -972,14 +990,12 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         barCalEl.className = "bg-emerald-400 h-full transition-all duration-300";
       }
 
-      // タンパク質
       const totalPEl = document.getElementById('totalProtein');
       const barPEl = document.getElementById('barProtein');
       totalPEl.textContent = roundedP;
       totalPEl.className = "text-blue-400 font-bold";
       barPEl.className = "bg-blue-400 h-full transition-all duration-300";
 
-      // 脂質
       const totalFEl = document.getElementById('totalFat');
       const barFEl = document.getElementById('barFat');
       totalFEl.textContent = roundedF;
@@ -991,7 +1007,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         barFEl.className = "bg-amber-400 h-full transition-all duration-300";
       }
 
-      // 炭水化物
       const totalCEl = document.getElementById('totalCarbs');
       const barCEl = document.getElementById('barCarbs');
       totalCEl.textContent = roundedC;
