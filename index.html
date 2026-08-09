@@ -45,25 +45,25 @@
   <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
     
     <!-- 上部固定エリア -->
-    <div class="sticky top-0 bg-white z-30 pt-2 pb-2 -mx-4 px-4 md:-mx-5 md:px-5 space-y-3 border-b border-slate-100/80 shadow-xs">
+    <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
       <!-- ヘッダー -->
       <div class="flex justify-between items-center">
-        <button onclick="openCalendarModal()" title="カレンダー" class="p-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 transition active:scale-95 shadow-sm">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button onclick="openCalendarModal()" title="カレンダー" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 transition active:scale-95 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
         </button>
 
         <div class="flex items-center space-x-2">
           <div id="authArea">
-            <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-2xl transition shadow-sm flex items-center gap-1 active:scale-95">
+            <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
               <span>Googleログイン</span>
             </button>
           </div>
 
-          <button onclick="openTargetModal()" title="設定" class="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onclick="openTargetModal()" title="設定" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
@@ -73,7 +73,7 @@
 
       <!-- 7日間の日付＆曜日タブナビゲーション -->
       <div>
-        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-center touch-pan-x cursor-grab">
+        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-center touch-pan-x cursor-grab">
           <!-- JSで動的生成 -->
         </div>
       </div>
@@ -81,19 +81,19 @@
       <!-- サマリーエリア -->
       <div id="summaryWrapper" class="relative">
         <!-- 通常時サマリーカード -->
-        <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-3 shadow-sm summary-transition">
+        <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-2 shadow-sm summary-transition">
           <div class="flex justify-between items-center">
-            <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
               <span>📊 本日の摂取量 / 目標</span>
             </h2>
-            <span id="dateBadge" class="text-[10px] bg-slate-200/80 text-slate-700 font-mono px-2.5 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
+            <span id="dateBadge" class="text-[9px] bg-slate-200/80 text-slate-700 font-mono px-2 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
           </div>
 
           <div class="space-y-1">
             <div class="flex justify-between items-baseline">
               <span class="text-xs text-slate-600 font-bold">総カロリー</span>
               <div class="font-mono">
-                <span id="totalCalories" class="text-xl font-black">0</span>
+                <span id="totalCalories" class="text-lg font-black">0</span>
                 <span class="text-slate-400 text-xs">/</span>
                 <span id="targetCaloriesDisplay" class="text-xs font-semibold text-slate-500">2000</span>
                 <span class="text-[10px] text-slate-400 ml-0.5">kcal</span>
@@ -104,37 +104,37 @@
             </div>
           </div>
           
-          <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-200 text-center">
-            <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+          <div class="grid grid-cols-3 gap-1 pt-0.5 border-t border-slate-200 text-center">
+            <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
               <div class="text-[9px] text-blue-600 font-bold">タンパク質</div>
-              <div class="text-[11px] font-bold font-mono">
+              <div class="text-[10px] font-bold font-mono">
                 <span id="totalProtein" class="text-blue-600">0</span>
-                <span class="text-slate-400 text-[9px]">/</span>
-                <span id="targetProteinDisplay" class="text-slate-400 text-[9px]">100</span><span class="text-[9px] text-slate-400">g</span>
+                <span class="text-slate-400 text-[8px]">/</span>
+                <span id="targetProteinDisplay" class="text-slate-400 text-[8px]">100</span><span class="text-[8px] text-slate-400">g</span>
               </div>
               <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                 <div id="barProtein" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
               </div>
             </div>
 
-            <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+            <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
               <div class="text-[9px] text-amber-600 font-bold">脂質</div>
-              <div class="text-[11px] font-bold font-mono">
+              <div class="text-[10px] font-bold font-mono">
                 <span id="totalFat" class="text-amber-600">0</span>
-                <span class="text-slate-400 text-[9px]">/</span>
-                <span id="targetFatDisplay" class="text-slate-400 text-[9px]">50</span><span class="text-[9px] text-slate-400">g</span>
+                <span class="text-slate-400 text-[8px]">/</span>
+                <span id="targetFatDisplay" class="text-slate-400 text-[8px]">50</span><span class="text-[8px] text-slate-400">g</span>
               </div>
               <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                 <div id="barFat" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
               </div>
             </div>
 
-            <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+            <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
               <div class="text-[9px] text-emerald-600 font-bold">炭水化物</div>
-              <div class="text-[11px] font-bold font-mono">
+              <div class="text-[10px] font-bold font-mono">
                 <span id="totalCarbs" class="text-emerald-600">0</span>
-                <span class="text-slate-400 text-[9px]">/</span>
-                <span id="targetCarbsDisplay" class="text-slate-400 text-[9px]">250</span><span class="text-[9px] text-slate-400">g</span>
+                <span class="text-slate-400 text-[8px]">/</span>
+                <span id="targetCarbsDisplay" class="text-slate-400 text-[8px]">250</span><span class="text-[8px] text-slate-400">g</span>
               </div>
               <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
                 <div id="barCarbs" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
@@ -143,23 +143,23 @@
           </div>
         </div>
 
-        <!-- スクロール時固定用 コンパクトサマリーバー -->
-        <div id="compactSummaryBar" class="hidden absolute inset-0 bg-blue-50/95 backdrop-blur-md border border-blue-200/80 p-2 rounded-2xl grid grid-cols-4 gap-1 text-center shadow-sm font-mono summary-transition items-center">
+        <!-- スクロール時固定用 コンパクトサマリーバー (コンパクトサイズ化) -->
+        <div id="compactSummaryBar" class="hidden absolute inset-0 bg-blue-50/95 backdrop-blur-md border border-blue-200/80 px-2 py-1 rounded-xl grid grid-cols-4 gap-1 text-center shadow-xs font-mono summary-transition items-center">
           <div>
-            <div class="text-[8px] text-slate-500 font-bold">残りカロリー</div>
-            <div id="compactRemCal" class="text-xs font-black">0 kcal</div>
+            <div class="text-[8px] text-slate-500 font-bold leading-none">残りカロリー</div>
+            <div id="compactRemCal" class="text-[11px] font-black leading-tight mt-0.5">0 kcal</div>
           </div>
           <div>
-            <div class="text-[8px] text-slate-500 font-bold">タンパク質</div>
-            <div id="compactProtein" class="text-[10px] font-bold">0 / 100g</div>
+            <div class="text-[8px] text-slate-500 font-bold leading-none">タンパク質</div>
+            <div id="compactProtein" class="text-[10px] font-bold leading-tight mt-0.5">0 / 100g</div>
           </div>
           <div>
-            <div class="text-[8px] text-slate-500 font-bold">脂質</div>
-            <div id="compactFat" class="text-[10px] font-bold">0 / 50g</div>
+            <div class="text-[8px] text-slate-500 font-bold leading-none">脂質</div>
+            <div id="compactFat" class="text-[10px] font-bold leading-tight mt-0.5">0 / 50g</div>
           </div>
           <div>
-            <div class="text-[8px] text-slate-500 font-bold">炭水化物</div>
-            <div id="compactCarbs" class="text-[10px] font-bold">0 / 250g</div>
+            <div class="text-[8px] text-slate-500 font-bold leading-none">炭水化物</div>
+            <div id="compactCarbs" class="text-[10px] font-bold leading-tight mt-0.5">0 / 250g</div>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@
     <div id="mainContentArea" class="space-y-4">
 
       <!-- 統合入力フォーム -->
-      <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div class="space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
         <div class="flex justify-between items-center">
           <label class="block text-xs font-bold text-slate-700">🍴 食事の追加</label>
           <div class="flex items-center space-x-2">
@@ -261,7 +261,7 @@
     </div>
   </div>
 
-  <!-- 「今日へ戻る」浮動ボタン (過去の日付を見ているときに右下に自動出現) -->
+  <!-- 「今日へ戻る」ボタン -->
   <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-5 right-5 bg-slate-900/90 hover:bg-slate-900 text-white font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
     <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -269,7 +269,7 @@
     <span>今日</span>
   </button>
 
-  <!-- 追加・記録案内用 トースト通知ポップアップ -->
+  <!-- トースト通知ポップアップ -->
   <div id="toastNotification" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center space-x-2 border border-slate-700/60 pointer-events-none">
     <span id="toastMessage">✅ 記録を追加しました</span>
   </div>
@@ -562,7 +562,7 @@
     };
   </script>
 
-  <!-- アプリ基本ロジック ＆ トースト通知 ＆ 今日へ戻る機能 -->
+  <!-- アプリ基本ロジック -->
   <script>
     const CLEANUP_DAYS = 30;
 
@@ -609,7 +609,6 @@
       return `${year}-${month}-${day}`;
     }
 
-    // トーストポップアップ表示（「追加しました」「記録しました」案内）
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
       const msgEl = document.getElementById('toastMessage');
@@ -625,7 +624,6 @@
       }, 1500);
     }
 
-    // 「今日」へ戻るボタン処理
     window.goToToday = function() {
       selectedDateStr = getTodayString();
       weekOffsetDays = 0;
@@ -1409,7 +1407,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     window.updateUI = function() {
       document.getElementById('dateBadge').textContent = selectedDateStr;
 
-      // 今日以外の日付を見ている時だけ「今日へ戻る」浮動ボタンを表示
       const backToTodayBtn = document.getElementById('backToTodayBtn');
       if (selectedDateStr !== getTodayString()) {
         backToTodayBtn.classList.remove('hidden');
@@ -1434,7 +1431,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const roundedF = Math.round(totalF * 10) / 10;
       const roundedC = Math.round(totalC * 10) / 10;
 
-      // 残り数値＆オーバー時の文字色設定
       const remCalVal = Math.max(0, Math.round(window.userTargets.calories - totalCal));
       const isCalOver = totalCal > window.userTargets.calories;
       const isPOver = roundedP > window.userTargets.protein;
@@ -1443,7 +1439,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       const compactRemCalEl = document.getElementById('compactRemCal');
       compactRemCalEl.textContent = remCalVal + " kcal";
-      compactRemCalEl.className = isCalOver ? "text-xs font-black text-rose-600" : "text-xs font-black text-blue-700";
+      compactRemCalEl.className = isCalOver ? "text-[11px] font-black text-rose-600 leading-tight mt-0.5" : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
 
       const compactProteinEl = document.getElementById('compactProtein');
       compactProteinEl.innerHTML = `<span class="${isPOver ? 'text-rose-600' : 'text-slate-800'}">${Math.round(roundedP)}</span> <span class="text-slate-500 font-normal">/ ${window.userTargets.protein}g</span>`;
@@ -1454,23 +1450,20 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const compactCarbsEl = document.getElementById('compactCarbs');
       compactCarbsEl.innerHTML = `<span class="${isCOver ? 'text-rose-600' : 'text-slate-800'}">${Math.round(roundedC)}</span> <span class="text-slate-500 font-normal">/ ${window.userTargets.carbs}g</span>`;
 
-      // 通常時サマリーカードのカロリー判定
       const totalCalEl = document.getElementById('totalCalories');
       const barCalEl = document.getElementById('barCalories');
       totalCalEl.textContent = roundedCal;
       if (isCalOver) {
-        totalCalEl.className = "text-xl font-black text-rose-500 animate-pulse";
+        totalCalEl.className = "text-lg font-black text-rose-500 animate-pulse";
         barCalEl.className = "bg-rose-500 h-full transition-all duration-300";
       } else {
-        totalCalEl.className = "text-xl font-black text-emerald-600";
+        totalCalEl.className = "text-lg font-black text-emerald-600";
         barCalEl.className = "bg-emerald-500 h-full transition-all duration-300";
       }
 
-      // タンパク質
       const totalPEl = document.getElementById('totalProtein');
       totalPEl.textContent = roundedP;
 
-      // 脂質
       const totalFEl = document.getElementById('totalFat');
       const barFEl = document.getElementById('barFat');
       totalFEl.textContent = roundedF;
@@ -1482,7 +1475,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         barFEl.className = "bg-amber-500 h-full transition-all duration-300";
       }
 
-      // 炭水化物
       const totalCEl = document.getElementById('totalCarbs');
       const barCEl = document.getElementById('barCarbs');
       totalCEl.textContent = roundedC;
@@ -1499,7 +1491,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       barFEl.style.width = `${Math.min(100, (totalF / window.userTargets.fat) * 100)}%`;
       barCEl.style.width = `${Math.min(100, (totalC / window.userTargets.carbs) * 100)}%`;
 
-      // サマリー表示
       const habitSummaryStatus = document.getElementById('habitSummaryStatus');
       const isOverNonProtein = isCalOver || isFOver || isCOver;
 
