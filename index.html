@@ -59,9 +59,9 @@
       </div>
     </div>
 
-    <!-- 7日間の日付＆曜日タブナビゲーション -->
+    <!-- 7日間の日付＆曜日タブナビゲーション（スワイプ対象をここ限定に修正） -->
     <div>
-      <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-center">
+      <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-center touch-pan-x">
         <!-- JSで動的生成 -->
       </div>
     </div>
@@ -116,7 +116,7 @@
               <span id="targetFatDisplay" class="text-slate-400 text-[10px]">50</span><span class="text-[10px] text-slate-400">g</span>
             </div>
             <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-              <div id="barFat" class="h-full transition-all duration-300" style="width: 0%"></div>
+              <div id="barFat" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
 
@@ -152,7 +152,7 @@
         <div id="favoritesContainer" class="flex flex-wrap gap-1.5"></div>
       </div>
 
-      <!-- 統合入力フォーム -->
+      <!-- 統合入力フォーム（同時登録チェックボックス追加） -->
       <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
         <div class="flex justify-between items-center">
           <label class="block text-xs font-bold text-slate-700">🍴 食事の追加</label>
@@ -209,6 +209,12 @@
           </div>
         </div>
 
+        <!-- よく食べるリスト同時追加オプション -->
+        <div class="flex items-center space-x-1.5 pt-1">
+          <input type="checkbox" id="addToListAlso" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+          <label for="addToListAlso" class="text-xs font-bold text-slate-600">⭐ 「よく食べるリスト」にも同時に追加する</label>
+        </div>
+
         <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-emerald-600 transition shadow-sm mt-1 active:scale-95">
           ＋ 記録に追加する
         </button>
@@ -237,7 +243,7 @@
     </div>
   </div>
 
-  <!-- よく食べるもの：検索＆選択モーダル -->
+  <!-- よく食べるもの：検索＆選択モーダル（追加ボタン撤去・編集・削除機能追加） -->
   <div id="selectFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2">
@@ -250,6 +256,41 @@
       <div id="selectFavoriteList" class="space-y-1.5 overflow-y-auto flex-1 pr-1 text-xs"></div>
 
       <button onclick="closeSelectFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
+    </div>
+  </div>
+
+  <!-- よく食べるものアイテム編集モーダル -->
+  <div id="editFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3">
+      <h3 class="text-sm font-bold text-slate-800 border-b pb-2">よく食べるアイテムの編集</h3>
+      <div>
+        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">料理名</label>
+        <input type="text" id="editFavName" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー(kcal)</label>
+          <input type="number" id="editFavCal" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質(g)</label>
+          <input type="number" id="editFavProtein" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質(g)</label>
+          <input type="number" id="editFavFat" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物(g)</label>
+          <input type="number" id="editFavCarbs" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        </div>
+      </div>
+      <div class="flex space-x-2 pt-2">
+        <button onclick="closeEditFavoriteModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">キャンセル</button>
+        <button onclick="saveEditedFavoriteItem()" class="flex-1 bg-amber-500 text-white text-xs font-bold py-2 rounded-xl shadow-sm">保存</button>
+      </div>
     </div>
   </div>
 
@@ -347,7 +388,7 @@
     </div>
   </div>
 
-  <!-- 編集モーダル -->
+  <!-- 記録編集モーダル -->
   <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">記録の編集</h3>
@@ -489,13 +530,14 @@
     };
   </script>
 
-  <!-- アプリ基本ロジック ＆ スワイプで週移動（前週 / 翌週） -->
+  <!-- アプリ基本ロジック -->
   <script>
     const CLEANUP_DAYS = 30;
 
     let base64Image = null;
     window.foodLogs = [];
     let editingLogId = null;
+    let editingFavoriteId = null;
     let selectedDateStr = "";
     let calendarCurrentYear = new Date().getFullYear();
     let calendarCurrentMonth = new Date().getMonth();
@@ -532,27 +574,27 @@
       return `${year}-${month}-${day}`;
     }
 
-    // スワイプで週全体を移動（前週 / 次の週へ）
+    // スワイプイベント対象を 7日間タブ（weekDaysContainer）のみに限定
     function initSwipeEvents() {
       let touchstartX = 0;
       let startY = 0;
       let touchendX = 0;
       let endY = 0;
-      const appContainer = document.getElementById('appContainer');
+      const targetArea = document.getElementById('weekDaysContainer');
 
-      appContainer.addEventListener('touchstart', e => {
+      targetArea.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
         startY = e.changedTouches[0].screenY;
       }, false);
 
-      appContainer.addEventListener('touchend', e => {
+      targetArea.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
         endY = e.changedTouches[0].screenY;
         handleSwipe();
       }, false);
 
       function handleSwipe() {
-        const thresholdX = 80;
+        const thresholdX = 70;
         const maxVerticalY = 60;
 
         const diffX = touchendX - touchstartX;
@@ -563,14 +605,14 @@
         const curDate = new Date(selectedDateStr);
 
         if (diffX < -thresholdX) {
-          // 左スワイプ -> 1週間分先の週へ (+7日)
+          // 左スワイプ -> 1週間前へ
           curDate.setDate(curDate.getDate() + 7);
           selectedDateStr = formatDateStr(curDate);
           triggerSlideAnimation('slide-left');
           renderWeekDays();
           updateUI();
         } else if (diffX > thresholdX) {
-          // 右スワイプ -> 1週間分前の週へ (-7日)
+          // 右スワイプ -> 1週間後へ
           curDate.setDate(curDate.getDate() - 7);
           selectedDateStr = formatDateStr(curDate);
           triggerSlideAnimation('slide-right');
@@ -843,12 +885,14 @@
       throw lastError || new Error("API呼び出しに失敗しました。");
     }
 
+    // 手動追加（同時によく食べるリストへ登録機能追加）
     async function addManualLog() {
       const nameInput = document.getElementById('manualName');
       const calInput = document.getElementById('manualCalories');
       const pInput = document.getElementById('manualProtein');
       const fInput = document.getElementById('manualFat');
       const cInput = document.getElementById('manualCarbs');
+      const addToListCheckbox = document.getElementById('addToListAlso');
 
       const name = nameInput.value.trim();
       let cal = calInput.value !== "" ? parseFloat(calInput.value) : null;
@@ -908,6 +952,23 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         carbs: c || 0
       });
 
+      // チェックがある場合、「よく食べるリスト」へ自動同時追加
+      if (addToListCheckbox && addToListCheckbox.checked) {
+        const exists = (window.favoritesList || []).some(item => item.foodName === name);
+        if (!exists) {
+          window.favoritesList.push({
+            id: Date.now() + 1,
+            foodName: name,
+            calories: cal || 0,
+            protein: p || 0,
+            fat: f || 0,
+            carbs: c || 0,
+            isPinned: false
+          });
+          saveFavorites();
+        }
+      }
+
       saveLogsToStorage();
       updateUI();
       renderWeekDays();
@@ -917,6 +978,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       pInput.value = '';
       fInput.value = '';
       cInput.value = '';
+      if (addToListCheckbox) addToListCheckbox.checked = false;
       clearPhotoPreview();
     }
 
@@ -932,6 +994,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (window.syncDataToCloud) window.syncDataToCloud();
     }
 
+    // TOPページ：お気に入り品名の前の「⭐」印を削除
     function renderFavoritesUI() {
       const container = document.getElementById('favoritesContainer');
       const pinnedItems = (window.favoritesList || []).filter(f => f.isPinned);
@@ -943,7 +1006,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       container.innerHTML = pinnedItems.map(item => `
         <button onclick="addFavoriteToLog(${item.id})" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-300/80 font-bold px-2.5 py-1 rounded-xl text-xs transition shadow-sm flex items-center gap-1 active:scale-95">
-          <span>⭐ ${item.foodName}</span>
+          <span>${item.foodName}</span>
           <span class="text-[10px] text-amber-600 font-semibold">(${item.calories}kcal)</span>
         </button>
       `).join('');
@@ -959,6 +1022,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       document.getElementById('selectFavoriteModal').classList.add('hidden');
     };
 
+    // リスト画面：追加ボタン撤去、行タップで記録追加、編集・削除ボタンを追加
     function renderSelectFavoriteList() {
       const query = (document.getElementById('favSearchInput').value || "").toLowerCase().trim();
       const el = document.getElementById('selectFavoriteList');
@@ -977,7 +1041,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       }
 
       el.innerHTML = filtered.map(item => `
-        <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 transition">
+        <div class="flex justify-between items-center bg-slate-50 hover:bg-amber-50/60 p-2.5 rounded-xl border border-slate-200 transition">
           <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
             <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="TOPページのお気に入りに登録/解除">
               ${item.isPinned ? '⭐' : '☆'}
@@ -987,12 +1051,76 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
               <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
             </div>
           </div>
-          <button onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow-sm shrink-0">
-            追加
-          </button>
+          <!-- 編集 ＆ 削除ボタン -->
+          <div class="flex items-center space-x-1 shrink-0">
+            <button onclick="event.stopPropagation(); openEditFavoriteModal(${item.id});" title="編集" class="text-slate-400 hover:text-slate-600 font-bold p-1 text-xs">
+              ✏️
+            </button>
+            <button onclick="event.stopPropagation(); confirmDeleteFavorite(${item.id});" title="削除" class="text-rose-400 hover:text-rose-600 font-bold p-1 text-xs">
+              🗑️
+            </button>
+          </div>
         </div>
       `).join('');
     }
+
+    // よく食べるアイテム削除確認（「本当にいいの？」画面）
+    window.confirmDeleteFavorite = function(id) {
+      const item = window.favoritesList.find(f => f.id === id);
+      if (!item) return;
+
+      if (confirm(`「${item.foodName}」をリストから削除します。本当にいいの？`)) {
+        deleteFavorite(id);
+        renderSelectFavoriteList();
+      }
+    };
+
+    // よく食べるアイテム編集モーダル
+    window.openEditFavoriteModal = function(id) {
+      const item = window.favoritesList.find(f => f.id === id);
+      if (!item) return;
+
+      editingFavoriteId = id;
+      document.getElementById('editFavName').value = item.foodName;
+      document.getElementById('editFavCal').value = item.calories;
+      document.getElementById('editFavProtein').value = item.protein;
+      document.getElementById('editFavFat').value = item.fat;
+      document.getElementById('editFavCarbs').value = item.carbs;
+
+      document.getElementById('editFavoriteModal').classList.remove('hidden');
+    };
+
+    window.closeEditFavoriteModal = function() {
+      editingFavoriteId = null;
+      document.getElementById('editFavoriteModal').classList.add('hidden');
+    };
+
+    window.saveEditedFavoriteItem = function() {
+      if (!editingFavoriteId) return;
+
+      const name = document.getElementById('editFavName').value.trim();
+      const cal = parseFloat(document.getElementById('editFavCal').value) || 0;
+      const p = parseFloat(document.getElementById('editFavProtein').value) || 0;
+      const f = parseFloat(document.getElementById('editFavFat').value) || 0;
+      const c = parseFloat(document.getElementById('editFavCarbs').value) || 0;
+
+      if (!name) {
+        alert('料理名を入力してください');
+        return;
+      }
+
+      window.favoritesList = window.favoritesList.map(item => {
+        if (item.id === editingFavoriteId) {
+          return { ...item, foodName: name, calories: cal, protein: p, fat: f, carbs: c };
+        }
+        return item;
+      });
+
+      saveFavorites();
+      renderFavoritesUI();
+      renderSelectFavoriteList();
+      closeEditFavoriteModal();
+    };
 
     window.addFavoriteToLog = function(id) {
       const item = window.favoritesList.find(f => f.id === id);
@@ -1098,7 +1226,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
               <div class="text-[10px] text-slate-400">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
             </div>
           </div>
-          <button onclick="deleteFavorite(${item.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded text-xs">削除</button>
+          <button onclick="confirmDeleteFavorite(${item.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded text-xs">削除</button>
         </div>
       `).join('');
     }
