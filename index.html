@@ -128,24 +128,24 @@
               <span id="targetCarbsDisplay" class="text-slate-400 text-[10px]">250</span><span class="text-[10px] text-slate-400">g</span>
             </div>
             <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-              <div id="barCarbs" class="h-full transition-all duration-300" style="width: 0%"></div>
+              <div id="barCarbs" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- よく食べるもの（ワンタップ追加） -->
+      <!-- よく食べるもの -->
       <div class="bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3 space-y-2">
         <div class="flex justify-between items-center">
           <h2 class="text-xs font-bold text-amber-900 flex items-center gap-1">
-            ⭐ よく食べるもの（ワンタップ追加）
+            ⭐ よく食べるもの
           </h2>
           <div class="flex items-center space-x-2">
             <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-amber-200/80 hover:bg-amber-300/80 text-amber-900 font-bold px-2 py-0.5 rounded-lg transition">
               📋 リストから選ぶ
             </button>
             <button onclick="openFavoriteModal()" class="text-[10px] text-amber-700 hover:underline font-bold">
-              ＋ 編集
+              ＋ 追加
             </button>
           </div>
         </div>
@@ -159,23 +159,21 @@
           <span id="aiStatusBadge" class="hidden text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full animate-pulse">✨ AI解析完了</span>
         </div>
 
-        <!-- アルバム選択用 input -->
         <input type="file" id="albumInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
-        <!-- カメラ直接起動用 input -->
         <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="analyzePhotoAndFillForm(event)">
 
         <div>
           <div class="flex items-center space-x-1.5">
             <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
             
-            <!-- アルバムアイコン（画像選択） -->
+            <!-- アルバムアイコン -->
             <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </button>
 
-            <!-- カメラアイコン（直接撮影起動） -->
+            <!-- カメラアイコン -->
             <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -239,7 +237,7 @@
     </div>
   </div>
 
-  <!-- よく食べるもの：検索＆一括選択モーダル -->
+  <!-- よく食べるもの：検索＆選択モーダル -->
   <div id="selectFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2">
@@ -491,7 +489,7 @@
     };
   </script>
 
-  <!-- アプリ基本ロジック ＆ スワイプ機能 -->
+  <!-- アプリ基本ロジック ＆ スワイプで週移動（前週 / 翌週） -->
   <script>
     const CLEANUP_DAYS = 30;
 
@@ -534,34 +532,46 @@
       return `${year}-${month}-${day}`;
     }
 
-    // 左右スワイプ処理
+    // スワイプで週全体を移動（前週 / 次の週へ）
     function initSwipeEvents() {
       let touchstartX = 0;
+      let startY = 0;
       let touchendX = 0;
+      let endY = 0;
       const appContainer = document.getElementById('appContainer');
 
       appContainer.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
+        startY = e.changedTouches[0].screenY;
       }, false);
 
       appContainer.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
+        endY = e.changedTouches[0].screenY;
         handleSwipe();
       }, false);
 
       function handleSwipe() {
-        const threshold = 50;
+        const thresholdX = 80;
+        const maxVerticalY = 60;
+
+        const diffX = touchendX - touchstartX;
+        const diffY = Math.abs(endY - startY);
+
+        if (diffY > maxVerticalY) return;
+
         const curDate = new Date(selectedDateStr);
 
-        if (touchendX < touchstartX - threshold) {
-          curDate.setDate(curDate.getDate() + 1);
+        if (diffX < -thresholdX) {
+          // 左スワイプ -> 1週間分先の週へ (+7日)
+          curDate.setDate(curDate.getDate() + 7);
           selectedDateStr = formatDateStr(curDate);
           triggerSlideAnimation('slide-left');
           renderWeekDays();
           updateUI();
-        }
-        if (touchendX > touchstartX + threshold) {
-          curDate.setDate(curDate.getDate() - 1);
+        } else if (diffX > thresholdX) {
+          // 右スワイプ -> 1週間分前の週へ (-7日)
+          curDate.setDate(curDate.getDate() - 7);
           selectedDateStr = formatDateStr(curDate);
           triggerSlideAnimation('slide-right');
           renderWeekDays();
@@ -571,7 +581,7 @@
     }
 
     function triggerSlideAnimation(className) {
-      const el = document.getElementById('mainContentArea');
+      const el = document.getElementById('weekDaysContainer');
       el.classList.remove('slide-left', 'slide-right');
       void el.offsetWidth;
       el.classList.add(className);
@@ -927,7 +937,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const pinnedItems = (window.favoritesList || []).filter(f => f.isPinned);
 
       if (pinnedItems.length === 0) {
-        container.innerHTML = `<span class="text-[11px] text-slate-400">お気に入り登録されたアイテムはありません（「リストから選ぶ」または「編集」からピン留め可能）</span>`;
+        container.innerHTML = `<span class="text-[11px] text-slate-400">お気に入り登録されたアイテムはありません（「リストから選ぶ」で☆をタップ）</span>`;
         return;
       }
 
@@ -953,7 +963,11 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const query = (document.getElementById('favSearchInput').value || "").toLowerCase().trim();
       const el = document.getElementById('selectFavoriteList');
 
-      const filtered = (window.favoritesList || []).filter(item => 
+      const sortedList = [...(window.favoritesList || [])].sort((a, b) => 
+        a.foodName.localeCompare(b.foodName, 'ja')
+      );
+
+      const filtered = sortedList.filter(item => 
         item.foodName.toLowerCase().includes(query)
       );
 
@@ -963,14 +977,17 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       }
 
       el.innerHTML = filtered.map(item => `
-        <div onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();" class="flex justify-between items-center bg-slate-50 hover:bg-amber-50 p-2.5 rounded-xl border border-slate-200 cursor-pointer transition active:scale-98">
-          <div>
-            <div class="font-bold text-slate-800 flex items-center gap-1">
-              <span>${item.isPinned ? '⭐' : '⚪'} ${item.foodName}</span>
+        <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-200 transition">
+          <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
+            <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="TOPページのお気に入りに登録/解除">
+              ${item.isPinned ? '⭐' : '☆'}
+            </button>
+            <div class="truncate">
+              <div class="font-bold text-slate-800 text-xs truncate">${item.foodName}</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
             </div>
-            <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
           </div>
-          <button class="bg-amber-500 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow-sm">
+          <button onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow-sm shrink-0">
             追加
           </button>
         </div>
@@ -1065,7 +1082,12 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         el.innerHTML = '<p class="text-slate-400 text-center py-2">登録なし</p>';
         return;
       }
-      el.innerHTML = window.favoritesList.map(item => `
+      
+      const sortedList = [...(window.favoritesList || [])].sort((a, b) => 
+        a.foodName.localeCompare(b.foodName, 'ja')
+      );
+
+      el.innerHTML = sortedList.map(item => `
         <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200">
           <div class="flex items-center space-x-1.5">
             <button onclick="toggleFavoritePin(${item.id})" class="text-base" title="TOPへの固定切替">
