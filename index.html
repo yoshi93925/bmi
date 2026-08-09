@@ -314,16 +314,19 @@
     let currentUser = null;
     let unsubscribeSnapshot = null;
 
-    // ポップアップ優先ログイン（失敗時にリダイレクトへフォールバック）
+// ポップアップログイン（スマホのCookie制限を回避して確実にログインを完了させる）
     window.loginWithGoogle = async function() {
       try {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        if (result && result.user) {
+          console.log("Logged in:", result.user);
+        }
       } catch (err) {
-        console.warn("Popup blocked or failed, trying redirect...", err);
-        try {
+        // ポップアップがブロックされた場合はリダイレクトを実行
+        if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
           await signInWithRedirect(auth, provider);
-        } catch (redirectErr) {
-          alert("ログイン処理に失敗しました: " + redirectErr.message);
+        } else {
+          alert("ログイン処理に失敗しました: " + err.message);
         }
       }
     };
