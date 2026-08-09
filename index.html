@@ -27,49 +27,46 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-3 md:p-6 flex justify-center items-start text-slate-800">
+<body class="bg-slate-100 min-h-screen p-2 md:p-6 flex justify-center items-start text-slate-800">
 
-  <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-5 space-y-4 my-2 select-none border border-slate-200/60 transition-all">
+  <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
     
-    <!-- ヘッダー -->
-    <div class="flex justify-between items-center">
-      <!-- カレンダーアイコンボタン -->
-      <button onclick="openCalendarModal()" title="カレンダー" class="p-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 transition active:scale-95 shadow-sm">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-        </svg>
-      </button>
-
-      <div class="flex items-center space-x-2">
-        <!-- 未ログイン時のみGoogleログインボタンを表示 -->
-        <div id="authArea">
-          <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-2xl transition shadow-sm flex items-center gap-1 active:scale-95">
-            <span>Googleログイン</span>
-          </button>
-        </div>
-
-        <!-- 設定アイコンボタン（⚙️） -->
-        <button onclick="openTargetModal()" title="設定" class="p-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
+    <!-- 上部固定エリア (ヘッダー + 週間カレンダー + サマリー) -->
+    <div class="sticky top-0 bg-white z-30 pt-2 pb-2 -mx-4 px-4 md:-mx-5 md:px-5 space-y-3 border-b border-slate-100/80 shadow-xs">
+      
+      <!-- ヘッダー -->
+      <div class="flex justify-between items-center">
+        <button onclick="openCalendarModal()" title="カレンダー" class="p-2 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 transition active:scale-95 shadow-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
         </button>
-      </div>
-    </div>
 
-    <!-- 7日間の日付＆曜日タブナビゲーション -->
-    <div>
-      <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-center">
-        <!-- JSで動的生成 -->
-      </div>
-    </div>
+        <div class="flex items-center space-x-2">
+          <div id="authArea">
+            <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-2xl transition shadow-sm flex items-center gap-1 active:scale-95">
+              <span>Googleログイン</span>
+            </button>
+          </div>
 
-    <!-- メインコンテンツエリア -->
-    <div id="mainContentArea" class="space-y-4">
-      
-      <!-- 1日の合計エリア -->
-      <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3.5 shadow-sm">
+          <button onclick="openTargetModal()" title="設定" class="p-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 7日間の日付＆曜日タブナビゲーション (フリック・スワイプ対応) -->
+      <div>
+        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 text-center touch-pan-x cursor-grab">
+          <!-- JSで動的生成 -->
+        </div>
+      </div>
+
+      <!-- 1日の合計エリア（通常時） -->
+      <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-3 shadow-sm transition-all duration-200">
         <div class="flex justify-between items-center">
           <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
             <span>📊 本日の摂取量 / 目標</span>
@@ -77,54 +74,52 @@
           <span id="dateBadge" class="text-[10px] bg-slate-200/80 text-slate-700 font-mono px-2.5 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
         </div>
 
-        <!-- カロリー比較 -->
         <div class="space-y-1">
           <div class="flex justify-between items-baseline">
             <span class="text-xs text-slate-600 font-bold">総カロリー</span>
             <div class="font-mono">
-              <span id="totalCalories" class="text-2xl font-black">0</span>
+              <span id="totalCalories" class="text-xl font-black">0</span>
               <span class="text-slate-400 text-xs">/</span>
-              <span id="targetCaloriesDisplay" class="text-sm font-semibold text-slate-500">2000</span>
-              <span class="text-xs text-slate-400 ml-0.5">kcal</span>
+              <span id="targetCaloriesDisplay" class="text-xs font-semibold text-slate-500">2000</span>
+              <span class="text-[10px] text-slate-400 ml-0.5">kcal</span>
             </div>
           </div>
-          <div class="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden">
+          <div class="w-full bg-slate-200/80 h-1.5 rounded-full overflow-hidden">
             <div id="barCalories" class="h-full transition-all duration-300" style="width: 0%"></div>
           </div>
         </div>
         
-        <!-- PFC比較 -->
-        <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200 text-center">
-          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-            <div class="text-[10px] text-blue-600 font-bold">タンパク質</div>
-            <div class="text-xs font-bold font-mono">
+        <div class="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-200 text-center">
+          <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+            <div class="text-[9px] text-blue-600 font-bold">タンパク質</div>
+            <div class="text-[11px] font-bold font-mono">
               <span id="totalProtein" class="text-blue-600">0</span>
-              <span class="text-slate-400 text-[10px]">/</span>
-              <span id="targetProteinDisplay" class="text-slate-400 text-[10px]">100</span><span class="text-[10px] text-slate-400">g</span>
+              <span class="text-slate-400 text-[9px]">/</span>
+              <span id="targetProteinDisplay" class="text-slate-400 text-[9px]">100</span><span class="text-[9px] text-slate-400">g</span>
             </div>
             <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
               <div id="barProtein" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
 
-          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-            <div class="text-[10px] text-amber-600 font-bold">脂質</div>
-            <div class="text-xs font-bold font-mono">
+          <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+            <div class="text-[9px] text-amber-600 font-bold">脂質</div>
+            <div class="text-[11px] font-bold font-mono">
               <span id="totalFat" class="text-amber-600">0</span>
-              <span class="text-slate-400 text-[10px]">/</span>
-              <span id="targetFatDisplay" class="text-slate-400 text-[10px]">50</span><span class="text-[10px] text-slate-400">g</span>
+              <span class="text-slate-400 text-[9px]">/</span>
+              <span id="targetFatDisplay" class="text-slate-400 text-[9px]">50</span><span class="text-[9px] text-slate-400">g</span>
             </div>
             <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
               <div id="barFat" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
 
-          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-            <div class="text-[10px] text-emerald-600 font-bold">炭水化物</div>
-            <div class="text-xs font-bold font-mono">
+          <div class="bg-white p-1.5 rounded-xl space-y-0.5 border border-slate-200/80 shadow-xs">
+            <div class="text-[9px] text-emerald-600 font-bold">炭水化物</div>
+            <div class="text-[11px] font-bold font-mono">
               <span id="totalCarbs" class="text-emerald-600">0</span>
-              <span class="text-slate-400 text-[10px]">/</span>
-              <span id="targetCarbsDisplay" class="text-slate-400 text-[10px]">250</span><span class="text-[10px] text-slate-400">g</span>
+              <span class="text-slate-400 text-[9px]">/</span>
+              <span id="targetCarbsDisplay" class="text-slate-400 text-[9px]">250</span><span class="text-[9px] text-slate-400">g</span>
             </div>
             <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
               <div id="barCarbs" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
@@ -132,6 +127,31 @@
           </div>
         </div>
       </div>
+
+      <!-- スクロール時上部固定用 コンパクトサマリーバー (画像2枚目の再現) -->
+      <div id="compactSummaryBar" class="hidden bg-blue-50/90 backdrop-blur-md border border-blue-200/80 p-2 rounded-xl grid grid-cols-4 gap-1 text-center shadow-sm font-mono">
+        <div>
+          <div class="text-[8px] text-slate-500 font-bold">残りカロリー</div>
+          <div id="compactRemCal" class="text-xs font-black text-blue-700">0 kcal</div>
+        </div>
+        <div>
+          <div class="text-[8px] text-slate-500 font-bold">炭水化物</div>
+          <div id="compactCarbs" class="text-[10px] font-bold text-slate-700">0g</div>
+        </div>
+        <div>
+          <div class="text-[8px] text-slate-500 font-bold">タンパク質</div>
+          <div id="compactProtein" class="text-[10px] font-bold text-slate-700">0g</div>
+        </div>
+        <div>
+          <div class="text-[8px] text-slate-500 font-bold">脂質</div>
+          <div id="compactFat" class="text-[10px] font-bold text-slate-700">0g</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- メインコンテンツエリア -->
+    <div id="mainContentArea" class="space-y-4">
 
       <!-- 統合入力フォーム -->
       <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -152,14 +172,12 @@
           <div class="flex items-center space-x-1.5">
             <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
             
-            <!-- アルバムアイコン -->
             <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
               </svg>
             </button>
 
-            <!-- カメラアイコン -->
             <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
@@ -195,7 +213,6 @@
           </div>
         </div>
 
-        <!-- チェックボックスの文言を「リストにも追加する」へ変更 -->
         <div class="flex items-center space-x-1.5 pt-1">
           <input type="checkbox" id="addToListAlso" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
           <label for="addToListAlso" class="text-xs font-bold text-slate-600">リストにも追加する</label>
@@ -220,16 +237,15 @@
           <button onclick="clearCurrentDateLog()" class="text-[11px] text-rose-500 hover:underline font-bold">この日をクリア</button>
         </div>
 
-        <!-- オーバー警告サマリーカード -->
         <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
 
-        <div id="logList" class="space-y-2 max-h-72 overflow-y-auto text-xs text-slate-500"></div>
+        <div id="logList" class="space-y-2 min-h-36 text-xs text-slate-500"></div>
       </div>
 
     </div>
   </div>
 
-  <!-- よく食べるもの：選択モーダル（ヘッダーを「リストから選択」へ変更） -->
+  <!-- モーダル各種 -->
   <div id="selectFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2">
@@ -250,7 +266,6 @@
     </div>
   </div>
 
-  <!-- よく食べるものアイテム編集モーダル -->
   <div id="editFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3">
       <h3 class="text-sm font-bold text-slate-800 border-b pb-2">よく食べるアイテムの編集</h3>
@@ -285,7 +300,6 @@
     </div>
   </div>
 
-  <!-- カレンダーモーダル -->
   <div id="calendarModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <div class="flex justify-between items-center border-b pb-2">
@@ -311,7 +325,6 @@
     </div>
   </div>
 
-  <!-- 目標＆APIキー設定モーダル -->
   <div id="targetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">⚙️ 目標＆Gemini API設定</h3>
@@ -341,7 +354,6 @@
         </div>
       </div>
 
-      <!-- ログアウトボタン -->
       <div id="modalLogoutArea" class="pt-2 border-t border-slate-100 hidden">
         <button onclick="logoutFromGoogle()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2 rounded-xl border border-rose-200 transition">
           ログアウト
@@ -355,7 +367,6 @@
     </div>
   </div>
 
-  <!-- 新規追加専用モーダル（ヘッダーを「リストに追加」へ変更） -->
   <div id="favoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">リストに追加</h3>
@@ -381,7 +392,6 @@
     </div>
   </div>
 
-  <!-- 記録編集モーダル -->
   <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">記録の編集</h3>
@@ -523,7 +533,7 @@
     };
   </script>
 
-  <!-- アプリ基本ロジック -->
+  <!-- アプリ基本ロジック ＆ スワイプ機能 ＆ スクロール追従処理 -->
   <script>
     const CLEANUP_DAYS = 30;
 
@@ -532,6 +542,7 @@
     let editingLogId = null;
     let editingFavoriteId = null;
     let selectedDateStr = "";
+    let weekOffsetDays = 0; // 1週間スライド用オフセット
     let calendarCurrentYear = new Date().getFullYear();
     let calendarCurrentMonth = new Date().getMonth();
 
@@ -556,7 +567,8 @@
       loadAndCleanupLogs();
       renderWeekDays();
       updateUI();
-      initSwipeEvents();
+      initWeekSwipeEvents();
+      initScrollHeader();
     };
 
     function getTodayString() {
@@ -567,53 +579,63 @@
       return `${year}-${month}-${day}`;
     }
 
-    function initSwipeEvents() {
+    // スクロール時の追従・コンパクトサマリー切替処理
+    function initScrollHeader() {
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+        const fullCard = document.getElementById('fullSummaryCard');
+        const compactBar = document.getElementById('compactSummaryBar');
+
+        if (scrollY > 70) {
+          fullCard.classList.add('hidden');
+          compactBar.classList.remove('hidden');
+        } else {
+          fullCard.classList.remove('hidden');
+          compactBar.classList.add('hidden');
+        }
+      });
+    }
+
+    // 週間カレンダー部分の直接スワイプ（1週間切り替え）
+    function initWeekSwipeEvents() {
       let touchstartX = 0;
       let startY = 0;
       let touchendX = 0;
       let endY = 0;
-      const targetArea = document.getElementById('mainContentArea');
+      const weekContainer = document.getElementById('weekDaysContainer');
 
-      targetArea.addEventListener('touchstart', e => {
+      weekContainer.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
         startY = e.changedTouches[0].screenY;
       }, false);
 
-      targetArea.addEventListener('touchend', e => {
+      weekContainer.addEventListener('touchend', e => {
         touchendX = e.changedTouches[0].screenX;
         endY = e.changedTouches[0].screenY;
-        handleSwipe();
-      }, false);
-
-      function handleSwipe() {
-        const thresholdX = 80;
-        const maxVerticalY = 60;
-
+        
+        const thresholdX = 50;
+        const maxVerticalY = 50;
         const diffX = touchendX - touchstartX;
         const diffY = Math.abs(endY - startY);
 
         if (diffY > maxVerticalY) return;
 
-        const curDate = new Date(selectedDateStr);
-
         if (diffX < -thresholdX) {
-          curDate.setDate(curDate.getDate() + 1);
-          selectedDateStr = formatDateStr(curDate);
+          // 左スワイプ -> 翌週へ
+          weekOffsetDays += 7;
           triggerSlideAnimation('slide-left');
           renderWeekDays();
-          updateUI();
         } else if (diffX > thresholdX) {
-          curDate.setDate(curDate.getDate() - 1);
-          selectedDateStr = formatDateStr(curDate);
+          // 右スワイプ -> 前週へ
+          weekOffsetDays -= 7;
           triggerSlideAnimation('slide-right');
           renderWeekDays();
-          updateUI();
         }
-      }
+      }, false);
     }
 
     function triggerSlideAnimation(className) {
-      const el = document.getElementById('mainContentArea');
+      const el = document.getElementById('weekDaysContainer');
       el.classList.remove('slide-left', 'slide-right');
       void el.offsetWidth;
       el.classList.add(className);
@@ -644,11 +666,12 @@
       const weekLabels = ["日", "月", "火", "水", "木", "金", "土"];
       
       let html = "";
-      const today = new Date(getTodayString());
+      const baseToday = new Date(getTodayString());
+      baseToday.setDate(baseToday.getDate() + weekOffsetDays);
 
       for (let i = -6; i <= 0; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
+        const d = new Date(baseToday);
+        d.setDate(baseToday.getDate() + i);
 
         const dateStr = formatDateStr(d);
         const dayOfWeek = weekLabels[d.getDay()];
@@ -741,6 +764,7 @@
 
     window.selectDateFromCalendar = function(dateStr) {
       selectedDateStr = dateStr;
+      weekOffsetDays = 0;
       renderWeekDays();
       updateUI();
       closeCalendarModal();
@@ -1339,15 +1363,26 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const roundedF = Math.round(totalF * 10) / 10;
       const roundedC = Math.round(totalC * 10) / 10;
 
+      // 残り数値計算
+      const remCal = Math.max(0, Math.round(window.userTargets.calories - totalCal));
+      const remCarbs = Math.round(totalC) + " / " + window.userTargets.carbs + "g";
+      const remProtein = Math.round(totalP) + " / " + window.userTargets.protein + "g";
+      const remFat = Math.round(totalF) + " / " + window.userTargets.fat + "g";
+
+      document.getElementById('compactRemCal').textContent = remCal + " kcal";
+      document.getElementById('compactCarbs').textContent = remCarbs;
+      document.getElementById('compactProtein').textContent = remProtein;
+      document.getElementById('compactFat').textContent = remFat;
+
       // カロリー判定
       const totalCalEl = document.getElementById('totalCalories');
       const barCalEl = document.getElementById('barCalories');
       totalCalEl.textContent = roundedCal;
       if (totalCal > window.userTargets.calories) {
-        totalCalEl.className = "text-2xl font-black text-rose-500 animate-pulse";
+        totalCalEl.className = "text-xl font-black text-rose-500 animate-pulse";
         barCalEl.className = "bg-rose-500 h-full transition-all duration-300";
       } else {
-        totalCalEl.className = "text-2xl font-black text-emerald-600";
+        totalCalEl.className = "text-xl font-black text-emerald-600";
         barCalEl.className = "bg-emerald-500 h-full transition-all duration-300";
       }
 
