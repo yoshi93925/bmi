@@ -6,10 +6,25 @@
   <title>AIカロリーチェッカー＆食事管理</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* スワイプ時の横スクロール防止 */
     body { overflow-x: hidden; touch-action: pan-y; }
     .calendar-day-red { background-color: #fecdd3; color: #e11d48; font-weight: bold; border-radius: 9999px; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
+
+    /* 左右スワイプアニメーション */
+    .slide-left {
+      animation: slideLeft 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .slide-right {
+      animation: slideRight 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    @keyframes slideLeft {
+      0% { transform: translateX(20px); opacity: 0.6; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideRight {
+      0% { transform: translateX(-20px); opacity: 0.6; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-3 md:p-6 flex justify-center items-start text-slate-800">
@@ -51,158 +66,196 @@
       </div>
     </div>
 
-    <!-- 1日の合計エリア（デザイン統合版） -->
-    <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3.5 shadow-sm">
-      <div class="flex justify-between items-center">
-        <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-          <span>📊 本日の摂取量 / 目標</span>
-        </h2>
-        <span id="dateBadge" class="text-[10px] bg-slate-200/80 text-slate-700 font-mono px-2.5 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
-      </div>
-
-      <!-- カロリー比較 -->
-      <div class="space-y-1">
-        <div class="flex justify-between items-baseline">
-          <span class="text-xs text-slate-600 font-bold">総カロリー</span>
-          <div class="font-mono">
-            <span id="totalCalories" class="text-2xl font-black">0</span>
-            <span class="text-slate-400 text-xs">/</span>
-            <span id="targetCaloriesDisplay" class="text-sm font-semibold text-slate-500">2000</span>
-            <span class="text-xs text-slate-400 ml-0.5">kcal</span>
-          </div>
-        </div>
-        <div class="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden">
-          <div id="barCalories" class="h-full transition-all duration-300" style="width: 0%"></div>
-        </div>
-      </div>
+    <!-- メインコンテンツエリア -->
+    <div id="mainContentArea" class="space-y-4">
       
-      <!-- PFC比較 -->
-      <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200 text-center">
-        <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-          <div class="text-[10px] text-blue-600 font-bold">タンパク質</div>
-          <div class="text-xs font-bold font-mono">
-            <span id="totalProtein" class="text-blue-600">0</span>
-            <span class="text-slate-400 text-[10px]">/</span>
-            <span id="targetProteinDisplay" class="text-slate-400 text-[10px]">100</span><span class="text-[10px] text-slate-400">g</span>
-          </div>
-          <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-            <div id="barProtein" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
-          </div>
+      <!-- 1日の合計エリア -->
+      <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3.5 shadow-sm">
+        <div class="flex justify-between items-center">
+          <h2 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <span>📊 本日の摂取量 / 目標</span>
+          </h2>
+          <span id="dateBadge" class="text-[10px] bg-slate-200/80 text-slate-700 font-mono px-2.5 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
         </div>
 
-        <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-          <div class="text-[10px] text-amber-600 font-bold">脂質</div>
-          <div class="text-xs font-bold font-mono">
-            <span id="totalFat" class="text-amber-600">0</span>
-            <span class="text-slate-400 text-[10px]">/</span>
-            <span id="targetFatDisplay" class="text-slate-400 text-[10px]">50</span><span class="text-[10px] text-slate-400">g</span>
+        <!-- カロリー比較 -->
+        <div class="space-y-1">
+          <div class="flex justify-between items-baseline">
+            <span class="text-xs text-slate-600 font-bold">総カロリー</span>
+            <div class="font-mono">
+              <span id="totalCalories" class="text-2xl font-black">0</span>
+              <span class="text-slate-400 text-xs">/</span>
+              <span id="targetCaloriesDisplay" class="text-sm font-semibold text-slate-500">2000</span>
+              <span class="text-xs text-slate-400 ml-0.5">kcal</span>
+            </div>
           </div>
-          <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-            <div id="barFat" class="h-full transition-all duration-300" style="width: 0%"></div>
+          <div class="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden">
+            <div id="barCalories" class="h-full transition-all duration-300" style="width: 0%"></div>
           </div>
-        </div>
-
-        <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
-          <div class="text-[10px] text-emerald-600 font-bold">炭水化物</div>
-          <div class="text-xs font-bold font-mono">
-            <span id="totalCarbs" class="text-emerald-600">0</span>
-            <span class="text-slate-400 text-[10px]">/</span>
-            <span id="targetCarbsDisplay" class="text-slate-400 text-[10px]">250</span><span class="text-[10px] text-slate-400">g</span>
-          </div>
-          <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-            <div id="barCarbs" class="h-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- よく食べるもの（クイック登録） -->
-    <div class="bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3 space-y-2">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xs font-bold text-amber-900 flex items-center gap-1">
-          ⭐ よく食べるもの（ワンタップ登録）
-        </h2>
-        <button onclick="openFavoriteModal()" class="text-[10px] text-amber-700 hover:underline font-bold">
-          ＋ 登録・編集
-        </button>
-      </div>
-      <div id="favoritesContainer" class="flex flex-wrap gap-1.5"></div>
-    </div>
-
-    <!-- 統合入力フォーム -->
-    <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-      <div class="flex justify-between items-center">
-        <label class="block text-xs font-bold text-slate-700">🍴 食事の追加</label>
-        <span id="aiStatusBadge" class="hidden text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full animate-pulse">✨ AI解析完了</span>
-      </div>
-
-      <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
-
-      <div>
-        <div class="flex items-center space-x-1.5">
-          <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
-          <button onclick="document.getElementById('imageInput').click()" title="写真からAI読み込み" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </button>
         </div>
         
-        <div id="previewContainer" class="hidden mt-2 relative">
-          <img id="imagePreview" class="max-h-32 mx-auto rounded-xl object-cover border border-slate-200">
-          <button onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-slate-800/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">×</button>
+        <!-- PFC比較 -->
+        <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200 text-center">
+          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
+            <div class="text-[10px] text-blue-600 font-bold">タンパク質</div>
+            <div class="text-xs font-bold font-mono">
+              <span id="totalProtein" class="text-blue-600">0</span>
+              <span class="text-slate-400 text-[10px]">/</span>
+              <span id="targetProteinDisplay" class="text-slate-400 text-[10px]">100</span><span class="text-[10px] text-slate-400">g</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+              <div id="barProtein" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
+            <div class="text-[10px] text-amber-600 font-bold">脂質</div>
+            <div class="text-xs font-bold font-mono">
+              <span id="totalFat" class="text-amber-600">0</span>
+              <span class="text-slate-400 text-[10px]">/</span>
+              <span id="targetFatDisplay" class="text-slate-400 text-[10px]">50</span><span class="text-[10px] text-slate-400">g</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+              <div id="barFat" class="h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-white p-2 rounded-xl space-y-1 border border-slate-200/80 shadow-sm">
+            <div class="text-[10px] text-emerald-600 font-bold">炭水化物</div>
+            <div class="text-xs font-bold font-mono">
+              <span id="totalCarbs" class="text-emerald-600">0</span>
+              <span class="text-slate-400 text-[10px]">/</span>
+              <span id="targetCarbsDisplay" class="text-slate-400 text-[10px]">250</span><span class="text-[10px] text-slate-400">g</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+              <div id="barCarbs" class="h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
+      <!-- よく食べるもの（ワンタップ追加） -->
+      <div class="bg-amber-50/70 border border-amber-200/70 rounded-2xl p-3 space-y-2">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-bold text-amber-900 flex items-center gap-1">
+            ⭐ よく食べるもの（ワンタップ追加）
+          </h2>
+          <div class="flex items-center space-x-2">
+            <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-amber-200/80 hover:bg-amber-300/80 text-amber-900 font-bold px-2 py-0.5 rounded-lg transition">
+              📋 リストから選ぶ
+            </button>
+            <button onclick="openFavoriteModal()" class="text-[10px] text-amber-700 hover:underline font-bold">
+              ＋ 編集
+            </button>
+          </div>
+        </div>
+        <div id="favoritesContainer" class="flex flex-wrap gap-1.5"></div>
+      </div>
+
+      <!-- 統合入力フォーム -->
+      <div class="space-y-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+        <div class="flex justify-between items-center">
+          <label class="block text-xs font-bold text-slate-700">🍴 食事の追加</label>
+          <span id="aiStatusBadge" class="hidden text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full animate-pulse">✨ AI解析完了</span>
+        </div>
+
+        <!-- アルバム選択用 input -->
+        <input type="file" id="albumInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
+        <!-- カメラ直接起動用 input -->
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="analyzePhotoAndFillForm(event)">
+
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー (kcal)</label>
-          <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          <div class="flex items-center space-x-1.5">
+            <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
+            
+            <!-- アルバムアイコン（画像選択） -->
+            <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </button>
+
+            <!-- カメラアイコン（直接撮影起動） -->
+            <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div id="previewContainer" class="hidden mt-2 relative">
+            <img id="imagePreview" class="max-h-32 mx-auto rounded-xl object-cover border border-slate-200">
+            <button onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-slate-800/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">×</button>
+          </div>
         </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質 (g)</label>
-          <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー (kcal)</label>
+            <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質 (g)</label>
+            <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質 (g)</label>
+            <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物 (g)</label>
+            <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          </div>
+        </div>
+
+        <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-emerald-600 transition shadow-sm mt-1 active:scale-95">
+          ＋ 記録に追加する
+        </button>
+
+        <div id="manualLoading" class="hidden text-center py-2">
+          <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent"></div>
+          <p class="text-[11px] text-slate-500 mt-1" id="loadingText">AIが栄養素を解析中...</p>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質 (g)</label>
-          <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+
+      <!-- 食事ログ＆習慣エリア -->
+      <div class="border-t border-slate-200/80 pt-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-bold text-slate-800 flex items-center gap-1.5" id="logListTitle">
+            📝 選択日の食事ログ
+          </h2>
+          <button onclick="clearCurrentDateLog()" class="text-[11px] text-rose-500 hover:underline font-bold">この日をクリア</button>
         </div>
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物 (g)</label>
-          <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-        </div>
+
+        <!-- オーバー警告サマリーカード -->
+        <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
+
+        <div id="logList" class="space-y-2 max-h-72 overflow-y-auto text-xs text-slate-500"></div>
       </div>
 
-      <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-emerald-600 transition shadow-sm mt-1 active:scale-95">
-        ＋ 記録に追加する
-      </button>
-
-      <div id="manualLoading" class="hidden text-center py-2">
-        <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent"></div>
-        <p class="text-[11px] text-slate-500 mt-1" id="loadingText">AIが栄養素を解析中...</p>
-      </div>
-    </div>
-
-    <!-- 食事ログ＆習慣エリア -->
-    <div class="border-t border-slate-200/80 pt-4 space-y-3">
-      <div class="flex justify-between items-center">
-        <h2 class="text-xs font-bold text-slate-800 flex items-center gap-1.5" id="logListTitle">
-          📝 選択日の食事ログ
-        </h2>
-        <button onclick="clearCurrentDateLog()" class="text-[11px] text-rose-500 hover:underline font-bold">この日をクリア</button>
-      </div>
-
-      <!-- オーバー警告状態のサマリーカード -->
-      <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
-
-      <div id="logList" class="space-y-2 max-h-72 overflow-y-auto text-xs text-slate-500"></div>
     </div>
   </div>
 
-  <!-- カレンダーモーダル（炭水化物表記修正済み） -->
+  <!-- よく食べるもの：検索＆一括選択モーダル -->
+  <div id="selectFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-sm font-bold text-slate-800">📋 よく食べるものから選択</h3>
+        <button onclick="closeSelectFavoriteModal()" class="text-slate-400 font-bold hover:text-slate-600">×</button>
+      </div>
+
+      <input type="text" id="favSearchInput" oninput="renderSelectFavoriteList()" placeholder="アイテム名で検索..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
+
+      <div id="selectFavoriteList" class="space-y-1.5 overflow-y-auto flex-1 pr-1 text-xs"></div>
+
+      <button onclick="closeSelectFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
+    </div>
+  </div>
+
+  <!-- カレンダーモーダル -->
   <div id="calendarModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <div class="flex justify-between items-center border-b pb-2">
@@ -213,18 +266,15 @@
         </div>
       </div>
 
-      <!-- 凡例 (炭水化物へ修正) -->
       <div class="flex justify-center space-x-4 text-[10px] text-slate-500 font-medium">
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-200 inline-block"></span> 適正・目標内</span>
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-200 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
       </div>
 
-      <!-- 曜日のヘッダー -->
       <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
         <span class="text-rose-400">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="text-blue-400">土</span>
       </div>
 
-      <!-- 日付グリッド -->
       <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
 
       <button onclick="closeCalendarModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
@@ -270,7 +320,8 @@
   <!-- よく食べるもの 管理モーダル -->
   <div id="favoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4 max-h-[90vh] overflow-y-auto">
-      <h3 class="text-base font-bold text-slate-800 border-b pb-2">⭐ よく食べるものの登録・削除</h3>
+      <h3 class="text-base font-bold text-slate-800 border-b pb-2">⭐ よく食べるものの管理</h3>
+      
       <div class="space-y-2 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/60">
         <div class="text-xs font-bold text-amber-900">新規登録</div>
         <input type="text" id="favInputName" placeholder="料理名 (例: プロテイン)" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
@@ -282,12 +333,18 @@
           <input type="number" id="favInputFat" placeholder="脂質(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
           <input type="number" id="favInputCarbs" placeholder="炭水化物(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
         </div>
-        <button onclick="addNewFavorite()" class="w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 rounded-xl transition shadow-sm">追加する</button>
+        <div class="flex items-center space-x-1.5 pt-1">
+          <input type="checkbox" id="favInputPinned" class="rounded border-slate-300 text-amber-500 focus:ring-amber-400">
+          <label for="favInputPinned" class="text-xs font-bold text-amber-900">TOPページに固定表示する（お気に入り）</label>
+        </div>
+        <button onclick="addNewFavorite()" class="w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 rounded-xl transition shadow-sm mt-1">追加する</button>
       </div>
+
       <div class="space-y-2">
-        <div class="text-xs font-bold text-slate-700">登録済みリスト</div>
+        <div class="text-xs font-bold text-slate-700">登録済みリスト（⭐でTOP表示切替）</div>
         <div id="favoriteManageList" class="space-y-1.5 max-h-40 overflow-y-auto text-xs"></div>
       </div>
+
       <button onclick="closeFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
     </div>
   </div>
@@ -327,7 +384,7 @@
     </div>
   </div>
 
-  <!-- Firebase (Google Auth & Firestore) SDK -->
+  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -455,8 +512,8 @@
     };
 
     window.favoritesList = [
-      { id: 1, foodName: "ソイプロテイン", calories: 120, protein: 20, fat: 1.5, carbs: 2 },
-      { id: 2, foodName: "おにぎり(1個)", calories: 180, protein: 3, fat: 0.5, carbs: 40 }
+      { id: 1, foodName: "ソイプロテイン", calories: 120, protein: 20, fat: 1.5, carbs: 2, isPinned: true },
+      { id: 2, foodName: "おにぎり(1個)", calories: 180, protein: 3, fat: 0.5, carbs: 40, isPinned: true }
     ];
 
     window.onload = function() {
@@ -477,7 +534,7 @@
       return `${year}-${month}-${day}`;
     }
 
-    // 左右スワイプで日付切替
+    // 左右スワイプ処理
     function initSwipeEvents() {
       let touchstartX = 0;
       let touchendX = 0;
@@ -499,16 +556,25 @@
         if (touchendX < touchstartX - threshold) {
           curDate.setDate(curDate.getDate() + 1);
           selectedDateStr = formatDateStr(curDate);
+          triggerSlideAnimation('slide-left');
           renderWeekDays();
           updateUI();
         }
         if (touchendX > touchstartX + threshold) {
           curDate.setDate(curDate.getDate() - 1);
           selectedDateStr = formatDateStr(curDate);
+          triggerSlideAnimation('slide-right');
           renderWeekDays();
           updateUI();
         }
       }
+    }
+
+    function triggerSlideAnimation(className) {
+      const el = document.getElementById('mainContentArea');
+      el.classList.remove('slide-left', 'slide-right');
+      void el.offsetWidth;
+      el.classList.add(className);
     }
 
     function formatDateStr(d) {
@@ -516,6 +582,19 @@
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
+    }
+
+    function checkIsDayOver(dateStr) {
+      const dayLogs = (window.foodLogs || []).filter(l => l.date === dateStr);
+      if (dayLogs.length === 0) return false;
+
+      const sumCal = dayLogs.reduce((s, l) => s + l.calories, 0);
+      const sumFat = dayLogs.reduce((s, l) => s + l.fat, 0);
+      const sumCarbs = dayLogs.reduce((s, l) => s + l.carbs, 0);
+
+      return (sumCal > window.userTargets.calories) || 
+             (sumFat > window.userTargets.fat) || 
+             (sumCarbs > window.userTargets.carbs);
     }
 
     function renderWeekDays() {
@@ -533,10 +612,15 @@
         const dayOfWeek = weekLabels[d.getDay()];
         const isSelected = dateStr === selectedDateStr;
         const isToday = dateStr === getTodayString();
+        const isOver = checkIsDayOver(dateStr);
 
-        const activeClass = isSelected 
-          ? "bg-emerald-500 text-white font-bold shadow-md scale-105" 
-          : "bg-white text-slate-600 hover:bg-slate-50";
+        let activeClass = "bg-white text-slate-600 hover:bg-slate-50";
+
+        if (isSelected) {
+          activeClass = "bg-emerald-500 text-white font-bold shadow-md scale-105";
+        } else if (isOver) {
+          activeClass = "bg-rose-100 text-rose-700 font-bold border border-rose-200";
+        }
 
         html += `
           <button onclick="selectDateFromTab('${dateStr}')" class="py-2 px-0.5 rounded-xl text-xs transition-all duration-200 flex flex-col items-center justify-center ${activeClass}">
@@ -554,7 +638,6 @@
       updateUI();
     }
 
-    // カレンダーモーダル処理
     window.openCalendarModal = function() {
       const cur = new Date(selectedDateStr);
       calendarCurrentYear = cur.getFullYear();
@@ -600,14 +683,7 @@
         let colorClass = "hover:bg-slate-100 text-slate-700";
 
         if (dayLogs.length > 0) {
-          const sumCal = dayLogs.reduce((s, l) => s + l.calories, 0);
-          const sumFat = dayLogs.reduce((s, l) => s + l.fat, 0);
-          const sumCarbs = dayLogs.reduce((s, l) => s + l.carbs, 0);
-
-          const isOver = (sumCal > window.userTargets.calories) || 
-                         (sumFat > window.userTargets.fat) || 
-                         (sumCarbs > window.userTargets.carbs);
-
+          const isOver = checkIsDayOver(dateStr);
           colorClass = isOver ? "calendar-day-red shadow-sm" : "calendar-day-green shadow-sm";
         }
 
@@ -725,7 +801,8 @@
 
     function clearPhotoPreview() {
       base64Image = null;
-      document.getElementById('imageInput').value = "";
+      document.getElementById('albumInput').value = "";
+      document.getElementById('cameraInput').value = "";
       document.getElementById('previewContainer').classList.add('hidden');
       document.getElementById('aiStatusBadge').classList.add('hidden');
     }
@@ -823,6 +900,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       saveLogsToStorage();
       updateUI();
+      renderWeekDays();
 
       nameInput.value = '';
       calInput.value = '';
@@ -846,16 +924,56 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
     function renderFavoritesUI() {
       const container = document.getElementById('favoritesContainer');
-      if (!window.favoritesList || window.favoritesList.length === 0) {
-        container.innerHTML = `<span class="text-[11px] text-slate-400">登録されたアイテムはありません</span>`;
+      const pinnedItems = (window.favoritesList || []).filter(f => f.isPinned);
+
+      if (pinnedItems.length === 0) {
+        container.innerHTML = `<span class="text-[11px] text-slate-400">お気に入り登録されたアイテムはありません（「リストから選ぶ」または「編集」からピン留め可能）</span>`;
         return;
       }
 
-      container.innerHTML = window.favoritesList.map(item => `
+      container.innerHTML = pinnedItems.map(item => `
         <button onclick="addFavoriteToLog(${item.id})" class="bg-white hover:bg-amber-100 text-amber-900 border border-amber-300/80 font-bold px-2.5 py-1 rounded-xl text-xs transition shadow-sm flex items-center gap-1 active:scale-95">
-          <span>${item.foodName}</span>
+          <span>⭐ ${item.foodName}</span>
           <span class="text-[10px] text-amber-600 font-semibold">(${item.calories}kcal)</span>
         </button>
+      `).join('');
+    }
+
+    window.openSelectFavoriteModal = function() {
+      document.getElementById('favSearchInput').value = "";
+      renderSelectFavoriteList();
+      document.getElementById('selectFavoriteModal').classList.remove('hidden');
+    };
+
+    window.closeSelectFavoriteModal = function() {
+      document.getElementById('selectFavoriteModal').classList.add('hidden');
+    };
+
+    function renderSelectFavoriteList() {
+      const query = (document.getElementById('favSearchInput').value || "").toLowerCase().trim();
+      const el = document.getElementById('selectFavoriteList');
+
+      const filtered = (window.favoritesList || []).filter(item => 
+        item.foodName.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        el.innerHTML = '<p class="text-slate-400 text-center py-4">該当するアイテムがありません</p>';
+        return;
+      }
+
+      el.innerHTML = filtered.map(item => `
+        <div onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();" class="flex justify-between items-center bg-slate-50 hover:bg-amber-50 p-2.5 rounded-xl border border-slate-200 cursor-pointer transition active:scale-98">
+          <div>
+            <div class="font-bold text-slate-800 flex items-center gap-1">
+              <span>${item.isPinned ? '⭐' : '⚪'} ${item.foodName}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
+          </div>
+          <button class="bg-amber-500 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] shadow-sm">
+            追加
+          </button>
+        </div>
       `).join('');
     }
 
@@ -875,6 +993,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       saveLogsToStorage();
       updateUI();
+      renderWeekDays();
     };
 
     window.openFavoriteModal = function() {
@@ -892,6 +1011,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const p = parseFloat(document.getElementById('favInputProtein').value) || 0;
       const f = parseFloat(document.getElementById('favInputFat').value) || 0;
       const c = parseFloat(document.getElementById('favInputCarbs').value) || 0;
+      const isPinned = document.getElementById('favInputPinned').checked;
 
       if (!name) {
         alert('料理名を入力してください');
@@ -904,7 +1024,8 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         calories: cal,
         protein: p,
         fat: f,
-        carbs: c
+        carbs: c,
+        isPinned: isPinned
       });
 
       saveFavorites();
@@ -916,6 +1037,19 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       document.getElementById('favInputProtein').value = '';
       document.getElementById('favInputFat').value = '';
       document.getElementById('favInputCarbs').value = '';
+      document.getElementById('favInputPinned').checked = false;
+    };
+
+    window.toggleFavoritePin = function(id) {
+      window.favoritesList = window.favoritesList.map(item => {
+        if (item.id === id) {
+          return { ...item, isPinned: !item.isPinned };
+        }
+        return item;
+      });
+      saveFavorites();
+      renderFavoritesUI();
+      renderFavoriteManageList();
     };
 
     window.deleteFavorite = function(id) {
@@ -933,11 +1067,16 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       }
       el.innerHTML = window.favoritesList.map(item => `
         <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200">
-          <div>
-            <div class="font-bold text-slate-700">${item.foodName}</div>
-            <div class="text-[10px] text-slate-400">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
+          <div class="flex items-center space-x-1.5">
+            <button onclick="toggleFavoritePin(${item.id})" class="text-base" title="TOPへの固定切替">
+              ${item.isPinned ? '⭐' : '☆'}
+            </button>
+            <div>
+              <div class="font-bold text-slate-700">${item.foodName}</div>
+              <div class="text-[10px] text-slate-400">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
+            </div>
           </div>
-          <button onclick="deleteFavorite(${item.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded">削除</button>
+          <button onclick="deleteFavorite(${item.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded text-xs">削除</button>
         </div>
       `).join('');
     }
@@ -980,6 +1119,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       window.userTargets = { calories: cal, protein: p, fat: f, carbs: c };
       saveTargets();
       updateUI();
+      renderWeekDays();
       closeTargetModal();
     };
 
@@ -1054,6 +1194,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       saveLogsToStorage();
       updateUI();
+      renderWeekDays();
       closeEditModal();
     };
 
@@ -1073,12 +1214,14 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       saveLogsToStorage();
       updateUI();
+      renderWeekDays();
     };
 
     window.deleteLog = function(id) {
       window.foodLogs = window.foodLogs.filter(item => item.id !== id);
       saveLogsToStorage();
       updateUI();
+      renderWeekDays();
     };
 
     window.clearCurrentDateLog = function() {
@@ -1086,6 +1229,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         window.foodLogs = window.foodLogs.filter(item => item.date !== selectedDateStr);
         saveLogsToStorage();
         updateUI();
+        renderWeekDays();
       }
     };
 
