@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>くるけん風 バス運行情報</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            margin: 0;
+        }
+        .timetable_section {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .approachDtlCard {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+        }
+        table:last-child {
+            margin-bottom: 0;
+        }
+        td {
+            padding: 4px;
+            vertical-align: middle;
+        }
+        /* 上段のスタイル */
+        .Time {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333;
+            width: 20%;
+        }
+        .CourseGroupName {
+            width: 60%;
+        }
+        .CourseGroupName a {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0066cc;
+            text-decoration: none;
+        }
+        .CourseGroupName a:hover {
+            text-decoration: underline;
+        }
+        .IkisakiKeiyuName {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 2px;
+        }
+        .busKeiyuTitle {
+            color: #999;
+        }
+        /* 下段のスタイル */
+        .lowerRow td {
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .BusComanyName {
+            font-weight: bold;
+            color: #e67e22; /* 広島交通っぽいカラー */
+            width: 25%;
+        }
+        .KeitouNo {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-align: center;
+            font-weight: bold;
+            width: 15%;
+        }
+        .BusType {
+            width: 15%;
+        }
+        .busTypeOneStep {
+            background-color: #7f8c8d;
+            color: #fff;
+            font-size: 0.75rem;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .TsuukaStationName {
+            width: 45%;
+            text-align: right;
+        }
+        .busCurrentPosition {
+            color: #d35400;
+            font-weight: bold;
+        }
+        .pendingDeparture {
+            font-weight: bold;
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+
+<section class="timetable_section">
+    <input id="_hdnApproachCourseSid_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="9362a72d-0316-44e6-918e-4c26fc2c8444">
+    <input id="_hdnApproachCourseName_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="深川線（広島駅－高陽車庫・セ･基･A）">
+    <input id="_hdnApproachCompanyId_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="73385130">
+    <input id="_hdnApproachBusId_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="0">
+    <input id="_hdnApproachKeiyuCode_5c628861-722d-459e-a254-f62c5573ac82" type="hidden">
+    <input id="_hdnApproachKeitouCode_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="30-4">
+    <input id="_hdnApproachCourseNo_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="30-4">
+    <input id="_hdnApproachIkisakiName_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="高陽A団地">
+    <input id="_hdnApproachIkisakiKeiyuName_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="合同庁舎・バスセンター・基町">
+    <input id="_hdnApproachDisplayCompanyId_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="73385130">
+    <input id="_hdnApproachTeikokuTime_5c628861-722d-459e-a254-f62c5573ac82" type="hidden" value="19:44">
+
+    <ul>
+        <li class="bus-73385130 approachDtlCard" style="display: block;">
+            <article>
+                <table>
+                    <tbody>
+                        <tr class="upperRow">
+                            <td class="Time">19:44</td>
+                            <td class="CourseGroupName">
+                                <a href="javascript:void(0);" onclick="resultByCourse(
+                                    '0c49253c-fd25-4e02-9d47-af620334a2c9',
+                                    '9362a72d-0316-44e6-918e-4c26fc2c8444',
+                                    '73385130',
+                                    '0',
+                                    '',
+                                    '5c628861-722d-459e-a254-f62c5573ac82',
+                                    '30-4',
+                                    '高陽A団地',
+                                    '合同庁舎・バスセンター・基町',
+                                    '73385130',
+                                    '19:44'
+                                    );">高陽A団地</a>
+                                <div class="IkisakiKeiyuName"><span class="busKeiyuTitle">【経由等】</span>合同庁舎・バスセンター・基町</div>
+                            </td>
+                            <td class="DelayTime_Minutes">
+                                <div class="changeCourse">
+                                    <div class="changeCourseInner">
+                                        <span class="scheduledOnTimeCarNext"> </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table>
+                    <tbody>
+                        <tr class="lowerRow">
+                            <td class="BusComanyName"><span class="busCompanyName73385130">広島交通</span></td>
+                            <td class="KeitouNo">30-4</td>
+                            <td class="BusType">
+                                <div class="BusType OneStep"><span class="busTypeOneStep">ﾜﾝｽﾃ</span></div>
+                            </td>
+                            <td class="BusSlope">
+                                <div class="BusSlope"></div>
+                            </td>
+                            <td class="TsuukaStationName">
+                                <span class="busCurrentPosition">【現在】</span><span class="pendingDeparture">出発待ち</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </li>
+    </ul>
+</section>
+
+<script>
+    // リンクがクリックされたときに動く関数
+    function resultByCourse(...args) {
+        console.log("クリックされた路線のパラメータ:", args);
+        alert(args[7] + "（" + args[8] + "経由）の運行詳細をリクエストしました。");
+    }
+</script>
+
+</body>
+</html>
