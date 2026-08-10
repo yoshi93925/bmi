@@ -44,7 +44,7 @@
 
   <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
     
-    <!-- 上部固定エリア -->
+    <!-- 上部固定エリア（ヘッダー ＋ 週間カレンダー） -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
       <!-- ヘッダー -->
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <!-- 7日間の日付＆曜日タブナビゲーション -->
+      <!-- 7日間の日付＆曜日タブナビゲーション（復旧＆常時表示） -->
       <div>
         <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-center touch-pan-x cursor-grab">
           <!-- JSで動的生成 -->
@@ -105,7 +105,9 @@
 
       <!-- 通常時サマリーカード -->
       <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-2 shadow-sm summary-transition">
-
+        <div class="flex justify-end items-center">
+          <span id="dateBadge" class="text-[9px] bg-slate-200/80 text-slate-700 font-mono px-2 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
+        </div>
 
         <div class="space-y-1">
           <div class="flex justify-between items-baseline">
@@ -236,10 +238,12 @@
         </div>
       </div>
 
-      
-
+      <!-- 食事ログエリア -->
+      <div class="border-t border-slate-200/80 pt-2 space-y-2">
         <div id="logList" class="space-y-2 min-h-36 text-xs text-slate-500"></div>
       </div>
+
+    </div>
   </div>
 
   <!-- 「今日へ戻る」ボタン -->
