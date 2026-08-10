@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <!-- スクロール追従用 コンパクトサマリーバー (上部エリアに完全組み込み) -->
+      <!-- スクロール追従用 コンパクトサマリーバー -->
       <div id="compactSummaryBar" class="hidden bg-blue-50/95 border border-blue-200/80 px-2 py-1.5 rounded-xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center">
         <div>
           <div class="text-[8px] text-slate-500 font-bold leading-none">残りカロリー</div>
@@ -103,7 +103,7 @@
     <!-- メインコンテンツエリア -->
     <div id="mainContentArea" class="space-y-4">
 
-      <!-- 通常時サマリーカード（スクロール監視対象） -->
+      <!-- 通常時サマリーカード -->
       <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-2 shadow-sm summary-transition">
         <div class="flex justify-between items-center">
           <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
@@ -637,26 +637,23 @@
       updateUI();
     };
 
-    // IntersectionObserverでスクロール要素の可視状態を精密検知（ブレ・チラつきを完全防止）
+    // 確実にスクロールで切り替わるイベントスクリプト（全環境対応）
     function initScrollObserver() {
-      const targetCard = document.getElementById('fullSummaryCard');
       const compactBar = document.getElementById('compactSummaryBar');
+      let isCompact = false;
 
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) {
-            // 通常カードが画面上部に隠れたら、1行バーを表示
-            compactBar.classList.remove('hidden');
-          } else {
-            // 通常カードが見えたら、1行バーを非表示
-            compactBar.classList.add('hidden');
-          }
-        });
-      }, {
-        threshold: 0.1 // 少しでも画面から外れたら切替
-      });
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-      observer.observe(targetCard);
+        // 40px以上スクロールされたら確実に1行バーを表示
+        if (scrollY > 40 && !isCompact) {
+          isCompact = true;
+          compactBar.classList.remove('hidden');
+        } else if (scrollY <= 40 && isCompact) {
+          isCompact = false;
+          compactBar.classList.add('hidden');
+        }
+      }, { passive: true });
     }
 
     function initWeekSwipeEvents() {
@@ -1409,6 +1406,13 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
     window.updateUI = function() {
       document.getElementById('dateBadge').textContent = selectedDateStr;
+
+      const backToTodayBtn = document.getElementById('backToTodayBtn');
+      if (selectedDateStr !== getTodayString()) {
+        backToTodayBtn.classList.remove('hidden');
+      } else {
+        backToTodayBtn.classList.add('hidden');
+      }
 
       document.getElementById('targetCaloriesDisplay').textContent = window.userTargets.calories;
       document.getElementById('targetProteinDisplay').textContent = window.userTargets.protein;
