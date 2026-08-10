@@ -241,7 +241,7 @@
         </div>
       </div>
 
-      <!-- 食事ログ＆習慣エリア -->
+      <!-- 食事ログエリア -->
       <div class="border-t border-slate-200/80 pt-4 space-y-3">
         <div class="flex justify-between items-center">
           <h2 class="text-xs font-bold text-slate-800 flex items-center gap-1.5" id="logListTitle">
@@ -249,8 +249,6 @@
           </h2>
           <button onclick="clearCurrentDateLog()" class="text-[11px] text-rose-500 hover:underline font-bold">この日をクリア</button>
         </div>
-
-        <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
 
         <div id="logList" class="space-y-2 min-h-36 text-xs text-slate-500"></div>
       </div>
@@ -637,7 +635,6 @@
       updateUI();
     };
 
-    // 確実にスクロールで切り替わるイベントスクリプト（全環境対応）
     function initScrollObserver() {
       const compactBar = document.getElementById('compactSummaryBar');
       let isCompact = false;
@@ -645,7 +642,6 @@
       window.addEventListener('scroll', () => {
         const scrollY = window.scrollY || document.documentElement.scrollTop;
 
-        // 40px以上スクロールされたら確実に1行バーを表示
         if (scrollY > 40 && !isCompact) {
           isCompact = true;
           compactBar.classList.remove('hidden');
@@ -1490,22 +1486,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       document.getElementById('barProtein').style.width = `${Math.min(100, (totalP / window.userTargets.protein) * 100)}%`;
       barFEl.style.width = `${Math.min(100, (totalF / window.userTargets.fat) * 100)}%`;
       barCEl.style.width = `${Math.min(100, (totalC / window.userTargets.carbs) * 100)}%`;
-
-      const habitSummaryStatus = document.getElementById('habitSummaryStatus');
-      const isOverNonProtein = isCalOver || isFOver || isCOver;
-
-      if (filteredLogs.length > 0) {
-        habitSummaryStatus.classList.remove('hidden');
-        if (isOverNonProtein) {
-          habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-rose-50 text-rose-700 border border-rose-200";
-          habitSummaryStatus.innerHTML = `<span>⚠️ 目標管理: カロリー/脂質/炭水化物が目標値を超過しています</span>`;
-        } else {
-          habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-emerald-50 text-emerald-700 border border-emerald-200";
-          habitSummaryStatus.innerHTML = `<span>✅ 目標管理: 適切な範囲内に収まっています</span>`;
-        }
-      } else {
-        habitSummaryStatus.classList.add('hidden');
-      }
 
       const logListEl = document.getElementById('logList');
       if (filteredLogs.length === 0) {
