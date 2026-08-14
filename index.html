@@ -7,9 +7,9 @@
 
   <!-- PWA & 全画面化設定 -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#10b981">
+  <meta name="theme-color" id="metaThemeColor" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" id="metaStatusBar" content="default">
   <meta name="apple-mobile-web-app-title" content="食事管理">
   <link rel="apple-touch-icon" href="icon.png">
 
@@ -77,6 +77,16 @@
       background-color: #0c1322 !important;
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
+    }
+    body.theme-dark #settingBtn {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #94a3b8 !important;
+    }
+    body.theme-dark #compactSummaryBar {
+      background-color: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f8fafc !important;
     }
     body.theme-dark input[type="text"],
     body.theme-dark input[type="number"],
@@ -186,7 +196,7 @@
             </button>
           </div>
 
-          <button onclick="openTargetModal()" title="設定" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
+          <button id="settingBtn" onclick="openTargetModal()" title="設定" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -296,13 +306,14 @@
       </div>
 
       <!-- 統合入力フォーム -->
-      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div class="bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
         
         <div class="flex justify-between items-center mb-0.5">
           <label class="block text-xs font-bold text-slate-700">食事の追加</label>
           <div class="flex items-center space-x-2">
             <span id="aiStatusBadge" class="hidden text-[10px] bg-theme-light text-theme-dark font-bold px-2 py-0.5 rounded-full">✨ AI解析完了</span>
-            <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-xl transition border border-amber-300/80 shadow-sm flex items-center gap-1 active:scale-95">
+            <!-- ★ テーマカラー連動の「リストから選ぶ」ボタン -->
+            <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-theme-light text-theme-dark font-bold px-2.5 py-1 rounded-xl transition border border-theme-light shadow-sm flex items-center gap-1 active:scale-95 hover:opacity-90">
               リストから選ぶ
             </button>
           </div>
@@ -378,9 +389,8 @@
         </div>
       </div>
 
-      <!-- 食事ログ＆習慣エリア -->
+      <!-- 食事ログエリア -->
       <div class="border-t border-slate-200/80 pt-3 space-y-2.5">
-        <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
         <div id="logList" class="space-y-2 min-h-36 text-xs text-slate-500"></div>
       </div>
 
@@ -474,14 +484,14 @@
       <div class="flex justify-between items-center border-b pb-2">
         <h3 class="text-sm font-bold text-slate-800">📋 リストから選択</h3>
         <div class="flex items-center space-x-2">
-          <button onclick="openFavoriteModal()" class="text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm active:scale-95">
+          <button onclick="openFavoriteModal()" class="text-xs bg-theme-main text-theme-contrast font-bold px-2.5 py-1 rounded-xl transition shadow-sm active:scale-95 hover:opacity-90">
             ＋ 追加
           </button>
           <button onclick="closeSelectFavoriteModal()" class="text-slate-400 font-bold hover:text-slate-600 text-lg">×</button>
         </div>
       </div>
 
-      <input type="text" id="favSearchInput" oninput="renderSelectFavoriteList()" placeholder="料理名・表示名で検索..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
+      <input type="text" id="favSearchInput" oninput="renderSelectFavoriteList()" placeholder="料理名・表示名で検索..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
 
       <div id="selectFavoriteList" class="space-y-1.5 overflow-y-auto flex-1 pr-1 text-xs"></div>
 
@@ -523,7 +533,7 @@
       </div>
       <div class="flex space-x-2 pt-2">
         <button onclick="closeEditFavoriteModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">キャンセル</button>
-        <button onclick="saveEditedFavoriteItem()" class="flex-1 bg-amber-500 text-white text-xs font-bold py-2 rounded-xl shadow-sm">保存</button>
+        <button onclick="saveEditedFavoriteItem()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl shadow-sm hover:opacity-90">保存</button>
       </div>
     </div>
   </div>
@@ -564,22 +574,22 @@
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">リストに追加</h3>
       
-      <div class="space-y-2 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/60">
-        <input type="text" id="favInputName" placeholder="料理名（例: プロテイン20g）" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
-        <input type="text" id="favInputShortName" placeholder="TOP表示名（略称・空欄なら料理名）" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+      <div class="space-y-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+        <input type="text" id="favInputName" placeholder="料理名（例: プロテイン20g）" class="w-full text-xs p-2 border border-slate-300 rounded-xl bg-white">
+        <input type="text" id="favInputShortName" placeholder="TOP表示名（略称・空欄なら料理名）" class="w-full text-xs p-2 border border-slate-300 rounded-xl bg-white">
         <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="favInputCalories" placeholder="カロリー(kcal)" class="text-xs p-2 border border-slate-300 rounded-xl">
-          <input type="number" id="favInputProtein" placeholder="タンパク質(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
+          <input type="number" id="favInputCalories" placeholder="カロリー(kcal)" class="text-xs p-2 border border-slate-300 rounded-xl bg-white">
+          <input type="number" id="favInputProtein" placeholder="タンパク質(g)" class="text-xs p-2 border border-slate-300 rounded-xl bg-white">
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="favInputFat" placeholder="脂質(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
-          <input type="number" id="favInputCarbs" placeholder="炭水化物(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
+          <input type="number" id="favInputFat" placeholder="脂質(g)" class="text-xs p-2 border border-slate-300 rounded-xl bg-white">
+          <input type="number" id="favInputCarbs" placeholder="炭水化物(g)" class="text-xs p-2 border border-slate-300 rounded-xl bg-white">
         </div>
         <div class="flex items-center space-x-1.5 pt-1">
-          <input type="checkbox" id="favInputPinned" class="rounded border-slate-300 text-amber-500 focus:ring-amber-400">
-          <label for="favInputPinned" class="text-xs font-bold text-amber-900">リストの上部に優先固定表示する（⭐）</label>
+          <input type="checkbox" id="favInputPinned" class="rounded border-slate-300 text-slate-700 focus:ring-slate-400">
+          <label for="favInputPinned" class="text-xs font-bold text-slate-700">リストの上部に優先固定表示する（⭐）</label>
         </div>
-        <button onclick="addNewFavorite()" class="w-full bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 rounded-xl transition shadow-sm mt-1">追加する</button>
+        <button onclick="addNewFavorite()" class="w-full bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl transition shadow-sm mt-1 hover:opacity-90">追加する</button>
       </div>
 
       <button onclick="closeFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
@@ -1389,6 +1399,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       updateThemeButtonsUI();
     };
 
+    // ★ ステータスバー色：通常は白、ダークモード時は黒で固定
     window.applyTheme = function(themeName, isDark) {
       if (isDark) {
         document.body.classList.add('theme-dark');
@@ -1407,6 +1418,16 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       document.documentElement.style.setProperty('--primary-border', t.border);
       document.documentElement.style.setProperty('--primary-text', t.text);
       document.documentElement.style.setProperty('--primary-contrast', t.contrast);
+
+      const metaThemeColor = document.getElementById('metaThemeColor');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', isDark ? '#090d16' : '#ffffff');
+      }
+
+      const metaStatusBar = document.getElementById('metaStatusBar');
+      if (metaStatusBar) {
+        metaStatusBar.setAttribute('content', isDark ? 'black' : 'default');
+      }
     };
 
     function updateThemeButtonsUI() {
@@ -1475,7 +1496,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         const canMoveDown = isPinnedItem && pinnedIndex < pinnedItems.length - 1;
 
         return `
-          <div class="flex justify-between items-center bg-slate-50 hover:bg-amber-50/60 p-2.5 rounded-xl border border-slate-200 transition">
+          <div class="flex justify-between items-center bg-slate-50 hover:bg-theme-light p-2.5 rounded-xl border border-slate-200 transition">
             <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
               <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="TOP優先に登録/解除">
                 ${item.isPinned ? '⭐' : '☆'}
@@ -1946,22 +1967,31 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const compactRemCalEl = document.getElementById('compactRemCal');
       if (compactRemCalEl) {
         compactRemCalEl.textContent = remCalVal + " kcal";
-        compactRemCalEl.className = isCalOver ? "text-[11px] font-black text-rose-600 leading-tight mt-0.5" : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
+        if (isCalOver) {
+          compactRemCalEl.className = "text-[11px] font-black text-rose-500 leading-tight mt-0.5";
+        } else {
+          compactRemCalEl.className = window.userSettings.isDarkMode 
+            ? "text-[11px] font-black text-emerald-400 leading-tight mt-0.5" 
+            : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
+        }
       }
 
       const compactProteinEl = document.getElementById('compactProtein');
       if (compactProteinEl) {
-        compactProteinEl.innerHTML = `<span class="${isPOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedP)}</span> <span class="text-slate-500 font-normal">/ ${targets.protein || 100}g</span>`;
+        const pClass = isPOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
+        compactProteinEl.innerHTML = `<span class="${pClass} font-bold">${Math.round(roundedP)}</span> <span class="text-slate-400 font-normal">/ ${targets.protein || 100}g</span>`;
       }
 
       const compactFatEl = document.getElementById('compactFat');
       if (compactFatEl) {
-        compactFatEl.innerHTML = `<span class="${isFOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedF)}</span> <span class="text-slate-500 font-normal">/ ${targets.fat || 50}g</span>`;
+        const fClass = isFOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
+        compactFatEl.innerHTML = `<span class="${fClass} font-bold">${Math.round(roundedF)}</span> <span class="text-slate-400 font-normal">/ ${targets.fat || 50}g</span>`;
       }
 
       const compactCarbsEl = document.getElementById('compactCarbs');
       if (compactCarbsEl) {
-        compactCarbsEl.innerHTML = `<span class="${isCOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedC)}</span> <span class="text-slate-500 font-normal">/ ${targets.carbs || 250}g</span>`;
+        const cClass = isCOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
+        compactCarbsEl.innerHTML = `<span class="${cClass} font-bold">${Math.round(roundedC)}</span> <span class="text-slate-400 font-normal">/ ${targets.carbs || 250}g</span>`;
       }
 
       const totalCalEl = document.getElementById('totalCalories');
@@ -2004,24 +2034,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (barCEl) {
         barCEl.className = isCOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-emerald-500 h-full transition-all duration-300";
         barCEl.style.width = `${Math.min(100, (totalC / (targets.carbs || 250)) * 100)}%`;
-      }
-
-      const habitSummaryStatus = document.getElementById('habitSummaryStatus');
-      const isOverNonProtein = isCalOver || isFOver || isCOver;
-
-      if (habitSummaryStatus) {
-        if (filteredLogs.length > 0) {
-          habitSummaryStatus.classList.remove('hidden');
-          if (isOverNonProtein) {
-            habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-rose-50 text-rose-700 border border-rose-200";
-            habitSummaryStatus.innerHTML = `<span>⚠️ 目標管理: カロリー/脂質/炭水化物が目標値を超過しています</span>`;
-          } else {
-            habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-theme-light text-theme-dark border border-theme-light";
-            habitSummaryStatus.innerHTML = `<span>✅ 目標管理: 適切な範囲内に収まっています</span>`;
-          }
-        } else {
-          habitSummaryStatus.classList.add('hidden');
-        }
       }
 
       const logListEl = document.getElementById('logList');
