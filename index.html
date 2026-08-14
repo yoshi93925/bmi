@@ -16,16 +16,17 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --primary-color: #10b981;
-      --primary-hover: #059669;
-      --primary-light: #ecfdf5;
-      --primary-border: #a7f3d0;
-      --primary-text: #047857;
+      --primary-color: #ec4899;
+      --primary-hover: #db2777;
+      --primary-light: #fce7f3;
+      --primary-border: #fbcfe8;
+      --primary-text: #be185d;
       --primary-contrast: #ffffff;
     }
 
     body { overflow-x: hidden; touch-action: pan-y; }
-    .calendar-day-red { background-color: #fecdd3; color: #e11d48; font-weight: bold; border-radius: 9999px; }
+    /* 超過時はしっかり赤で塗りつぶし、文字を白にする */
+    .calendar-day-red { background-color: #e11d48 !important; color: #ffffff !important; font-weight: bold; border-radius: 9999px; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
     /* 動的テーマカラー用ユーティリティ */
@@ -100,14 +101,20 @@
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
+    /* TOPのカロリーやたんぱく質などの設定値・ラベルの色調整 */
     body.theme-dark .text-slate-800,
     body.theme-dark .text-slate-700,
     body.theme-dark .text-slate-600 {
-      color: #cbd5e1 !important;
+      color: #ffffff !important;
     }
     body.theme-dark .text-slate-500,
     body.theme-dark .text-slate-400 {
-      color: #94a3b8 !important;
+      color: #cbd5e1 !important;
+    }
+    body:not(.theme-dark) .text-slate-800,
+    body:not(.theme-dark) .text-slate-700,
+    body:not(.theme-dark) .text-slate-600 {
+      color: #000000 !important;
     }
     body.theme-dark .pill-quick-chip {
       background-color: #1e293b !important;
@@ -135,6 +142,7 @@
       flex-shrink: 0;
       user-select: none;
       transition: opacity 0.2s ease;
+      cursor: pointer;
     }
     .shiratama-body {
       position: relative;
@@ -147,8 +155,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: transform 0.15s ease;
     }
     body.theme-dark .shiratama-body { border: 1.5px solid #475569; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
+    .shiratama-body.jump { animation: shiratamaJump 0.3s ease; }
+    @keyframes shiratamaJump {
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.08, 0.92); }
+      100% { transform: translateY(0) scale(1); }
+    }
 
     .shiratama-eye { width: 5px; height: 5px; background-color: #334155; border-radius: 50%; position: absolute; top: 36%; }
     .shiratama-eye::after { content: ''; position: absolute; top: 1px; right: 1px; width: 1.8px; height: 1.8px; background: #ffffff; border-radius: 50%; }
@@ -170,8 +185,9 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
+    /* ダークモード時のテーマカラー選択中の白丸修正：黒枠/リングを明示 */
     .theme-circle.active { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0f172a; transform: scale(1.1); }
-    body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #f8fafc; }
+    body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #ffffff; }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-2 md:p-6 flex justify-center items-start text-slate-800">
@@ -238,7 +254,7 @@
       <!-- 通常時サマリーカード -->
       <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-2.5 shadow-sm summary-transition">
         <div id="summaryHeaderRow" class="flex items-center justify-between px-5 py-0.5">
-          <div id="shiratamaContainer" class="shiratama-container">
+          <div id="shiratamaContainer" class="shiratama-container" onclick="tapShiratama()">
             <div id="shiratama-body" class="shiratama-body">
               <div id="shiratama-eye-l" class="shiratama-eye left"></div>
               <div id="shiratama-eye-r" class="shiratama-eye right"></div>
@@ -266,7 +282,7 @@
           </div>
         </div>
         
-        <!-- ★ PFCカード3列（文字と数値を大きく見やすく調整） -->
+        <!-- PFCカード3列 -->
         <div class="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-slate-200 text-center">
           
           <!-- タンパク質 -->
@@ -426,8 +442,9 @@
           <button onclick="selectTheme('emerald')" id="theme-btn-emerald" class="theme-circle w-7 h-7 rounded-full bg-emerald-500 transition-all active:scale-90" title="エメラルド"></button>
           <button onclick="selectTheme('blue')" id="theme-btn-blue" class="theme-circle w-7 h-7 rounded-full bg-blue-500 transition-all active:scale-90" title="ブルー"></button>
           <button onclick="selectTheme('violet')" id="theme-btn-violet" class="theme-circle w-7 h-7 rounded-full bg-violet-500 transition-all active:scale-90" title="バイオレット"></button>
-          <button onclick="selectTheme('rose')" id="theme-btn-rose" class="theme-circle w-7 h-7 rounded-full bg-rose-500 transition-all active:scale-90" title="ローズ"></button>
+          <button onclick="selectTheme('pink')" id="theme-btn-pink" class="theme-circle w-7 h-7 rounded-full bg-pink-400 transition-all active:scale-90" title="薄いピンク"></button>
           <button onclick="selectTheme('amber')" id="theme-btn-amber" class="theme-circle w-7 h-7 rounded-full bg-amber-500 transition-all active:scale-90" title="アンバー（オレンジ）"></button>
+          <button onclick="selectTheme('halloween')" id="theme-btn-halloween" class="theme-circle w-7 h-7 rounded-full bg-orange-600 transition-all active:scale-90" title="ハロウィン"></button>
           <button onclick="selectTheme('white')" id="theme-btn-white" class="theme-circle w-7 h-7 rounded-full bg-white border border-slate-300 transition-all active:scale-90" title="ホワイト"></button>
         </div>
 
@@ -477,7 +494,7 @@
       </div>
 
       <div class="flex space-x-2 pt-1">
-        <button onclick="closeTargetModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">キャンセル</button>
+        <button onclick="closeTargetModal()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">設定を保存</button>
         <button onclick="saveTargetValues()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">設定を保存</button>
       </div>
     </div>
@@ -561,7 +578,7 @@
 
       <div class="flex justify-center space-x-4 text-[10px] text-slate-500 font-medium">
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-200 inline-block"></span> 適正・目標内</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-200 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
       </div>
 
       <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
@@ -719,7 +736,7 @@
           if (data.favoritesList) window.favoritesList = data.favoritesList;
           if (data.userSettings) {
             window.userSettings = data.userSettings;
-            if (window.applyTheme) window.applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
+            if (window.applyTheme) window.applyTheme(window.userSettings.themeColor || 'pink', window.userSettings.isDarkMode);
           }
           if (data.geminiApiKey) {
             window.userGeminiApiKey = data.geminiApiKey;
@@ -770,13 +787,17 @@
         light: { main: '#8b5cf6', hover: '#7c3aed', bgLight: '#f5f3ff', border: '#ddd6fe', text: '#6d28d9', contrast: '#ffffff' },
         dark:  { main: '#a78bfa', hover: '#8b5cf6', bgLight: '#4c1d95', border: '#6d28d9', text: '#c4b5fd', contrast: '#4c1d95' }
       },
-      rose: {
-        light: { main: '#f43f5e', hover: '#e11d48', bgLight: '#fff1f2', border: '#fecdd3', text: '#be123c', contrast: '#ffffff' },
-        dark:  { main: '#fb7185', hover: '#f43f5e', bgLight: '#881337', border: '#be123c', text: '#fda4af', contrast: '#881337' }
+      pink: {
+        light: { main: '#ec4899', hover: '#db2777', bgLight: '#fce7f3', border: '#fbcfe8', text: '#be185d', contrast: '#ffffff' },
+        dark:  { main: '#f472b6', hover: '#ec4899', bgLight: '#831843', border: '#be185d', text: '#fbcfe8', contrast: '#831843' }
       },
       amber: {
         light: { main: '#f59e0b', hover: '#d97706', bgLight: '#fffbeb', border: '#fde68a', text: '#b45309', contrast: '#ffffff' },
         dark:  { main: '#fbbf24', hover: '#f59e0b', bgLight: '#78350f', border: '#b45309', text: '#fde68a', contrast: '#78350f' }
+      },
+      halloween: {
+        light: { main: '#ea580c', hover: '#c2410c', bgLight: '#ffedd5', border: '#fed7aa', text: '#9a3412', contrast: '#ffffff' },
+        dark:  { main: '#f97316', hover: '#ea580c', bgLight: '#431407', border: '#9a3412', text: '#fdba74', contrast: '#431407' }
       },
       white: {
         light: { main: '#ffffff', hover: '#f8fafc', bgLight: '#f1f5f9', border: '#cbd5e1', text: '#334155', contrast: '#0f172a' },
@@ -805,7 +826,7 @@
 
     window.userSettings = {
       showMascot: true,
-      themeColor: 'emerald',
+      themeColor: 'pink',
       isDarkMode: false
     };
 
@@ -838,7 +859,7 @@
         loadTargets();
         loadFavorites();
         loadAndCleanupLogs();
-        applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
+        applyTheme(window.userSettings.themeColor || 'pink', window.userSettings.isDarkMode);
         renderWeekDays();
         renderQuickFavoriteChips();
         updateUI();
@@ -848,6 +869,14 @@
         console.error("初期化エラー:", err);
       }
     });
+
+    window.tapShiratama = function() {
+      const bodyEl = document.getElementById('shiratama-body');
+      if (!bodyEl) return;
+      bodyEl.classList.remove('jump');
+      void bodyEl.offsetWidth;
+      bodyEl.classList.add('jump');
+    };
 
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
@@ -997,7 +1026,7 @@
         if (isSelected) {
           activeClass = "bg-theme-main text-theme-contrast font-bold shadow-md scale-105";
         } else if (isOver) {
-          activeClass = "bg-rose-100 text-rose-700 font-bold border border-rose-200";
+          activeClass = "calendar-day-red shadow-sm";
         }
 
         html += `
@@ -1411,7 +1440,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         document.body.classList.remove('theme-dark');
       }
 
-      const colorSet = THEMES[themeName] || THEMES.emerald;
+      const colorSet = THEMES[themeName] || THEMES.pink;
       const t = isDark ? colorSet.dark : colorSet.light;
 
       document.body.setAttribute('data-theme', themeName);
@@ -1435,7 +1464,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
 
     function updateThemeButtonsUI() {
-      const current = (window.userSettings && window.userSettings.themeColor) || 'emerald';
+      const current = (window.userSettings && window.userSettings.themeColor) || 'pink';
       Object.keys(THEMES).forEach(k => {
         const btn = document.getElementById(`theme-btn-${k}`);
         if (btn) {
@@ -1770,7 +1799,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       saveSettings();
 
-      applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
+      applyTheme(window.userSettings.themeColor || 'pink', window.userSettings.isDarkMode);
       updateUI();
       renderWeekDays();
       renderQuickFavoriteChips();
