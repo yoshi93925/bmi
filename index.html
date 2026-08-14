@@ -42,7 +42,7 @@
     body[data-theme="white"] .bg-theme-main { border: 1px solid #cbd5e1; }
     body.theme-dark[data-theme="white"] .bg-theme-main { border: 1px solid #475569; }
 
-    /* ====== 横スクロール ピル型チップ用スタイル ====== */
+    /* ====== お気に入り（クイックチップ）用スタイル（文字数に合わせて自動可変） ====== */
     .pill-scroll-container {
       display: flex;
       gap: 6px;
@@ -54,6 +54,17 @@
     }
     .pill-scroll-container::-webkit-scrollbar {
       display: none;
+    }
+    .pill-quick-chip {
+      height: 34px;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 12px;
+      padding-right: 12px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     /* ====== ダークモード連動スタイル ====== */
@@ -340,7 +351,7 @@
           </div>
         </div>
 
-        <!-- お気に入りピル型チップ -->
+        <!-- お気に入りピル型チップ（文字数に合わせて自動可変） -->
         <div id="quickFavoriteChipsContainer" class="hidden -mx-1 px-1 mt-0.5 mb-1.5">
           <div id="quickFavoriteChips" class="pill-scroll-container"></div>
         </div>
@@ -488,14 +499,14 @@
       </div>
 
       <div id="modalLogoutArea" class="pt-1 border-t border-slate-100 hidden">
-        <button onclick="logoutFromGoogle()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-1.5 rounded-xl border border-rose-200 transition">
+        <button onclick="logoutFromGoogle()" class="w-full text-xs bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 rounded-xl transition shadow-sm">
           ログアウト
         </button>
       </div>
 
       <div class="flex space-x-2 pt-1">
-        <button onclick="closeTargetModal()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">設定を保存</button>
-        <button onclick="saveTargetValues()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">設定を保存</button>
+        <button onclick="closeTargetModal()" class="flex-1 bg-white text-black border border-slate-300 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition shadow-xs">キャンセル</button>
+        <button onclick="saveTargetValues()" class="flex-1 bg-white text-black border border-slate-300 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition shadow-xs">設定を保存</button>
       </div>
     </div>
   </div>
@@ -1064,8 +1075,8 @@
       chipsEl.innerHTML = pinnedItems.map(item => {
         const displayName = (item.shortName && item.shortName.trim() !== '') ? item.shortName.trim() : item.foodName;
         return `
-          <button onclick="addFavoriteToLog(${item.id})" class="pill-quick-chip shrink-0 inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 border border-slate-200/90 shadow-2xs hover:border-slate-400 active:scale-95 transition-all duration-150">
-            <span class="truncate max-w-[140px]">${displayName}</span>
+          <button onclick="addFavoriteToLog(${item.id})" title="${item.foodName}" class="pill-quick-chip font-bold bg-white text-slate-700 border border-slate-200/90 shadow-2xs hover:border-slate-400 active:scale-95 transition-all duration-150 text-[11px]">
+            <span>${displayName}</span>
           </button>
         `;
       }).join('');
