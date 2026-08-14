@@ -2,60 +2,178 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PFC管理</title>
-  <!-- PWA対応用メタタグ（白基調用） -->
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AIカロリーチェッカー＆食事管理</title>
+
+  <!-- PWA & 全画面化設定 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10b981">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  
+  <meta name="apple-mobile-web-app-title" content="食事管理">
+  <link rel="apple-touch-icon" href="icon.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --primary-color: #10b981;
+      --primary-hover: #059669;
+      --primary-light: #ecfdf5;
+      --primary-border: #a7f3d0;
+      --primary-text: #047857;
+      --primary-contrast: #ffffff;
+    }
+
     body { overflow-x: hidden; touch-action: pan-y; }
     .calendar-day-red { background-color: #fecdd3; color: #e11d48; font-weight: bold; border-radius: 9999px; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
+    /* 動的テーマカラー用ユーティリティ */
+    .bg-theme-main { background-color: var(--primary-color) !important; }
+    .bg-theme-hover:hover { background-color: var(--primary-hover) !important; }
+    .bg-theme-light { background-color: var(--primary-light) !important; }
+    .border-theme-light { border-color: var(--primary-border) !important; }
+    .text-theme-main { color: var(--primary-color) !important; }
+    .text-theme-dark { color: var(--primary-text) !important; }
+    .text-theme-contrast { color: var(--primary-contrast) !important; }
+
+    /* 白テーマ専用のボタン枠線 */
+    body[data-theme="white"] .bg-theme-main { border: 1px solid #cbd5e1; }
+    body.theme-dark[data-theme="white"] .bg-theme-main { border: 1px solid #475569; }
+
+    /* ====== 横スクロール ピル型チップ用スタイル ====== */
+    .pill-scroll-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-top: 1px;
+      padding-bottom: 1px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .pill-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ====== ダークモード連動スタイル ====== */
+    body.theme-dark {
+      background-color: #090d16 !important;
+      color: #f1f5f9 !important;
+    }
+    body.theme-dark #appContainer {
+      background-color: #131b2e !important;
+      border-color: #1e293b !important;
+    }
+    body.theme-dark .sticky {
+      background-color: #131b2e !important;
+      border-color: #1e293b !important;
+    }
+    body.theme-dark #weekDaysContainer {
+      background-color: #090d16 !important;
+      border-color: #1e293b !important;
+    }
+    body.theme-dark #fullSummaryCard,
+    body.theme-dark .bg-slate-50 {
+      background-color: #0c1322 !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.theme-dark input[type="text"],
+    body.theme-dark input[type="number"],
+    body.theme-dark input[type="password"] {
+      background-color: #131b2e !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+    body.theme-dark .bg-white {
+      background-color: #131b2e !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.theme-dark .text-slate-800,
+    body.theme-dark .text-slate-700,
+    body.theme-dark .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+    body.theme-dark .text-slate-500,
+    body.theme-dark .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+    body.theme-dark .pill-quick-chip {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #e2e8f0 !important;
+    }
+    body.theme-dark .pill-quick-chip:hover {
+      background-color: #334155 !important;
+    }
+
     /* 左右スワイプアニメーション */
-    .slide-left {
-      animation: slideLeft 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-    .slide-right {
-      animation: slideRight 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-    @keyframes slideLeft {
-      0% { transform: translateX(20px); opacity: 0.6; }
-      100% { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideRight {
-      0% { transform: translateX(-20px); opacity: 0.6; }
-      100% { transform: translateX(0); opacity: 1; }
-    }
+    .slide-left { animation: slideLeft 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
+    .slide-right { animation: slideRight 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
+    @keyframes slideLeft { 0% { transform: translateX(20px); opacity: 0.6; } 100% { transform: translateX(0); opacity: 1; } }
+    @keyframes slideRight { 0% { transform: translateX(-20px); opacity: 0.6; } 100% { transform: translateX(0); opacity: 1; } }
 
     /* トースト通知アニメーション */
-    .toast-show {
-      animation: toastIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
-    @keyframes toastIn {
-      0% { opacity: 0; transform: translate(-50%, 20px); }
-      100% { opacity: 1; transform: translate(-50%, 0); }
-    }
+    .toast-show { animation: toastIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    @keyframes toastIn { 0% { opacity: 0; transform: translate(-50%, 20px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
 
-    .summary-transition {
-      transition: opacity 0.15s ease-in-out;
+    .summary-transition { transition: opacity 0.15s ease-in-out; }
+
+    /* ====== もちもち白玉マスコット スタイル ====== */
+    .shiratama-container {
+      flex-shrink: 0;
+      user-select: none;
+      transition: opacity 0.2s ease;
     }
+    .shiratama-body {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+      border-radius: 50%;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    body.theme-dark .shiratama-body { border: 1.5px solid #475569; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
+
+    .shiratama-eye { width: 5px; height: 5px; background-color: #334155; border-radius: 50%; position: absolute; top: 36%; }
+    .shiratama-eye::after { content: ''; position: absolute; top: 1px; right: 1px; width: 1.8px; height: 1.8px; background: #ffffff; border-radius: 50%; }
+    .shiratama-eye.left { left: 26%; }
+    .shiratama-eye.right { right: 26%; }
+    .shiratama-eye.sick { background: transparent !important; font-size: 10px; font-weight: bold; color: #334155; top: 25%; }
+    .shiratama-eye.sick::after { display: none; }
+
+    .shiratama-cheek { width: 8px; height: 4px; background-color: #fda4af; border-radius: 50%; position: absolute; top: 48%; opacity: 0.7; transition: background-color 0.2s; }
+    .shiratama-cheek.left { left: 14%; }
+    .shiratama-cheek.right { right: 14%; }
+    .shiratama-cheek.sick { background-color: #a5b4fc; }
+
+    .shiratama-mouth { position: absolute; top: 48%; transition: all 0.2s; }
+    .shiratama-mouth.happy { width: 6px; height: 3px; border-bottom: 1.5px solid #334155; border-radius: 0 0 6px 6px; }
+    .shiratama-mouth.hungry { width: 6px; height: 3px; border-top: 1.5px solid #334155; border-radius: 6px 6px 0 0; top: 52%; }
+    .shiratama-mouth.sick { width: 8px; height: 3px; border-bottom: 1.5px dashed #334155; }
+
+    .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
+    .shiratama-sweat.active { display: block; }
+
+    .theme-circle.active { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0f172a; transform: scale(1.1); }
+    body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #f8fafc; }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-2 md:p-6 flex justify-center items-start text-slate-800">
 
   <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
     
-    <!-- 上部固定エリア（ヘッダー ＋ 週間カレンダー） -->
+    <!-- 上部固定エリア -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
       <!-- ヘッダー -->
       <div class="flex justify-between items-center">
-        <button onclick="openCalendarModal()" title="カレンダー" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 transition active:scale-95 shadow-sm">
+        <button onclick="openCalendarModal()" title="カレンダー" class="p-1.5 rounded-xl bg-theme-light text-theme-dark border border-theme-light transition active:scale-95 shadow-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
@@ -77,11 +195,9 @@
         </div>
       </div>
 
-      <!-- 7日間の日付＆曜日タブナビゲーション（復旧＆常時表示） -->
+      <!-- 7日間の日付＆曜日タブナビゲーション -->
       <div>
-        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-center touch-pan-x cursor-grab">
-          <!-- JSで動的生成 -->
-        </div>
+        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-center touch-pan-x cursor-grab"></div>
       </div>
 
       <!-- スクロール追従用 コンパクトサマリーバー -->
@@ -110,27 +226,37 @@
     <div id="mainContentArea" class="space-y-4">
 
       <!-- 通常時サマリーカード -->
-      <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-2 shadow-sm summary-transition">
-        <div class="flex justify-end items-center">
-          <span id="dateBadge" class="text-[9px] bg-slate-200/80 text-slate-700 font-mono px-2 py-0.5 rounded-full border border-slate-300/60 font-bold"></span>
+      <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-2.5 shadow-sm summary-transition">
+        <div id="summaryHeaderRow" class="flex items-center justify-between px-5 py-0.5">
+          <div id="shiratamaContainer" class="shiratama-container">
+            <div id="shiratama-body" class="shiratama-body">
+              <div id="shiratama-eye-l" class="shiratama-eye left"></div>
+              <div id="shiratama-eye-r" class="shiratama-eye right"></div>
+              <div id="shiratama-cheek-l" class="shiratama-cheek left"></div>
+              <div id="shiratama-cheek-r" class="shiratama-cheek right"></div>
+              <div id="shiratama-mouth" class="shiratama-mouth happy"></div>
+              <div id="shiratama-sweat" class="shiratama-sweat">💧</div>
+            </div>
+          </div>
+
+          <div id="calorieTextGroup" class="flex flex-col justify-center text-right">
+            <span class="text-xs text-slate-600 font-bold leading-none mb-1">総カロリー</span>
+            <div class="font-mono flex items-baseline justify-end space-x-1">
+              <span id="totalCalories" class="text-xl font-black text-theme-main leading-none">0</span>
+              <span class="text-slate-400 text-xs">/</span>
+              <span id="targetCaloriesDisplay" class="text-xs font-semibold text-slate-500">2000</span>
+              <span class="text-[10px] text-slate-400">kcal</span>
+            </div>
+          </div>
         </div>
 
         <div class="space-y-1">
-          <div class="flex justify-between items-baseline">
-            <span class="text-xs text-slate-600 font-bold">総カロリー</span>
-            <div class="font-mono">
-              <span id="totalCalories" class="text-lg font-black">0</span>
-              <span class="text-slate-400 text-xs">/</span>
-              <span id="targetCaloriesDisplay" class="text-xs font-semibold text-slate-500">2000</span>
-              <span class="text-[10px] text-slate-400 ml-0.5">kcal</span>
-            </div>
-          </div>
           <div class="w-full bg-slate-200/80 h-1.5 rounded-full overflow-hidden">
-            <div id="barCalories" class="h-full transition-all duration-300" style="width: 0%"></div>
+            <div id="barCalories" class="h-full transition-all duration-300 bg-theme-main" style="width: 0%"></div>
           </div>
         </div>
         
-        <div class="grid grid-cols-3 gap-1 pt-0.5 border-t border-slate-200 text-center">
+        <div class="grid grid-cols-3 gap-1 pt-1 border-t border-slate-200 text-center">
           <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
             <div class="text-[9px] text-blue-600 font-bold">タンパク質</div>
             <div class="text-[10px] font-bold font-mono">
@@ -170,82 +296,91 @@
       </div>
 
       <!-- 統合入力フォーム -->
-      <div class="space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
-        <div class="flex justify-between items-center">
-          <label class="block text-xs font-bold text-slate-700">🍴 食事の追加</label>
+      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+        
+        <div class="flex justify-between items-center mb-0.5">
+          <label class="block text-xs font-bold text-slate-700">食事の追加</label>
           <div class="flex items-center space-x-2">
-            <span id="aiStatusBadge" class="hidden text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full animate-pulse">✨ AI解析完了</span>
+            <span id="aiStatusBadge" class="hidden text-[10px] bg-theme-light text-theme-dark font-bold px-2 py-0.5 rounded-full">✨ AI解析完了</span>
             <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-2.5 py-1 rounded-xl transition border border-amber-300/80 shadow-sm flex items-center gap-1 active:scale-95">
-              📋 リストから選ぶ
+              リストから選ぶ
             </button>
           </div>
+        </div>
+
+        <!-- お気に入りピル型チップ -->
+        <div id="quickFavoriteChipsContainer" class="hidden -mx-1 px-1 mt-0.5 mb-1.5">
+          <div id="quickFavoriteChips" class="pill-scroll-container"></div>
         </div>
 
         <input type="file" id="albumInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
         <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="analyzePhotoAndFillForm(event)">
 
-        <div>
-          <div class="flex items-center space-x-1.5">
-            <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm">
+        <div class="space-y-2.5">
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-sm">
+              
+              <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm hover:opacity-90">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+
+              <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm hover:opacity-90">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </button>
+            </div>
             
-            <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-            </button>
+            <div id="previewContainer" class="hidden mt-2 relative">
+              <img id="imagePreview" class="max-h-32 mx-auto rounded-xl object-cover border border-slate-200">
+              <button onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-slate-800/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">×</button>
+            </div>
+          </div>
 
-            <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-300/80 font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-            </button>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー (kcal)</label>
+              <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質 (g)</label>
+              <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+            </div>
           </div>
-          
-          <div id="previewContainer" class="hidden mt-2 relative">
-            <img id="imagePreview" class="max-h-32 mx-auto rounded-xl object-cover border border-slate-200">
-            <button onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-slate-800/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">×</button>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質 (g)</label>
+              <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物 (g)</label>
+              <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+            </div>
           </div>
-        </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー (kcal)</label>
-            <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+          <div class="flex items-center space-x-1.5 pt-0.5">
+            <input type="checkbox" id="addToListAlso" class="rounded border-slate-300 text-slate-700 focus:ring-slate-400">
+            <label for="addToListAlso" class="text-xs font-bold text-slate-600">リストにも追加する</label>
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質 (g)</label>
-            <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質 (g)</label>
-            <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物 (g)</label>
-            <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-          </div>
-        </div>
 
-        <div class="flex items-center space-x-1.5 pt-1">
-          <input type="checkbox" id="addToListAlso" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
-          <label for="addToListAlso" class="text-xs font-bold text-slate-600">リストにも追加する</label>
+          <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-theme-main text-theme-contrast text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition shadow-sm active:scale-95">
+            ＋ 記録に追加する
+          </button>
         </div>
-
-        <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-emerald-500 text-white text-xs font-bold py-2.5 rounded-xl hover:bg-emerald-600 transition shadow-sm mt-1 active:scale-95">
-          ＋ 記録に追加する
-        </button>
 
         <div id="manualLoading" class="hidden text-center py-2">
-          <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-emerald-500 border-t-transparent"></div>
+          <div class="inline-block animate-spin rounded-full h-5 w-5 border-2 border-slate-500 border-t-transparent"></div>
           <p class="text-[11px] text-slate-500 mt-1" id="loadingText">AIが栄養素を解析中...</p>
         </div>
       </div>
 
-      <!-- 食事ログエリア -->
-      <div class="border-t border-slate-200/80 pt-2 space-y-2">
+      <!-- 食事ログ＆習慣エリア -->
+      <div class="border-t border-slate-200/80 pt-3 space-y-2.5">
+        <div id="habitSummaryStatus" class="hidden p-2.5 rounded-xl text-xs font-bold flex justify-between items-center"></div>
         <div id="logList" class="space-y-2 min-h-36 text-xs text-slate-500"></div>
       </div>
 
@@ -253,8 +388,8 @@
   </div>
 
   <!-- 「今日へ戻る」ボタン -->
-  <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-5 right-5 bg-slate-900/90 hover:bg-slate-900 text-white font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
-    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-5 right-5 bg-slate-900/90 hover:bg-slate-900 text-theme-contrast font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
+    <svg class="w-4 h-4 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
     </svg>
     <span>今日</span>
@@ -265,7 +400,75 @@
     <span id="toastMessage">✅ 記録を追加しました</span>
   </div>
 
-  <!-- モーダル各種 -->
+  <!-- 設定モーダル -->
+  <div id="targetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3.5 max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800 border-b pb-2">⚙️ 設定＆カスタマイズ</h3>
+      
+      <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2.5">
+        <label class="block text-[11px] font-bold text-slate-700">テーマカラー</label>
+        <div class="flex items-center justify-between px-1">
+          <button onclick="selectTheme('emerald')" id="theme-btn-emerald" class="theme-circle w-7 h-7 rounded-full bg-emerald-500 transition-all active:scale-90" title="エメラルド"></button>
+          <button onclick="selectTheme('blue')" id="theme-btn-blue" class="theme-circle w-7 h-7 rounded-full bg-blue-500 transition-all active:scale-90" title="ブルー"></button>
+          <button onclick="selectTheme('violet')" id="theme-btn-violet" class="theme-circle w-7 h-7 rounded-full bg-violet-500 transition-all active:scale-90" title="バイオレット"></button>
+          <button onclick="selectTheme('rose')" id="theme-btn-rose" class="theme-circle w-7 h-7 rounded-full bg-rose-500 transition-all active:scale-90" title="ローズ"></button>
+          <button onclick="selectTheme('amber')" id="theme-btn-amber" class="theme-circle w-7 h-7 rounded-full bg-amber-500 transition-all active:scale-90" title="アンバー（オレンジ）"></button>
+          <button onclick="selectTheme('white')" id="theme-btn-white" class="theme-circle w-7 h-7 rounded-full bg-white border border-slate-300 transition-all active:scale-90" title="ホワイト"></button>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200 space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="inputDarkMode" class="text-xs font-bold text-slate-700 cursor-pointer">ダークモード</label>
+            <input type="checkbox" id="inputDarkMode" class="w-4 h-4 rounded border-slate-300 text-slate-700 focus:ring-0 cursor-pointer">
+          </div>
+          <div class="flex items-center justify-between">
+            <label for="inputShowMascot" class="text-xs font-bold text-slate-700 cursor-pointer">キャラ表示</label>
+            <input type="checkbox" id="inputShowMascot" class="w-4 h-4 rounded border-slate-300 text-slate-700 focus:ring-0 cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
+        <label class="block text-[11px] font-bold text-slate-700">Gemini APIキー</label>
+        <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+        <p class="text-[9px] text-slate-400">※Googleログイン時、アカウントに暗号化同期保存されます。</p>
+      </div>
+
+      <div class="space-y-2">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 mb-0.5">目標カロリー (kcal)</label>
+          <input type="number" id="inputTargetCalories" placeholder="2000" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 mb-0.5">タンパク質(g)</label>
+            <input type="number" id="inputTargetProtein" placeholder="100" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 mb-0.5">脂質(g)</label>
+            <input type="number" id="inputTargetFat" placeholder="50" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-600 mb-0.5">炭水化物(g)</label>
+            <input type="number" id="inputTargetCarbs" placeholder="250" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
+          </div>
+        </div>
+      </div>
+
+      <div id="modalLogoutArea" class="pt-1 border-t border-slate-100 hidden">
+        <button onclick="logoutFromGoogle()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-1.5 rounded-xl border border-rose-200 transition">
+          ログアウト
+        </button>
+      </div>
+
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeTargetModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">キャンセル</button>
+        <button onclick="saveTargetValues()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">設定を保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- リスト選択モーダル -->
   <div id="selectFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-2">
@@ -278,7 +481,7 @@
         </div>
       </div>
 
-      <input type="text" id="favSearchInput" oninput="renderSelectFavoriteList()" placeholder="アイテム名で検索..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
+      <input type="text" id="favSearchInput" oninput="renderSelectFavoriteList()" placeholder="料理名・表示名で検索..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
 
       <div id="selectFavoriteList" class="space-y-1.5 overflow-y-auto flex-1 pr-1 text-xs"></div>
 
@@ -286,12 +489,17 @@
     </div>
   </div>
 
+  <!-- リスト編集モーダル -->
   <div id="editFavoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3">
       <h3 class="text-sm font-bold text-slate-800 border-b pb-2">よく食べるアイテムの編集</h3>
       <div>
-        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">料理名</label>
+        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">料理名（正式名称）</label>
         <input type="text" id="editFavName" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+      </div>
+      <div>
+        <label class="block text-[10px] font-bold text-slate-500 mb-0.5">TOP表示名（略称・空欄なら正式名）</label>
+        <input type="text" id="editFavShortName" placeholder="例: プロテイン" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
@@ -320,12 +528,13 @@
     </div>
   </div>
 
+  <!-- カレンダーモーダル -->
   <div id="calendarModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <div class="flex justify-between items-center border-b pb-2">
         <div class="flex items-center space-x-2">
           <h3 class="text-sm font-bold text-slate-800" id="calendarMonthTitle">2026年 8月</h3>
-          <button onclick="goToTodayFromModal()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-lg text-[10px] border border-emerald-200 transition active:scale-95">
+          <button onclick="goToTodayFromModal()" class="bg-theme-light text-theme-dark font-bold px-2 py-0.5 rounded-lg text-[10px] border border-theme-light transition active:scale-95">
             今日
           </button>
         </div>
@@ -350,54 +559,14 @@
     </div>
   </div>
 
-  <div id="targetModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
-    <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
-      <h3 class="text-base font-bold text-slate-800 border-b pb-2">⚙️ 目標＆Gemini API設定</h3>
-      
-      <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1.5">
-        <label class="block text-xs font-bold text-slate-700">🔑 Gemini APIキー</label>
-        <input type="password" id="inputGeminiApiKey" placeholder="AIzaSy..." class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-        <p class="text-[10px] text-slate-400">※Googleログイン時、アカウントに暗号化同期保存されます。</p>
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-slate-600 mb-1">目標カロリー (kcal)</label>
-        <input type="number" id="inputTargetCalories" placeholder="2000" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-      </div>
-      <div class="grid grid-cols-3 gap-2">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">タンパク質 (g)</label>
-          <input type="number" id="inputTargetProtein" placeholder="100" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">脂質 (g)</label>
-          <input type="number" id="inputTargetFat" placeholder="50" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">炭水化物 (g)</label>
-          <input type="number" id="inputTargetCarbs" placeholder="250" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        </div>
-      </div>
-
-      <div id="modalLogoutArea" class="pt-2 border-t border-slate-100 hidden">
-        <button onclick="logoutFromGoogle()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2 rounded-xl border border-rose-200 transition">
-          ログアウト
-        </button>
-      </div>
-
-      <div class="flex space-x-2 pt-2">
-        <button onclick="closeTargetModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">キャンセル</button>
-        <button onclick="saveTargetValues()" class="flex-1 bg-emerald-500 text-white text-xs font-bold py-2 rounded-xl hover:bg-emerald-600 transition shadow-sm">設定を保存</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- リスト新規追加モーダル -->
   <div id="favoriteModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">リストに追加</h3>
       
       <div class="space-y-2 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/60">
-        <input type="text" id="favInputName" placeholder="料理名 (例: プロテイン)" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        <input type="text" id="favInputName" placeholder="料理名（例: プロテイン20g）" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
+        <input type="text" id="favInputShortName" placeholder="TOP表示名（略称・空欄なら料理名）" class="w-full text-xs p-2 border border-slate-300 rounded-xl">
         <div class="grid grid-cols-2 gap-2">
           <input type="number" id="favInputCalories" placeholder="カロリー(kcal)" class="text-xs p-2 border border-slate-300 rounded-xl">
           <input type="number" id="favInputProtein" placeholder="タンパク質(g)" class="text-xs p-2 border border-slate-300 rounded-xl">
@@ -417,36 +586,37 @@
     </div>
   </div>
 
+  <!-- 食事ログ編集モーダル -->
   <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">記録の編集</h3>
       <div>
         <label class="block text-xs font-bold text-slate-600 mb-1">料理名・食品名</label>
-        <input type="text" id="editName" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        <input type="text" id="editName" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">カロリー (kcal)</label>
-          <input type="number" id="editCalories" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <input type="number" id="editCalories" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">タンパク質 (g)</label>
-          <input type="number" id="editProtein" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <input type="number" id="editProtein" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">脂質 (g)</label>
-          <input type="number" id="editFat" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <input type="number" id="editFat" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">炭水化物 (g)</label>
-          <input type="number" id="editCarbs" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <input type="number" id="editCarbs" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
         </div>
       </div>
       <div class="flex space-x-2 pt-2">
         <button onclick="closeEditModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">キャンセル</button>
-        <button onclick="saveEditedLog()" class="flex-1 bg-emerald-500 text-white text-xs font-bold py-2 rounded-xl hover:bg-emerald-600 transition shadow-sm">保存する</button>
+        <button onclick="saveEditedLog()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">保存する</button>
       </div>
     </div>
   </div>
@@ -507,14 +677,18 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
-        document.getElementById('loginBtn').classList.add('hidden');
-        document.getElementById('modalLogoutArea').classList.remove('hidden');
+        const loginBtn = document.getElementById('loginBtn');
+        const modalLogoutArea = document.getElementById('modalLogoutArea');
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (modalLogoutArea) modalLogoutArea.classList.remove('hidden');
 
         subscribeCloudData(user.uid);
       } else {
         currentUser = null;
-        document.getElementById('loginBtn').classList.remove('hidden');
-        document.getElementById('modalLogoutArea').classList.add('hidden');
+        const loginBtn = document.getElementById('loginBtn');
+        const modalLogoutArea = document.getElementById('modalLogoutArea');
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (modalLogoutArea) modalLogoutArea.classList.add('hidden');
       }
     });
 
@@ -528,13 +702,18 @@
           if (data.foodLogs) window.foodLogs = data.foodLogs;
           if (data.userTargets) window.userTargets = data.userTargets;
           if (data.favoritesList) window.favoritesList = data.favoritesList;
+          if (data.userSettings) {
+            window.userSettings = data.userSettings;
+            if (window.applyTheme) window.applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
+          }
           if (data.geminiApiKey) {
             window.userGeminiApiKey = data.geminiApiKey;
             localStorage.setItem('user_gemini_api_key', data.geminiApiKey);
           }
           
-          window.updateUI();
-          window.renderWeekDays();
+          if (window.updateUI) window.updateUI();
+          if (window.renderWeekDays) window.renderWeekDays();
+          if (window.renderQuickFavoriteChips) window.renderQuickFavoriteChips();
         } else {
           window.syncDataToCloud();
         }
@@ -549,6 +728,7 @@
           foodLogs: window.foodLogs || [],
           userTargets: window.userTargets || {},
           favoritesList: window.favoritesList || [],
+          userSettings: window.userSettings || {},
           geminiApiKey: window.userGeminiApiKey || "",
           updatedAt: new Date().toISOString()
         }, { merge: true });
@@ -561,6 +741,33 @@
   <!-- アプリ基本ロジック -->
   <script>
     const CLEANUP_DAYS = 30;
+
+    const THEMES = {
+      emerald: {
+        light: { main: '#10b981', hover: '#059669', bgLight: '#ecfdf5', border: '#a7f3d0', text: '#047857', contrast: '#ffffff' },
+        dark:  { main: '#34d399', hover: '#10b981', bgLight: '#064e3b', border: '#047857', text: '#6ee7b7', contrast: '#064e3b' }
+      },
+      blue: {
+        light: { main: '#3b82f6', hover: '#2563eb', bgLight: '#eff6ff', border: '#bfdbfe', text: '#1d4ed8', contrast: '#ffffff' },
+        dark:  { main: '#60a5fa', hover: '#3b82f6', bgLight: '#1e3a8a', border: '#1d4ed8', text: '#93c5fd', contrast: '#1e3a8a' }
+      },
+      violet: {
+        light: { main: '#8b5cf6', hover: '#7c3aed', bgLight: '#f5f3ff', border: '#ddd6fe', text: '#6d28d9', contrast: '#ffffff' },
+        dark:  { main: '#a78bfa', hover: '#8b5cf6', bgLight: '#4c1d95', border: '#6d28d9', text: '#c4b5fd', contrast: '#4c1d95' }
+      },
+      rose: {
+        light: { main: '#f43f5e', hover: '#e11d48', bgLight: '#fff1f2', border: '#fecdd3', text: '#be123c', contrast: '#ffffff' },
+        dark:  { main: '#fb7185', hover: '#f43f5e', bgLight: '#881337', border: '#be123c', text: '#fda4af', contrast: '#881337' }
+      },
+      amber: {
+        light: { main: '#f59e0b', hover: '#d97706', bgLight: '#fffbeb', border: '#fde68a', text: '#b45309', contrast: '#ffffff' },
+        dark:  { main: '#fbbf24', hover: '#f59e0b', bgLight: '#78350f', border: '#b45309', text: '#fde68a', contrast: '#78350f' }
+      },
+      white: {
+        light: { main: '#ffffff', hover: '#f8fafc', bgLight: '#f1f5f9', border: '#cbd5e1', text: '#334155', contrast: '#0f172a' },
+        dark:  { main: '#f8fafc', hover: '#e2e8f0', bgLight: '#1e293b', border: '#475569', text: '#f8fafc', contrast: '#0f172a' }
+      }
+    };
 
     let base64Image = null;
     window.foodLogs = [];
@@ -581,21 +788,25 @@
       carbs: 250
     };
 
+    window.userSettings = {
+      showMascot: true,
+      themeColor: 'emerald',
+      isDarkMode: false
+    };
+
     window.favoritesList = [
-      { id: 1, foodName: "ソイプロテイン", calories: 120, protein: 20, fat: 1.5, carbs: 2, isPinned: true },
-      { id: 2, foodName: "おにぎり(1個)", calories: 180, protein: 3, fat: 0.5, carbs: 40, isPinned: true }
+      { id: 1, foodName: "ソイプロテイン", shortName: "プロテイン", calories: 120, protein: 20, fat: 1.5, carbs: 2, isPinned: true, order: 1 },
+      { id: 2, foodName: "おにぎり(1個)", shortName: "おにぎり", calories: 180, protein: 3, fat: 0.5, carbs: 40, isPinned: true, order: 2 }
     ];
 
-    window.onload = function() {
-      selectedDateStr = getTodayString();
-      loadTargets();
-      loadFavorites();
-      loadAndCleanupLogs();
-      renderWeekDays();
-      updateUI();
-      initWeekSwipeEvents();
-      initScrollObserver();
-    };
+    function normalizeJapanese(str) {
+      if (!str) return "";
+      return str
+        .toLowerCase()
+        .replace(/[\u30a1-\u30f6]/g, match => String.fromCharCode(match.charCodeAt(0) - 0x60))
+        .replace(/[！-～]/g, match => String.fromCharCode(match.charCodeAt(0) - 0xfee0))
+        .trim();
+    }
 
     function getTodayString() {
       const d = new Date();
@@ -605,9 +816,28 @@
       return `${year}-${month}-${day}`;
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        selectedDateStr = getTodayString();
+        loadSettings();
+        loadTargets();
+        loadFavorites();
+        loadAndCleanupLogs();
+        applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
+        renderWeekDays();
+        renderQuickFavoriteChips();
+        updateUI();
+        initWeekSwipeEvents();
+        initScrollObserver();
+      } catch (err) {
+        console.error("初期化エラー:", err);
+      }
+    });
+
     function showToast(message) {
       const toast = document.getElementById('toastNotification');
       const msgEl = document.getElementById('toastMessage');
+      if (!toast || !msgEl) return;
 
       msgEl.textContent = message;
       toast.classList.remove('hidden');
@@ -619,6 +849,13 @@
         toast.classList.remove('toast-show');
       }, 1500);
     }
+
+    window.goToToday = function() {
+      selectedDateStr = getTodayString();
+      weekOffsetDays = 0;
+      renderWeekDays();
+      updateUI();
+    };
 
     window.goToTodayFromModal = function() {
       selectedDateStr = getTodayString();
@@ -632,20 +869,23 @@
     };
 
     function initScrollObserver() {
+      const targetCard = document.getElementById('fullSummaryCard');
       const compactBar = document.getElementById('compactSummaryBar');
-      let isCompact = false;
+      if (!targetCard || !compactBar) return;
 
-      window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) {
+            compactBar.classList.remove('hidden');
+          } else {
+            compactBar.classList.add('hidden');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
 
-        if (scrollY > 40 && !isCompact) {
-          isCompact = true;
-          compactBar.classList.remove('hidden');
-        } else if (scrollY <= 40 && isCompact) {
-          isCompact = false;
-          compactBar.classList.add('hidden');
-        }
-      }, { passive: true });
+      observer.observe(targetCard);
     }
 
     function initWeekSwipeEvents() {
@@ -654,6 +894,7 @@
       let touchendX = 0;
       let endY = 0;
       const weekContainer = document.getElementById('weekDaysContainer');
+      if (!weekContainer) return;
 
       weekContainer.addEventListener('touchstart', e => {
         touchstartX = e.changedTouches[0].screenX;
@@ -685,6 +926,7 @@
 
     function triggerSlideAnimation(className) {
       const el = document.getElementById('weekDaysContainer');
+      if (!el) return;
       el.classList.remove('slide-left', 'slide-right');
       void el.offsetWidth;
       el.classList.add(className);
@@ -698,20 +940,25 @@
     }
 
     function checkIsDayOver(dateStr) {
-      const dayLogs = (window.foodLogs || []).filter(l => l.date === dateStr);
+      const logs = Array.isArray(window.foodLogs) ? window.foodLogs : [];
+      const dayLogs = logs.filter(l => l && l.date === dateStr);
       if (dayLogs.length === 0) return false;
 
-      const sumCal = dayLogs.reduce((s, l) => s + l.calories, 0);
-      const sumFat = dayLogs.reduce((s, l) => s + l.fat, 0);
-      const sumCarbs = dayLogs.reduce((s, l) => s + l.carbs, 0);
+      const sumCal = dayLogs.reduce((s, l) => s + (l.calories || 0), 0);
+      const sumFat = dayLogs.reduce((s, l) => s + (l.fat || 0), 0);
+      const sumCarbs = dayLogs.reduce((s, l) => s + (l.carbs || 0), 0);
 
-      return (sumCal > window.userTargets.calories) || 
-             (sumFat > window.userTargets.fat) || 
-             (sumCarbs > window.userTargets.carbs);
+      const targets = window.userTargets || { calories: 2000, fat: 50, carbs: 250 };
+
+      return (sumCal > (targets.calories || 2000)) || 
+             (sumFat > (targets.fat || 50)) || 
+             (sumCarbs > (targets.carbs || 250));
     }
 
-    function renderWeekDays() {
+    window.renderWeekDays = function() {
       const container = document.getElementById('weekDaysContainer');
+      if (!container) return;
+
       const weekLabels = ["日", "月", "火", "水", "木", "金", "土"];
       
       let html = "";
@@ -728,10 +975,12 @@
         const isToday = dateStr === getTodayString();
         const isOver = checkIsDayOver(dateStr);
 
-        let activeClass = "bg-white text-slate-600 hover:bg-slate-50";
+        let activeClass = window.userSettings.isDarkMode 
+          ? "bg-slate-800 text-slate-300 hover:bg-slate-700" 
+          : "bg-white text-slate-600 hover:bg-slate-50";
 
         if (isSelected) {
-          activeClass = "bg-emerald-500 text-white font-bold shadow-md scale-105";
+          activeClass = "bg-theme-main text-theme-contrast font-bold shadow-md scale-105";
         } else if (isOver) {
           activeClass = "bg-rose-100 text-rose-700 font-bold border border-rose-200";
         }
@@ -744,24 +993,52 @@
         `;
       }
       container.innerHTML = html;
-    }
+    };
 
-    function selectDateFromTab(dateStr) {
+    window.selectDateFromTab = function(dateStr) {
       selectedDateStr = dateStr;
       renderWeekDays();
       updateUI();
-    }
+    };
+
+    window.renderQuickFavoriteChips = function() {
+      const containerWrapper = document.getElementById('quickFavoriteChipsContainer');
+      const chipsEl = document.getElementById('quickFavoriteChips');
+      if (!containerWrapper || !chipsEl) return;
+
+      const pinnedItems = (window.favoritesList || [])
+        .filter(item => item && item.isPinned)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+      if (pinnedItems.length === 0) {
+        containerWrapper.classList.add('hidden');
+        chipsEl.innerHTML = '';
+        return;
+      }
+
+      containerWrapper.classList.remove('hidden');
+      chipsEl.innerHTML = pinnedItems.map(item => {
+        const displayName = (item.shortName && item.shortName.trim() !== '') ? item.shortName.trim() : item.foodName;
+        return `
+          <button onclick="addFavoriteToLog(${item.id})" class="pill-quick-chip shrink-0 inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-bold bg-white text-slate-700 border border-slate-200/90 shadow-2xs hover:border-slate-400 active:scale-95 transition-all duration-150">
+            <span class="truncate max-w-[140px]">${displayName}</span>
+          </button>
+        `;
+      }).join('');
+    };
 
     window.openCalendarModal = function() {
-      const cur = new Date(selectedDateStr);
+      const cur = new Date(selectedDateStr || getTodayString());
       calendarCurrentYear = cur.getFullYear();
       calendarCurrentMonth = cur.getMonth();
       renderCalendarGrid();
-      document.getElementById('calendarModal').classList.remove('hidden');
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.remove('hidden');
     };
 
     window.closeCalendarModal = function() {
-      document.getElementById('calendarModal').classList.add('hidden');
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.add('hidden');
     };
 
     window.changeCalendarMonth = function(delta) {
@@ -777,8 +1054,10 @@
     };
 
     function renderCalendarGrid() {
-      document.getElementById('calendarMonthTitle').textContent = `${calendarCurrentYear}年 ${calendarCurrentMonth + 1}月`;
+      const titleEl = document.getElementById('calendarMonthTitle');
       const grid = document.getElementById('calendarGrid');
+      if (titleEl) titleEl.textContent = `${calendarCurrentYear}年 ${calendarCurrentMonth + 1}月`;
+      if (!grid) return;
       grid.innerHTML = "";
 
       const firstDay = new Date(calendarCurrentYear, calendarCurrentMonth, 1).getDay();
@@ -793,15 +1072,15 @@
         const dayStr = String(day).padStart(2, '0');
         const dateStr = `${calendarCurrentYear}-${monthStr}-${dayStr}`;
 
-        const dayLogs = (window.foodLogs || []).filter(l => l.date === dateStr);
-        let colorClass = "hover:bg-slate-100 text-slate-700";
+        const dayLogs = (window.foodLogs || []).filter(l => l && l.date === dateStr);
+        let colorClass = window.userSettings.isDarkMode ? "hover:bg-slate-800 text-slate-200" : "hover:bg-slate-100 text-slate-700";
 
         if (dayLogs.length > 0) {
           const isOver = checkIsDayOver(dateStr);
           colorClass = isOver ? "calendar-day-red shadow-sm" : "calendar-day-green shadow-sm";
         }
 
-        const isSelected = dateStr === selectedDateStr ? "ring-2 ring-emerald-500 font-bold" : "";
+        const isSelected = dateStr === selectedDateStr ? "ring-2 ring-slate-400 font-bold" : "";
 
         grid.innerHTML += `
           <button onclick="selectDateFromCalendar('${dateStr}')" class="py-2 text-center rounded-xl transition ${colorClass} ${isSelected}">
@@ -822,13 +1101,13 @@
     function getActiveGeminiApiKey() {
       const apiKey = window.userGeminiApiKey || localStorage.getItem('user_gemini_api_key');
       if (!apiKey) {
-        alert("Gemini APIキーが設定されていません。右上の「⚙️ 設定」からキーを入力してください。");
+        alert("Gemini APIキーが設定されていません。右上の「設定」からキーを入力してください。");
         return null;
       }
       return apiKey.trim();
     }
 
-    async function analyzePhotoAndFillForm(event) {
+    window.analyzePhotoAndFillForm = async function(event) {
       const activeKey = getActiveGeminiApiKey();
       if (!activeKey) return;
 
@@ -842,14 +1121,16 @@
 
       const reader = new FileReader();
       reader.onload = async function(e) {
-        document.getElementById('imagePreview').src = e.target.result;
-        document.getElementById('previewContainer').classList.remove('hidden');
+        const imgPrev = document.getElementById('imagePreview');
+        const prevContainer = document.getElementById('previewContainer');
+        if (imgPrev) imgPrev.src = e.target.result;
+        if (prevContainer) prevContainer.classList.remove('hidden');
         base64Image = e.target.result.split(',')[1];
 
-        manualAddBtn.disabled = true;
-        loadingText.textContent = "AIが写真から栄養成分を解析中...";
-        manualLoading.classList.remove('hidden');
-        aiStatusBadge.classList.add('hidden');
+        if (manualAddBtn) manualAddBtn.disabled = true;
+        if (loadingText) loadingText.textContent = "AIが写真から栄養成分を解析中...";
+        if (manualLoading) manualLoading.classList.remove('hidden');
+        if (aiStatusBadge) aiStatusBadge.classList.add('hidden');
 
         const promptText = `添付された料理の写真から以下を推測し、指定のJSON形式のみで出力してください。数値部分（calories, protein, fat, carbs）は数値のみ（単位なし）で入れてください。
 
@@ -894,33 +1175,43 @@
             const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
             const parsed = JSON.parse(cleanJson);
 
-            document.getElementById('manualName').value = parsed.foodName || "";
-            document.getElementById('manualCalories').value = parsed.calories || "";
-            document.getElementById('manualProtein').value = parsed.protein || "";
-            document.getElementById('manualFat').value = parsed.fat || "";
-            document.getElementById('manualCarbs').value = parsed.carbs || "";
+            const mName = document.getElementById('manualName');
+            const mCal = document.getElementById('manualCalories');
+            const mP = document.getElementById('manualProtein');
+            const mF = document.getElementById('manualFat');
+            const mC = document.getElementById('manualCarbs');
 
-            aiStatusBadge.classList.remove('hidden');
+            if (mName) mName.value = parsed.foodName || "";
+            if (mCal) mCal.value = parsed.calories || "";
+            if (mP) mP.value = parsed.protein || "";
+            if (mF) mF.value = parsed.fat || "";
+            if (mC) mC.value = parsed.carbs || "";
+
+            if (aiStatusBadge) aiStatusBadge.classList.remove('hidden');
           } else {
             alert('写真の解析に失敗しました。APIキーまたは写真をご確認ください。');
           }
         } catch (err) {
           alert('解析データの取得に失敗しました。');
         } finally {
-          manualLoading.classList.add('hidden');
-          manualAddBtn.disabled = false;
+          if (manualLoading) manualLoading.classList.add('hidden');
+          if (manualAddBtn) manualAddBtn.disabled = false;
         }
       };
       reader.readAsDataURL(file);
-    }
+    };
 
-    function clearPhotoPreview() {
+    window.clearPhotoPreview = function() {
       base64Image = null;
-      document.getElementById('albumInput').value = "";
-      document.getElementById('cameraInput').value = "";
-      document.getElementById('previewContainer').classList.add('hidden');
-      document.getElementById('aiStatusBadge').classList.add('hidden');
-    }
+      const album = document.getElementById('albumInput');
+      const camera = document.getElementById('cameraInput');
+      const prev = document.getElementById('previewContainer');
+      const badge = document.getElementById('aiStatusBadge');
+      if (album) album.value = "";
+      if (camera) camera.value = "";
+      if (prev) prev.classList.add('hidden');
+      if (badge) badge.classList.add('hidden');
+    };
 
     async function callGeminiTextAPI(promptText) {
       const activeKey = getActiveGeminiApiKey();
@@ -948,7 +1239,7 @@
       throw lastError || new Error("API呼び出しに失敗しました。");
     }
 
-    async function addManualLog() {
+    window.addManualLog = async function() {
       const nameInput = document.getElementById('manualName');
       const calInput = document.getElementById('manualCalories');
       const pInput = document.getElementById('manualProtein');
@@ -956,11 +1247,11 @@
       const cInput = document.getElementById('manualCarbs');
       const addToListCheckbox = document.getElementById('addToListAlso');
 
-      const name = nameInput.value.trim();
-      let cal = calInput.value !== "" ? parseFloat(calInput.value) : null;
-      let p = pInput.value !== "" ? parseFloat(pInput.value) : null;
-      let f = fInput.value !== "" ? parseFloat(fInput.value) : null;
-      let c = cInput.value !== "" ? parseFloat(cInput.value) : null;
+      const name = nameInput ? nameInput.value.trim() : "";
+      let cal = (calInput && calInput.value !== "") ? parseFloat(calInput.value) : null;
+      let p = (pInput && pInput.value !== "") ? parseFloat(pInput.value) : null;
+      let f = (fInput && fInput.value !== "") ? parseFloat(fInput.value) : null;
+      let c = (cInput && cInput.value !== "") ? parseFloat(cInput.value) : null;
 
       if (!name) {
         alert('料理名・食品名を入力してください。');
@@ -972,9 +1263,9 @@
         const manualLoading = document.getElementById('manualLoading');
         const loadingText = document.getElementById('loadingText');
         
-        manualAddBtn.disabled = true;
-        loadingText.textContent = "AIが未入力数値を推測中...";
-        manualLoading.classList.remove('hidden');
+        if (manualAddBtn) manualAddBtn.disabled = true;
+        if (loadingText) loadingText.textContent = "AIが未入力数値を推測中...";
+        if (manualLoading) manualLoading.classList.remove('hidden');
 
         try {
           const promptText = `食品名「${name}」の一般的な栄養成分（1食分）を推測してください。
@@ -995,15 +1286,16 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
           if (c === null) c = parseFloat(parsed.carbs) || 0;
         } catch (err) {
           alert('AIによる自動推定に失敗しました: ' + err.message);
-          manualLoading.classList.add('hidden');
-          manualAddBtn.disabled = false;
+          if (manualLoading) manualLoading.classList.add('hidden');
+          if (manualAddBtn) manualAddBtn.disabled = false;
           return;
         } finally {
-          manualLoading.classList.add('hidden');
-          manualAddBtn.disabled = false;
+          if (manualLoading) manualLoading.classList.add('hidden');
+          if (manualAddBtn) manualAddBtn.disabled = false;
         }
       }
 
+      if (!Array.isArray(window.foodLogs)) window.foodLogs = [];
       window.foodLogs.push({
         id: Date.now(),
         date: selectedDateStr,
@@ -1015,18 +1307,23 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       });
 
       if (addToListCheckbox && addToListCheckbox.checked) {
-        const exists = (window.favoritesList || []).some(item => item.foodName === name);
+        if (!Array.isArray(window.favoritesList)) window.favoritesList = [];
+        const exists = window.favoritesList.some(item => item && item.foodName === name);
         if (!exists) {
+          const maxOrder = window.favoritesList.reduce((max, item) => Math.max(max, item.order || 0), 0);
           window.favoritesList.push({
             id: Date.now() + 1,
             foodName: name,
+            shortName: name,
             calories: cal || 0,
             protein: p || 0,
             fat: f || 0,
             carbs: c || 0,
-            isPinned: false
+            isPinned: false,
+            order: maxOrder + 1
           });
           saveFavorites();
+          renderQuickFavoriteChips();
         }
       }
 
@@ -1035,19 +1332,24 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       renderWeekDays();
       showToast(`✅ 「${name}」を記録しました`);
 
-      nameInput.value = '';
-      calInput.value = '';
-      pInput.value = '';
-      fInput.value = '';
-      cInput.value = '';
+      if (nameInput) nameInput.value = '';
+      if (calInput) calInput.value = '';
+      if (pInput) pInput.value = '';
+      if (fInput) fInput.value = '';
+      if (cInput) cInput.value = '';
       if (addToListCheckbox) addToListCheckbox.checked = false;
       clearPhotoPreview();
-    }
+    };
 
     function loadFavorites() {
       const saved = localStorage.getItem('userFavorites');
       if (saved) {
         try { window.favoritesList = JSON.parse(saved); } catch(e){}
+      }
+      if (Array.isArray(window.favoritesList)) {
+        window.favoritesList.forEach((item, idx) => {
+          if (typeof item.order === 'undefined') item.order = idx + 1;
+        });
       }
     }
 
@@ -1056,192 +1358,17 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (window.syncDataToCloud) window.syncDataToCloud();
     }
 
-    window.openSelectFavoriteModal = function() {
-      document.getElementById('favSearchInput').value = "";
-      renderSelectFavoriteList();
-      document.getElementById('selectFavoriteModal').classList.remove('hidden');
-    };
-
-    window.closeSelectFavoriteModal = function() {
-      document.getElementById('selectFavoriteModal').classList.add('hidden');
-    };
-
-    function renderSelectFavoriteList() {
-      const query = (document.getElementById('favSearchInput').value || "").toLowerCase().trim();
-      const el = document.getElementById('selectFavoriteList');
-
-      const sortedList = [...(window.favoritesList || [])].sort((a, b) => {
-        if (a.isPinned !== b.isPinned) {
-          return a.isPinned ? -1 : 1;
-        }
-        return a.foodName.localeCompare(b.foodName, 'ja');
-      });
-
-      const filtered = sortedList.filter(item => 
-        item.foodName.toLowerCase().includes(query)
-      );
-
-      if (filtered.length === 0) {
-        el.innerHTML = '<p class="text-slate-400 text-center py-4">該当するアイテムがありません</p>';
-        return;
+    function loadSettings() {
+      const saved = localStorage.getItem('userSettings_v1');
+      if (saved) {
+        try { window.userSettings = Object.assign(window.userSettings, JSON.parse(saved)); } catch(e){}
       }
-
-      el.innerHTML = filtered.map(item => `
-        <div class="flex justify-between items-center bg-slate-50 hover:bg-amber-50/60 p-2.5 rounded-xl border border-slate-200 transition">
-          <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
-            <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="上部優先に登録/解除">
-              ${item.isPinned ? '⭐' : '☆'}
-            </button>
-            <div class="truncate">
-              <div class="font-bold text-slate-800 text-xs truncate">${item.foodName}</div>
-              <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
-            </div>
-          </div>
-          <div class="flex items-center space-x-1 shrink-0">
-            <button onclick="event.stopPropagation(); openEditFavoriteModal(${item.id});" title="編集" class="text-slate-400 hover:text-slate-600 font-bold p-1 text-xs">
-              ✏️
-            </button>
-            <button onclick="event.stopPropagation(); confirmDeleteFavorite(${item.id});" title="削除" class="text-rose-400 hover:text-rose-600 font-bold p-1 text-xs">
-              🗑️
-            </button>
-          </div>
-        </div>
-      `).join('');
     }
 
-    window.confirmDeleteFavorite = function(id) {
-      const item = window.favoritesList.find(f => f.id === id);
-      if (!item) return;
-
-      if (confirm(`「${item.foodName}」をリストから削除します。本当にいいの？`)) {
-        deleteFavorite(id);
-        renderSelectFavoriteList();
-      }
-    };
-
-    window.openEditFavoriteModal = function(id) {
-      const item = window.favoritesList.find(f => f.id === id);
-      if (!item) return;
-
-      editingFavoriteId = id;
-      document.getElementById('editFavName').value = item.foodName;
-      document.getElementById('editFavCal').value = item.calories;
-      document.getElementById('editFavProtein').value = item.protein;
-      document.getElementById('editFavFat').value = item.fat;
-      document.getElementById('editFavCarbs').value = item.carbs;
-
-      document.getElementById('editFavoriteModal').classList.remove('hidden');
-    };
-
-    window.closeEditFavoriteModal = function() {
-      editingFavoriteId = null;
-      document.getElementById('editFavoriteModal').classList.add('hidden');
-    };
-
-    window.saveEditedFavoriteItem = function() {
-      if (!editingFavoriteId) return;
-
-      const name = document.getElementById('editFavName').value.trim();
-      const cal = parseFloat(document.getElementById('editFavCal').value) || 0;
-      const p = parseFloat(document.getElementById('editFavProtein').value) || 0;
-      const f = parseFloat(document.getElementById('editFavFat').value) || 0;
-      const c = parseFloat(document.getElementById('editFavCarbs').value) || 0;
-
-      if (!name) {
-        alert('料理名を入力してください');
-        return;
-      }
-
-      window.favoritesList = window.favoritesList.map(item => {
-        if (item.id === editingFavoriteId) {
-          return { ...item, foodName: name, calories: cal, protein: p, fat: f, carbs: c };
-        }
-        return item;
-      });
-
-      saveFavorites();
-      renderSelectFavoriteList();
-      closeEditFavoriteModal();
-    };
-
-    window.addFavoriteToLog = function(id) {
-      const item = window.favoritesList.find(f => f.id === id);
-      if (!item) return;
-
-      window.foodLogs.push({
-        id: Date.now(),
-        date: selectedDateStr,
-        foodName: item.foodName,
-        calories: item.calories,
-        protein: item.protein,
-        fat: item.fat,
-        carbs: item.carbs
-      });
-
-      saveLogsToStorage();
-      updateUI();
-      renderWeekDays();
-      showToast(`✅ 「${item.foodName}」を追加しました`);
-    };
-
-    window.openFavoriteModal = function() {
-      document.getElementById('favoriteModal').classList.remove('hidden');
-    };
-
-    window.closeFavoriteModal = function() {
-      document.getElementById('favoriteModal').classList.add('hidden');
-    };
-
-    window.addNewFavorite = function() {
-      const name = document.getElementById('favInputName').value.trim();
-      const cal = parseFloat(document.getElementById('favInputCalories').value) || 0;
-      const p = parseFloat(document.getElementById('favInputProtein').value) || 0;
-      const f = parseFloat(document.getElementById('favInputFat').value) || 0;
-      const c = parseFloat(document.getElementById('favInputCarbs').value) || 0;
-      const isPinned = document.getElementById('favInputPinned').checked;
-
-      if (!name) {
-        alert('料理名を入力してください');
-        return;
-      }
-
-      window.favoritesList.push({
-        id: Date.now(),
-        foodName: name,
-        calories: cal,
-        protein: p,
-        fat: f,
-        carbs: c,
-        isPinned: isPinned
-      });
-
-      saveFavorites();
-
-      document.getElementById('favInputName').value = '';
-      document.getElementById('favInputCalories').value = '';
-      document.getElementById('favInputProtein').value = '';
-      document.getElementById('favInputFat').value = '';
-      document.getElementById('favInputCarbs').value = '';
-      document.getElementById('favInputPinned').checked = false;
-      closeFavoriteModal();
-      renderSelectFavoriteList();
-      showToast(`✅ 「${name}」をリストに登録しました`);
-    };
-
-    window.toggleFavoritePin = function(id) {
-      window.favoritesList = window.favoritesList.map(item => {
-        if (item.id === id) {
-          return { ...item, isPinned: !item.isPinned };
-        }
-        return item;
-      });
-      saveFavorites();
-    };
-
-    window.deleteFavorite = function(id) {
-      window.favoritesList = window.favoritesList.filter(f => f.id !== id);
-      saveFavorites();
-    };
+    function saveSettings() {
+      localStorage.setItem('userSettings_v1', JSON.stringify(window.userSettings));
+      if (window.syncDataToCloud) window.syncDataToCloud();
+    }
 
     function loadTargets() {
       const savedTargets = localStorage.getItem('userTargets');
@@ -1255,21 +1382,350 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (window.syncDataToCloud) window.syncDataToCloud();
     }
 
+    window.selectTheme = function(themeName) {
+      if (!THEMES[themeName]) return;
+      window.userSettings.themeColor = themeName;
+      applyTheme(themeName, window.userSettings.isDarkMode);
+      updateThemeButtonsUI();
+    };
+
+    window.applyTheme = function(themeName, isDark) {
+      if (isDark) {
+        document.body.classList.add('theme-dark');
+      } else {
+        document.body.classList.remove('theme-dark');
+      }
+
+      const colorSet = THEMES[themeName] || THEMES.emerald;
+      const t = isDark ? colorSet.dark : colorSet.light;
+
+      document.body.setAttribute('data-theme', themeName);
+
+      document.documentElement.style.setProperty('--primary-color', t.main);
+      document.documentElement.style.setProperty('--primary-hover', t.hover);
+      document.documentElement.style.setProperty('--primary-light', t.bgLight);
+      document.documentElement.style.setProperty('--primary-border', t.border);
+      document.documentElement.style.setProperty('--primary-text', t.text);
+      document.documentElement.style.setProperty('--primary-contrast', t.contrast);
+    };
+
+    function updateThemeButtonsUI() {
+      const current = (window.userSettings && window.userSettings.themeColor) || 'emerald';
+      Object.keys(THEMES).forEach(k => {
+        const btn = document.getElementById(`theme-btn-${k}`);
+        if (btn) {
+          if (k === current) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    window.openSelectFavoriteModal = function() {
+      const search = document.getElementById('favSearchInput');
+      if (search) search.value = "";
+      renderSelectFavoriteList();
+      const modal = document.getElementById('selectFavoriteModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeSelectFavoriteModal = function() {
+      const modal = document.getElementById('selectFavoriteModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    function renderSelectFavoriteList() {
+      const rawQuery = (document.getElementById('favSearchInput').value || "").trim();
+      const normalizedQuery = normalizeJapanese(rawQuery);
+      const el = document.getElementById('selectFavoriteList');
+      if (!el) return;
+
+      const favs = Array.isArray(window.favoritesList) ? window.favoritesList : [];
+      
+      let sortedList = [];
+      if (rawQuery !== "") {
+        sortedList = [...favs].sort((a, b) => (a.foodName || "").localeCompare(b.foodName || "", 'ja'));
+      } else {
+        const pinned = favs.filter(f => f && f.isPinned).sort((a, b) => (a.order || 0) - (b.order || 0));
+        const unpinned = favs.filter(f => f && !f.isPinned).sort((a, b) => (a.foodName || "").localeCompare(b.foodName || "", 'ja'));
+        sortedList = [...pinned, ...unpinned];
+      }
+
+      const filtered = sortedList.filter(item => {
+        if (!item) return false;
+        if (!normalizedQuery) return true;
+        const normalizedFoodName = normalizeJapanese(item.foodName || "");
+        const normalizedShortName = normalizeJapanese(item.shortName || "");
+        return normalizedFoodName.includes(normalizedQuery) || normalizedShortName.includes(normalizedQuery);
+      });
+
+      if (filtered.length === 0) {
+        el.innerHTML = '<p class="text-slate-400 text-center py-4">該当するアイテムがありません</p>';
+        return;
+      }
+
+      const pinnedItems = favs.filter(f => f && f.isPinned).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+      el.innerHTML = filtered.map(item => {
+        const isPinnedItem = !!item.isPinned;
+        const pinnedIndex = isPinnedItem ? pinnedItems.findIndex(p => p.id === item.id) : -1;
+        const canMoveUp = isPinnedItem && pinnedIndex > 0;
+        const canMoveDown = isPinnedItem && pinnedIndex < pinnedItems.length - 1;
+
+        return `
+          <div class="flex justify-between items-center bg-slate-50 hover:bg-amber-50/60 p-2.5 rounded-xl border border-slate-200 transition">
+            <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
+              <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="TOP優先に登録/解除">
+                ${item.isPinned ? '⭐' : '☆'}
+              </button>
+              <div class="truncate">
+                <div class="font-bold text-slate-800 text-xs truncate">
+                  ${item.foodName}
+                  ${(item.shortName && item.shortName !== item.foodName) ? `<span class="text-[10px] text-slate-400 font-normal ml-1">(TOP表示: ${item.shortName})</span>` : ''}
+                </div>
+                <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-1 shrink-0">
+              ${isPinnedItem && rawQuery === "" ? `
+                <div class="flex flex-col space-y-0.5 mr-1">
+                  <button onclick="event.stopPropagation(); moveFavoriteOrder(${item.id}, -1);" ${!canMoveUp ? 'disabled class="opacity-25 cursor-not-allowed"' : 'class="hover:text-slate-900 active:scale-90"'} title="上へ移動" class="text-[9px] font-bold px-1 bg-slate-200/80 rounded">▲</button>
+                  <button onclick="event.stopPropagation(); moveFavoriteOrder(${item.id}, 1);" ${!canMoveDown ? 'disabled class="opacity-25 cursor-not-allowed"' : 'class="hover:text-slate-900 active:scale-90"'} title="下へ移動" class="text-[9px] font-bold px-1 bg-slate-200/80 rounded">▼</button>
+                </div>
+              ` : ''}
+              <button onclick="event.stopPropagation(); openEditFavoriteModal(${item.id});" title="編集" class="text-slate-400 hover:text-slate-600 font-bold p-1 text-xs">
+                ✏️
+              </button>
+              <button onclick="event.stopPropagation(); confirmDeleteFavorite(${item.id});" title="削除" class="text-rose-400 hover:text-rose-600 font-bold p-1 text-xs">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.moveFavoriteOrder = function(id, direction) {
+      const favs = Array.isArray(window.favoritesList) ? window.favoritesList : [];
+      const pinned = favs.filter(f => f && f.isPinned).sort((a, b) => (a.order || 0) - (b.order || 0));
+      const currentIndex = pinned.findIndex(p => p.id === id);
+
+      if (currentIndex === -1) return;
+      const targetIndex = currentIndex + direction;
+      if (targetIndex < 0 || targetIndex >= pinned.length) return;
+
+      const currentItem = pinned[currentIndex];
+      const targetItem = pinned[targetIndex];
+
+      const tempOrder = currentItem.order || (currentIndex + 1);
+      currentItem.order = targetItem.order || (targetIndex + 1);
+      targetItem.order = tempOrder;
+
+      pinned.sort((a, b) => (a.order || 0) - (b.order || 0)).forEach((item, idx) => {
+        item.order = idx + 1;
+      });
+
+      saveFavorites();
+      renderSelectFavoriteList();
+      renderQuickFavoriteChips();
+    };
+
+    window.confirmDeleteFavorite = function(id) {
+      const favs = Array.isArray(window.favoritesList) ? window.favoritesList : [];
+      const item = favs.find(f => f && f.id === id);
+      if (!item) return;
+
+      if (confirm(`「${item.foodName}」をリストから削除します。本当にいいの？`)) {
+        deleteFavorite(id);
+        renderSelectFavoriteList();
+        renderQuickFavoriteChips();
+      }
+    };
+
+    window.openEditFavoriteModal = function(id) {
+      const favs = Array.isArray(window.favoritesList) ? window.favoritesList : [];
+      const item = favs.find(f => f && f.id === id);
+      if (!item) return;
+
+      editingFavoriteId = id;
+      document.getElementById('editFavName').value = item.foodName || "";
+      document.getElementById('editFavShortName').value = item.shortName || "";
+      document.getElementById('editFavCal').value = item.calories || 0;
+      document.getElementById('editFavProtein').value = item.protein || 0;
+      document.getElementById('editFavFat').value = item.fat || 0;
+      document.getElementById('editFavCarbs').value = item.carbs || 0;
+
+      const modal = document.getElementById('editFavoriteModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeEditFavoriteModal = function() {
+      editingFavoriteId = null;
+      const modal = document.getElementById('editFavoriteModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.saveEditedFavoriteItem = function() {
+      if (!editingFavoriteId) return;
+
+      const name = document.getElementById('editFavName').value.trim();
+      const shortName = document.getElementById('editFavShortName').value.trim();
+      const cal = parseFloat(document.getElementById('editFavCal').value) || 0;
+      const p = parseFloat(document.getElementById('editFavProtein').value) || 0;
+      const f = parseFloat(document.getElementById('editFavFat').value) || 0;
+      const c = parseFloat(document.getElementById('editFavCarbs').value) || 0;
+
+      if (!name) {
+        alert('料理名を入力してください');
+        return;
+      }
+
+      if (!Array.isArray(window.favoritesList)) window.favoritesList = [];
+      window.favoritesList = window.favoritesList.map(item => {
+        if (item && item.id === editingFavoriteId) {
+          return { ...item, foodName: name, shortName: shortName || name, calories: cal, protein: p, fat: f, carbs: c };
+        }
+        return item;
+      });
+
+      saveFavorites();
+      renderSelectFavoriteList();
+      renderQuickFavoriteChips();
+      closeEditFavoriteModal();
+    };
+
+    window.addFavoriteToLog = function(id) {
+      const favs = Array.isArray(window.favoritesList) ? window.favoritesList : [];
+      const item = favs.find(f => f && f.id === id);
+      if (!item) return;
+
+      if (!Array.isArray(window.foodLogs)) window.foodLogs = [];
+      window.foodLogs.push({
+        id: Date.now(),
+        date: selectedDateStr,
+        foodName: item.foodName,
+        calories: item.calories || 0,
+        protein: item.protein || 0,
+        fat: item.fat || 0,
+        carbs: item.carbs || 0
+      });
+
+      saveLogsToStorage();
+      updateUI();
+      renderWeekDays();
+      showToast(`✅ 「${item.foodName}」を追加しました`);
+    };
+
+    window.openFavoriteModal = function() {
+      const modal = document.getElementById('favoriteModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeFavoriteModal = function() {
+      const modal = document.getElementById('favoriteModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.addNewFavorite = function() {
+      const name = document.getElementById('favInputName').value.trim();
+      const shortName = document.getElementById('favInputShortName').value.trim();
+      const cal = parseFloat(document.getElementById('favInputCalories').value) || 0;
+      const p = parseFloat(document.getElementById('favInputProtein').value) || 0;
+      const f = parseFloat(document.getElementById('favInputFat').value) || 0;
+      const c = parseFloat(document.getElementById('favInputCarbs').value) || 0;
+      const isPinned = document.getElementById('favInputPinned').checked;
+
+      if (!name) {
+        alert('料理名を入力してください');
+        return;
+      }
+
+      if (!Array.isArray(window.favoritesList)) window.favoritesList = [];
+      const maxOrder = window.favoritesList.reduce((max, item) => Math.max(max, item.order || 0), 0);
+
+      window.favoritesList.push({
+        id: Date.now(),
+        foodName: name,
+        shortName: shortName || name,
+        calories: cal,
+        protein: p,
+        fat: f,
+        carbs: c,
+        isPinned: isPinned,
+        order: maxOrder + 1
+      });
+
+      saveFavorites();
+
+      document.getElementById('favInputName').value = '';
+      document.getElementById('favInputShortName').value = '';
+      document.getElementById('favInputCalories').value = '';
+      document.getElementById('favInputProtein').value = '';
+      document.getElementById('favInputFat').value = '';
+      document.getElementById('favInputCarbs').value = '';
+      document.getElementById('favInputPinned').checked = false;
+      closeFavoriteModal();
+      renderSelectFavoriteList();
+      renderQuickFavoriteChips();
+      showToast(`✅ 「${name}」をリストに登録しました`);
+    };
+
+    window.toggleFavoritePin = function(id) {
+      if (!Array.isArray(window.favoritesList)) return;
+      const maxOrder = window.favoritesList.reduce((max, item) => Math.max(max, item.order || 0), 0);
+
+      window.favoritesList = window.favoritesList.map(item => {
+        if (item && item.id === id) {
+          const nextPinned = !item.isPinned;
+          return { ...item, isPinned: nextPinned, order: nextPinned ? maxOrder + 1 : 0 };
+        }
+        return item;
+      });
+      saveFavorites();
+      renderQuickFavoriteChips();
+    };
+
+    window.deleteFavorite = function(id) {
+      if (!Array.isArray(window.favoritesList)) return;
+      window.favoritesList = window.favoritesList.filter(f => f && f.id !== id);
+      saveFavorites();
+      renderQuickFavoriteChips();
+    };
+
     window.openTargetModal = function() {
-      document.getElementById('inputGeminiApiKey').value = window.userGeminiApiKey || "";
-      document.getElementById('inputTargetCalories').value = window.userTargets.calories;
-      document.getElementById('inputTargetProtein').value = window.userTargets.protein;
-      document.getElementById('inputTargetFat').value = window.userTargets.fat;
-      document.getElementById('inputTargetCarbs').value = window.userTargets.carbs;
-      document.getElementById('targetModal').classList.remove('hidden');
+      const apiKeyEl = document.getElementById('inputGeminiApiKey');
+      const targetCalEl = document.getElementById('inputTargetCalories');
+      const targetPEl = document.getElementById('inputTargetProtein');
+      const targetFEl = document.getElementById('inputTargetFat');
+      const targetCEl = document.getElementById('inputTargetCarbs');
+      const showMascotEl = document.getElementById('inputShowMascot');
+      const darkModeEl = document.getElementById('inputDarkMode');
+
+      if (apiKeyEl) apiKeyEl.value = window.userGeminiApiKey || "";
+      if (targetCalEl) targetCalEl.value = window.userTargets.calories;
+      if (targetPEl) targetPEl.value = window.userTargets.protein;
+      if (targetFEl) targetFEl.value = window.userTargets.fat;
+      if (targetCEl) targetCEl.value = window.userTargets.carbs;
+      
+      if (showMascotEl) showMascotEl.checked = window.userSettings.showMascot !== false;
+      if (darkModeEl) darkModeEl.checked = !!window.userSettings.isDarkMode;
+      updateThemeButtonsUI();
+
+      const modal = document.getElementById('targetModal');
+      if (modal) modal.classList.remove('hidden');
     };
 
     window.closeTargetModal = function() {
-      document.getElementById('targetModal').classList.add('hidden');
+      const modal = document.getElementById('targetModal');
+      if (modal) modal.classList.add('hidden');
     };
 
     window.saveTargetValues = function() {
-      const apiKeyVal = document.getElementById('inputGeminiApiKey').value.trim();
+      const apiKeyEl = document.getElementById('inputGeminiApiKey');
+      const apiKeyVal = apiKeyEl ? apiKeyEl.value.trim() : "";
       window.userGeminiApiKey = apiKeyVal;
       localStorage.setItem('user_gemini_api_key', apiKeyVal);
 
@@ -1280,9 +1736,21 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       window.userTargets = { calories: cal, protein: p, fat: f, carbs: c };
       saveTargets();
+
+      const mascotEl = document.getElementById('inputShowMascot');
+      if (mascotEl) window.userSettings.showMascot = mascotEl.checked;
+
+      const darkModeEl = document.getElementById('inputDarkMode');
+      if (darkModeEl) window.userSettings.isDarkMode = darkModeEl.checked;
+
+      saveSettings();
+
+      applyTheme(window.userSettings.themeColor || 'emerald', window.userSettings.isDarkMode);
       updateUI();
       renderWeekDays();
+      renderQuickFavoriteChips();
       closeTargetModal();
+      showToast('⚙️ 設定を保存しました');
     };
 
     function loadAndCleanupLogs() {
@@ -1294,7 +1762,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
           cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_DAYS);
           const cutoffStr = formatDateStr(cutoffDate);
 
-          window.foodLogs = parsed.filter(item => item.date >= cutoffStr);
+          window.foodLogs = Array.isArray(parsed) ? parsed.filter(item => item && item.date >= cutoffStr) : [];
           saveLogsToStorage();
         } catch (e) {
           window.foodLogs = [];
@@ -1308,22 +1776,25 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     }
 
     window.openEditModal = function(id) {
-      const item = window.foodLogs.find(log => log.id === id);
+      const logs = Array.isArray(window.foodLogs) ? window.foodLogs : [];
+      const item = logs.find(log => log && log.id === id);
       if (!item) return;
 
       editingLogId = id;
-      document.getElementById('editName').value = item.foodName;
-      document.getElementById('editCalories').value = item.calories;
-      document.getElementById('editProtein').value = item.protein;
-      document.getElementById('editFat').value = item.fat;
-      document.getElementById('editCarbs').value = item.carbs;
+      document.getElementById('editName').value = item.foodName || "";
+      document.getElementById('editCalories').value = item.calories || 0;
+      document.getElementById('editProtein').value = item.protein || 0;
+      document.getElementById('editFat').value = item.fat || 0;
+      document.getElementById('editCarbs').value = item.carbs || 0;
 
-      document.getElementById('editModal').classList.remove('hidden');
+      const modal = document.getElementById('editModal');
+      if (modal) modal.classList.remove('hidden');
     };
 
     window.closeEditModal = function() {
       editingLogId = null;
-      document.getElementById('editModal').classList.add('hidden');
+      const modal = document.getElementById('editModal');
+      if (modal) modal.classList.add('hidden');
     };
 
     window.saveEditedLog = function() {
@@ -1340,8 +1811,9 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         return;
       }
 
+      if (!Array.isArray(window.foodLogs)) window.foodLogs = [];
       window.foodLogs = window.foodLogs.map(item => {
-        if (item.id === editingLogId) {
+        if (item && item.id === editingLogId) {
           return {
             ...item,
             foodName: name,
@@ -1361,17 +1833,18 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
 
     window.duplicateLog = function(id) {
-      const original = window.foodLogs.find(item => item.id === id);
+      const logs = Array.isArray(window.foodLogs) ? window.foodLogs : [];
+      const original = logs.find(item => item && item.id === id);
       if (!original) return;
 
       window.foodLogs.push({
         id: Date.now(),
         date: selectedDateStr,
-        foodName: original.foodName,
-        calories: original.calories,
-        protein: original.protein,
-        fat: original.fat,
-        carbs: original.carbs
+        foodName: original.foodName || "",
+        calories: original.calories || 0,
+        protein: original.protein || 0,
+        fat: original.fat || 0,
+        carbs: original.carbs || 0
       });
 
       saveLogsToStorage();
@@ -1381,134 +1854,204 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
 
     window.deleteLog = function(id) {
-      window.foodLogs = window.foodLogs.filter(item => item.id !== id);
+      if (!Array.isArray(window.foodLogs)) return;
+      window.foodLogs = window.foodLogs.filter(item => item && item.id !== id);
       saveLogsToStorage();
       updateUI();
       renderWeekDays();
     };
 
-    window.clearCurrentDateLog = function() {
-      if (confirm(`${selectedDateStr} の記録をすべて削除しますか？`)) {
-        window.foodLogs = window.foodLogs.filter(item => item.date !== selectedDateStr);
-        saveLogsToStorage();
-        updateUI();
-        renderWeekDays();
+    function updateShiratama(currentCal, targetCal) {
+      const eyeL = document.getElementById('shiratama-eye-l');
+      const eyeR = document.getElementById('shiratama-eye-r');
+      const cheekL = document.getElementById('shiratama-cheek-l');
+      const cheekR = document.getElementById('shiratama-cheek-r');
+      const mouth = document.getElementById('shiratama-mouth');
+      const sweat = document.getElementById('shiratama-sweat');
+
+      if (!eyeL || !targetCal) return;
+
+      const ratio = currentCal / targetCal;
+
+      eyeL.className = 'shiratama-eye left';
+      eyeR.className = 'shiratama-eye right';
+      eyeL.textContent = '';
+      eyeR.textContent = '';
+      cheekL.className = 'shiratama-cheek left';
+      cheekR.className = 'shiratama-cheek right';
+      if (sweat) sweat.classList.remove('active');
+
+      if (ratio <= 0.3) {
+        if (mouth) mouth.className = 'shiratama-mouth hungry';
+      } else if (ratio <= 1.0) {
+        if (mouth) mouth.className = 'shiratama-mouth happy';
+      } else {
+        if (eyeL) eyeL.className = 'shiratama-eye left sick';
+        if (eyeR) eyeR.className = 'shiratama-eye right sick';
+        if (eyeL) eyeL.textContent = '＞';
+        if (eyeR) eyeR.textContent = '＜';
+        if (cheekL) cheekL.className = 'shiratama-cheek left sick';
+        if (cheekR) cheekR.className = 'shiratama-cheek right sick';
+        if (mouth) mouth.className = 'shiratama-mouth sick';
+        if (sweat) sweat.classList.add('active');
       }
-    };
+    }
 
     window.updateUI = function() {
-      document.getElementById('dateBadge').textContent = selectedDateStr;
+      const targetCalDisp = document.getElementById('targetCaloriesDisplay');
+      const targetPDisp = document.getElementById('targetProteinDisplay');
+      const targetFDisp = document.getElementById('targetFatDisplay');
+      const targetCDisp = document.getElementById('targetCarbsDisplay');
 
-      const backToTodayBtn = document.getElementById('backToTodayBtn');
-      if (selectedDateStr !== getTodayString()) {
-        backToTodayBtn.classList.remove('hidden');
-      } else {
-        backToTodayBtn.classList.add('hidden');
+      const targets = window.userTargets || { calories: 2000, protein: 100, fat: 50, carbs: 250 };
+      if (targetCalDisp) targetCalDisp.textContent = targets.calories;
+      if (targetPDisp) targetPDisp.textContent = targets.protein;
+      if (targetFDisp) targetFDisp.textContent = targets.fat;
+      if (targetCDisp) targetCDisp.textContent = targets.carbs;
+
+      const mascotContainer = document.getElementById('shiratamaContainer');
+      if (mascotContainer) {
+        if (window.userSettings && window.userSettings.showMascot === false) {
+          mascotContainer.style.visibility = 'hidden';
+          mascotContainer.style.opacity = '0';
+        } else {
+          mascotContainer.style.visibility = 'visible';
+          mascotContainer.style.opacity = '1';
+        }
       }
 
-      document.getElementById('targetCaloriesDisplay').textContent = window.userTargets.calories;
-      document.getElementById('targetProteinDisplay').textContent = window.userTargets.protein;
-      document.getElementById('targetFatDisplay').textContent = window.userTargets.fat;
-      document.getElementById('targetCarbsDisplay').textContent = window.userTargets.carbs;
+      const logs = Array.isArray(window.foodLogs) ? window.foodLogs : [];
+      const filteredLogs = logs.filter(item => item && item.date === selectedDateStr);
 
-      const filteredLogs = (window.foodLogs || []).filter(item => item.date === selectedDateStr);
-
-      const totalCal = filteredLogs.reduce((sum, item) => sum + item.calories, 0);
-      const totalP = filteredLogs.reduce((sum, item) => sum + item.protein, 0);
-      const totalF = filteredLogs.reduce((sum, item) => sum + item.fat, 0);
-      const totalC = filteredLogs.reduce((sum, item) => sum + item.carbs, 0);
+      const totalCal = filteredLogs.reduce((sum, item) => sum + (item.calories || 0), 0);
+      const totalP = filteredLogs.reduce((sum, item) => sum + (item.protein || 0), 0);
+      const totalF = filteredLogs.reduce((sum, item) => sum + (item.fat || 0), 0);
+      const totalC = filteredLogs.reduce((sum, item) => sum + (item.carbs || 0), 0);
 
       const roundedCal = Math.round(totalCal);
       const roundedP = Math.round(totalP * 10) / 10;
       const roundedF = Math.round(totalF * 10) / 10;
       const roundedC = Math.round(totalC * 10) / 10;
 
-      const remCalVal = Math.max(0, Math.round(window.userTargets.calories - totalCal));
-      const isCalOver = totalCal > window.userTargets.calories;
-      const isPOver = roundedP > window.userTargets.protein;
-      const isFOver = roundedF > window.userTargets.fat;
-      const isCOver = roundedC > window.userTargets.carbs;
+      const remCalVal = Math.max(0, Math.round((targets.calories || 2000) - totalCal));
+      const isCalOver = totalCal > (targets.calories || 2000);
+      const isPOver = roundedP > (targets.protein || 100);
+      const isFOver = roundedF > (targets.fat || 50);
+      const isCOver = roundedC > (targets.carbs || 250);
+
+      if (!window.userSettings || window.userSettings.showMascot !== false) {
+        updateShiratama(totalCal, targets.calories || 2000);
+      }
 
       const compactRemCalEl = document.getElementById('compactRemCal');
-      compactRemCalEl.textContent = remCalVal + " kcal";
-      compactRemCalEl.className = isCalOver ? "text-[11px] font-black text-rose-600 leading-tight mt-0.5" : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
+      if (compactRemCalEl) {
+        compactRemCalEl.textContent = remCalVal + " kcal";
+        compactRemCalEl.className = isCalOver ? "text-[11px] font-black text-rose-600 leading-tight mt-0.5" : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
+      }
 
       const compactProteinEl = document.getElementById('compactProtein');
-      compactProteinEl.innerHTML = `<span class="${isPOver ? 'text-rose-600' : 'text-slate-800'}">${Math.round(roundedP)}</span> <span class="text-slate-500 font-normal">/ ${window.userTargets.protein}g</span>`;
+      if (compactProteinEl) {
+        compactProteinEl.innerHTML = `<span class="${isPOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedP)}</span> <span class="text-slate-500 font-normal">/ ${targets.protein || 100}g</span>`;
+      }
 
       const compactFatEl = document.getElementById('compactFat');
-      compactFatEl.innerHTML = `<span class="${isFOver ? 'text-rose-600' : 'text-slate-800'}">${Math.round(roundedF)}</span> <span class="text-slate-500 font-normal">/ ${window.userTargets.fat}g</span>`;
+      if (compactFatEl) {
+        compactFatEl.innerHTML = `<span class="${isFOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedF)}</span> <span class="text-slate-500 font-normal">/ ${targets.fat || 50}g</span>`;
+      }
 
       const compactCarbsEl = document.getElementById('compactCarbs');
-      compactCarbsEl.innerHTML = `<span class="${isCOver ? 'text-rose-600' : 'text-slate-800'}">${Math.round(roundedC)}</span> <span class="text-slate-500 font-normal">/ ${window.userTargets.carbs}g</span>`;
+      if (compactCarbsEl) {
+        compactCarbsEl.innerHTML = `<span class="${isCOver ? 'text-rose-600 font-bold' : 'text-slate-800'}">${Math.round(roundedC)}</span> <span class="text-slate-500 font-normal">/ ${targets.carbs || 250}g</span>`;
+      }
 
       const totalCalEl = document.getElementById('totalCalories');
       const barCalEl = document.getElementById('barCalories');
-      totalCalEl.textContent = roundedCal;
-      if (isCalOver) {
-        totalCalEl.className = "text-lg font-black text-rose-500 animate-pulse";
-        barCalEl.className = "bg-rose-500 h-full transition-all duration-300";
-      } else {
-        totalCalEl.className = "text-lg font-black text-emerald-600";
-        barCalEl.className = "bg-emerald-500 h-full transition-all duration-300";
+      if (totalCalEl) {
+        totalCalEl.textContent = roundedCal;
+        if (isCalOver) {
+          totalCalEl.className = "text-xl font-black text-rose-500 leading-none";
+        } else {
+          totalCalEl.className = "text-xl font-black text-theme-main leading-none";
+        }
+      }
+      if (barCalEl) {
+        barCalEl.className = isCalOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-theme-main h-full transition-all duration-300";
+        barCalEl.style.width = `${Math.min(100, (totalCal / (targets.calories || 2000)) * 100)}%`;
       }
 
       const totalPEl = document.getElementById('totalProtein');
-      totalPEl.textContent = roundedP;
+      const barPEl = document.getElementById('barProtein');
+      if (totalPEl) totalPEl.textContent = roundedP;
+      if (barPEl) barPEl.style.width = `${Math.min(100, (totalP / (targets.protein || 100)) * 100)}%`;
 
       const totalFEl = document.getElementById('totalFat');
       const barFEl = document.getElementById('barFat');
-      totalFEl.textContent = roundedF;
-      if (isFOver) {
-        totalFEl.className = "text-rose-500 font-bold animate-pulse";
-        barFEl.className = "bg-rose-500 h-full transition-all duration-300";
-      } else {
-        totalFEl.className = "text-amber-600 font-bold";
-        barFEl.className = "bg-amber-500 h-full transition-all duration-300";
+      if (totalFEl) {
+        totalFEl.textContent = roundedF;
+        totalFEl.className = isFOver ? "text-rose-500 font-bold" : "text-amber-600 font-bold";
+      }
+      if (barFEl) {
+        barFEl.className = isFOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-amber-500 h-full transition-all duration-300";
+        barFEl.style.width = `${Math.min(100, (totalF / (targets.fat || 50)) * 100)}%`;
       }
 
       const totalCEl = document.getElementById('totalCarbs');
       const barCEl = document.getElementById('barCarbs');
-      totalCEl.textContent = roundedC;
-      if (isCOver) {
-        totalCEl.className = "text-rose-500 font-bold animate-pulse";
-        barCEl.className = "bg-rose-500 h-full transition-all duration-300";
-      } else {
-        totalCEl.className = "text-emerald-600 font-bold";
-        barCEl.className = "bg-emerald-500 h-full transition-all duration-300";
+      if (totalCEl) {
+        totalCEl.textContent = roundedC;
+        totalCEl.className = isCOver ? "text-rose-500 font-bold" : "text-emerald-600 font-bold";
+      }
+      if (barCEl) {
+        barCEl.className = isCOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-emerald-500 h-full transition-all duration-300";
+        barCEl.style.width = `${Math.min(100, (totalC / (targets.carbs || 250)) * 100)}%`;
       }
 
-      barCalEl.style.width = `${Math.min(100, (totalCal / window.userTargets.calories) * 100)}%`;
-      document.getElementById('barProtein').style.width = `${Math.min(100, (totalP / window.userTargets.protein) * 100)}%`;
-      barFEl.style.width = `${Math.min(100, (totalF / window.userTargets.fat) * 100)}%`;
-      barCEl.style.width = `${Math.min(100, (totalC / window.userTargets.carbs) * 100)}%`;
+      const habitSummaryStatus = document.getElementById('habitSummaryStatus');
+      const isOverNonProtein = isCalOver || isFOver || isCOver;
+
+      if (habitSummaryStatus) {
+        if (filteredLogs.length > 0) {
+          habitSummaryStatus.classList.remove('hidden');
+          if (isOverNonProtein) {
+            habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-rose-50 text-rose-700 border border-rose-200";
+            habitSummaryStatus.innerHTML = `<span>⚠️ 目標管理: カロリー/脂質/炭水化物が目標値を超過しています</span>`;
+          } else {
+            habitSummaryStatus.className = "p-2.5 rounded-2xl text-xs font-bold flex justify-between items-center bg-theme-light text-theme-dark border border-theme-light";
+            habitSummaryStatus.innerHTML = `<span>✅ 目標管理: 適切な範囲内に収まっています</span>`;
+          }
+        } else {
+          habitSummaryStatus.classList.add('hidden');
+        }
+      }
 
       const logListEl = document.getElementById('logList');
-      if (filteredLogs.length === 0) {
-        logListEl.innerHTML = `<p class="text-center py-6 text-slate-400 font-medium">${selectedDateStr} の記録はありません</p>`;
-        return;
-      }
+      if (logListEl) {
+        if (filteredLogs.length === 0) {
+          logListEl.innerHTML = `<p class="text-center py-6 text-slate-400 font-medium">${selectedDateStr} の記録はありません</p>`;
+          return;
+        }
 
-      logListEl.innerHTML = filteredLogs.map(item => `
-        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
-          <div class="flex-1 pr-2 cursor-pointer" onclick="openEditModal(${item.id})" title="タップして編集">
-            <div class="font-bold text-slate-800 flex items-center space-x-1 text-xs">
-              <span>${item.foodName}</span>
-              <span class="text-[10px] text-slate-400">✏️</span>
+        logListEl.innerHTML = filteredLogs.map(item => `
+          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+            <div class="flex-1 pr-2 cursor-pointer" onclick="openEditModal(${item.id})" title="タップして編集">
+              <div class="font-bold text-slate-800 flex items-center space-x-1 text-xs">
+                <span>${item.foodName}</span>
+                <span class="text-[10px] text-slate-400">✏️</span>
+              </div>
+              <div class="text-[10px] text-slate-400 mt-0.5">P:${item.protein}g / F:${item.fat}g / C:${item.carbs}g</div>
             </div>
-            <div class="text-[10px] text-slate-400 mt-0.5">P:${item.protein}g / F:${item.fat}g / C:${item.carbs}g</div>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-slate-700 text-xs">${item.calories} <span class="text-[9px] font-normal text-slate-400">kcal</span></span>
+              <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-theme-main text-theme-contrast font-bold px-2 py-1 rounded-xl text-[10px] transition active:scale-95 shadow-sm hover:opacity-90">
+                +1回
+              </button>
+              <button onclick="deleteLog(${item.id})" title="削除" class="text-slate-300 hover:text-rose-500 font-bold px-1 text-sm transition">
+                ×
+              </button>
+            </div>
           </div>
-          <div class="flex items-center space-x-2">
-            <span class="font-bold text-slate-700 text-xs">${item.calories} <span class="text-[9px] font-normal text-slate-400">kcal</span></span>
-            <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-2 py-1 rounded-xl text-[10px] transition active:scale-95 shadow-sm">
-              +1回
-            </button>
-            <button onclick="deleteLog(${item.id})" title="削除" class="text-slate-300 hover:text-rose-500 font-bold px-1 text-sm transition">
-              ×
-            </button>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
     };
   </script>
 </body>
