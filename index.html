@@ -213,20 +213,20 @@
       <!-- スクロール追従用 コンパクトサマリーバー -->
       <div id="compactSummaryBar" class="hidden bg-blue-50/95 border border-blue-200/80 px-2 py-1.5 rounded-xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center">
         <div>
-          <div class="text-[8px] text-slate-500 font-bold leading-none">残りカロリー</div>
-          <div id="compactRemCal" class="text-[11px] font-black leading-tight mt-0.5">0 kcal</div>
+          <div class="text-[9px] text-slate-500 font-bold leading-none">残りカロリー</div>
+          <div id="compactRemCal" class="text-xs font-black leading-tight mt-0.5">0 kcal</div>
         </div>
         <div>
-          <div class="text-[8px] text-slate-500 font-bold leading-none">タンパク質</div>
-          <div id="compactProtein" class="text-[10px] font-bold leading-tight mt-0.5">0 / 100g</div>
+          <div class="text-[9px] text-slate-500 font-bold leading-none">タンパク質</div>
+          <div id="compactProtein" class="text-xs font-bold leading-tight mt-0.5">0 / 100g</div>
         </div>
         <div>
-          <div class="text-[8px] text-slate-500 font-bold leading-none">脂質</div>
-          <div id="compactFat" class="text-[10px] font-bold leading-tight mt-0.5">0 / 50g</div>
+          <div class="text-[9px] text-slate-500 font-bold leading-none">脂質</div>
+          <div id="compactFat" class="text-xs font-bold leading-tight mt-0.5">0 / 50g</div>
         </div>
         <div>
-          <div class="text-[8px] text-slate-500 font-bold leading-none">炭水化物</div>
-          <div id="compactCarbs" class="text-[10px] font-bold leading-tight mt-0.5">0 / 250g</div>
+          <div class="text-[9px] text-slate-500 font-bold leading-none">炭水化物</div>
+          <div id="compactCarbs" class="text-xs font-bold leading-tight mt-0.5">0 / 250g</div>
         </div>
       </div>
 
@@ -266,42 +266,48 @@
           </div>
         </div>
         
-        <div class="grid grid-cols-3 gap-1 pt-1 border-t border-slate-200 text-center">
-          <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
-            <div class="text-[9px] text-blue-600 font-bold">タンパク質</div>
-            <div class="text-[10px] font-bold font-mono">
-              <span id="totalProtein" class="text-blue-600">0</span>
-              <span class="text-slate-400 text-[8px]">/</span>
-              <span id="targetProteinDisplay" class="text-slate-400 text-[8px]">100</span><span class="text-[8px] text-slate-400">g</span>
+        <!-- ★ PFCカード3列（文字と数値を大きく見やすく調整） -->
+        <div class="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-slate-200 text-center">
+          
+          <!-- タンパク質 -->
+          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+            <div class="text-xs text-blue-600 font-bold leading-tight">タンパク質</div>
+            <div class="font-bold font-mono leading-none">
+              <span id="totalProtein" class="text-blue-600 text-sm">0</span>
+              <span class="text-slate-400 text-[11px] font-normal">/</span>
+              <span id="targetProteinDisplay" class="text-slate-400 text-[11px] font-normal">100</span><span class="text-[11px] text-slate-400 font-normal">g</span>
             </div>
-            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
               <div id="barProtein" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
 
-          <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
-            <div class="text-[9px] text-amber-600 font-bold">脂質</div>
-            <div class="text-[10px] font-bold font-mono">
-              <span id="totalFat" class="text-amber-600">0</span>
-              <span class="text-slate-400 text-[8px]">/</span>
-              <span id="targetFatDisplay" class="text-slate-400 text-[8px]">50</span><span class="text-[8px] text-slate-400">g</span>
+          <!-- 脂質 -->
+          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+            <div class="text-xs text-amber-600 font-bold leading-tight">脂質</div>
+            <div class="font-bold font-mono leading-none">
+              <span id="totalFat" class="text-amber-600 text-sm">0</span>
+              <span class="text-slate-400 text-[11px] font-normal">/</span>
+              <span id="targetFatDisplay" class="text-slate-400 text-[11px] font-normal">50</span><span class="text-[11px] text-slate-400 font-normal">g</span>
             </div>
-            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
               <div id="barFat" class="bg-amber-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
 
-          <div class="bg-white p-1 rounded-lg space-y-0.5 border border-slate-200/80">
-            <div class="text-[9px] text-emerald-600 font-bold">炭水化物</div>
-            <div class="text-[10px] font-bold font-mono">
-              <span id="totalCarbs" class="text-emerald-600">0</span>
-              <span class="text-slate-400 text-[8px]">/</span>
-              <span id="targetCarbsDisplay" class="text-slate-400 text-[8px]">250</span><span class="text-[8px] text-slate-400">g</span>
+          <!-- 炭水化物 -->
+          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+            <div class="text-xs text-emerald-600 font-bold leading-tight">炭水化物</div>
+            <div class="font-bold font-mono leading-none">
+              <span id="totalCarbs" class="text-emerald-600 text-sm">0</span>
+              <span class="text-slate-400 text-[11px] font-normal">/</span>
+              <span id="targetCarbsDisplay" class="text-slate-400 text-[11px] font-normal">250</span><span class="text-[11px] text-slate-400 font-normal">g</span>
             </div>
-            <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
               <div id="barCarbs" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -312,7 +318,6 @@
           <label class="block text-xs font-bold text-slate-700">食事の追加</label>
           <div class="flex items-center space-x-2">
             <span id="aiStatusBadge" class="hidden text-[10px] bg-theme-light text-theme-dark font-bold px-2 py-0.5 rounded-full">✨ AI解析完了</span>
-            <!-- ★ テーマカラー連動の「リストから選ぶ」ボタン -->
             <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-theme-light text-theme-dark font-bold px-2.5 py-1 rounded-xl transition border border-theme-light shadow-sm flex items-center gap-1 active:scale-95 hover:opacity-90">
               リストから選ぶ
             </button>
@@ -1399,7 +1404,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       updateThemeButtonsUI();
     };
 
-    // ★ ステータスバー色：通常は白、ダークモード時は黒で固定
     window.applyTheme = function(themeName, isDark) {
       if (isDark) {
         document.body.classList.add('theme-dark');
@@ -1968,30 +1972,30 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (compactRemCalEl) {
         compactRemCalEl.textContent = remCalVal + " kcal";
         if (isCalOver) {
-          compactRemCalEl.className = "text-[11px] font-black text-rose-500 leading-tight mt-0.5";
+          compactRemCalEl.className = "text-xs font-black text-rose-500 leading-tight mt-0.5";
         } else {
           compactRemCalEl.className = window.userSettings.isDarkMode 
-            ? "text-[11px] font-black text-emerald-400 leading-tight mt-0.5" 
-            : "text-[11px] font-black text-blue-700 leading-tight mt-0.5";
+            ? "text-xs font-black text-emerald-400 leading-tight mt-0.5" 
+            : "text-xs font-black text-blue-700 leading-tight mt-0.5";
         }
       }
 
       const compactProteinEl = document.getElementById('compactProtein');
       if (compactProteinEl) {
         const pClass = isPOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
-        compactProteinEl.innerHTML = `<span class="${pClass} font-bold">${Math.round(roundedP)}</span> <span class="text-slate-400 font-normal">/ ${targets.protein || 100}g</span>`;
+        compactProteinEl.innerHTML = `<span class="${pClass} font-bold">${Math.round(roundedP)}</span> <span class="text-slate-400 font-normal text-[10px]">/ ${targets.protein || 100}g</span>`;
       }
 
       const compactFatEl = document.getElementById('compactFat');
       if (compactFatEl) {
         const fClass = isFOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
-        compactFatEl.innerHTML = `<span class="${fClass} font-bold">${Math.round(roundedF)}</span> <span class="text-slate-400 font-normal">/ ${targets.fat || 50}g</span>`;
+        compactFatEl.innerHTML = `<span class="${fClass} font-bold">${Math.round(roundedF)}</span> <span class="text-slate-400 font-normal text-[10px]">/ ${targets.fat || 50}g</span>`;
       }
 
       const compactCarbsEl = document.getElementById('compactCarbs');
       if (compactCarbsEl) {
         const cClass = isCOver ? 'text-rose-500' : (window.userSettings.isDarkMode ? 'text-slate-100' : 'text-slate-800');
-        compactCarbsEl.innerHTML = `<span class="${cClass} font-bold">${Math.round(roundedC)}</span> <span class="text-slate-400 font-normal">/ ${targets.carbs || 250}g</span>`;
+        compactCarbsEl.innerHTML = `<span class="${cClass} font-bold">${Math.round(roundedC)}</span> <span class="text-slate-400 font-normal text-[10px]">/ ${targets.carbs || 250}g</span>`;
       }
 
       const totalCalEl = document.getElementById('totalCalories');
@@ -2018,7 +2022,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const barFEl = document.getElementById('barFat');
       if (totalFEl) {
         totalFEl.textContent = roundedF;
-        totalFEl.className = isFOver ? "text-rose-500 font-bold" : "text-amber-600 font-bold";
+        totalFEl.className = isFOver ? "text-rose-500 font-bold text-sm" : "text-amber-600 font-bold text-sm";
       }
       if (barFEl) {
         barFEl.className = isFOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-amber-500 h-full transition-all duration-300";
@@ -2029,7 +2033,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const barCEl = document.getElementById('barCarbs');
       if (totalCEl) {
         totalCEl.textContent = roundedC;
-        totalCEl.className = isCOver ? "text-rose-500 font-bold" : "text-emerald-600 font-bold";
+        totalCEl.className = isCOver ? "text-rose-500 font-bold text-sm" : "text-emerald-600 font-bold text-sm";
       }
       if (barCEl) {
         barCEl.className = isCOver ? "bg-rose-500 h-full transition-all duration-300" : "bg-emerald-500 h-full transition-all duration-300";
