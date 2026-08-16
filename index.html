@@ -215,7 +215,7 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
-    /* キャラ吹き出しスタイル（横幅を狭く、縦長に2〜3行対応） */
+    /* キャラ吹き出しスタイル */
     .speech-bubble {
       position: relative;
       background: #ffffff;
@@ -262,7 +262,7 @@
     <!-- 上部固定エリア -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
-      <!-- ヘッダー（Googleログイン時、ログイン中は非表示またはスッキリさせるためラッパー制御） -->
+      <!-- ヘッダー（Googleログイン時、ログイン中は非表示） -->
       <div id="headerAuthRow" class="flex justify-end items-center">
         <div id="authArea">
           <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
@@ -870,7 +870,7 @@
       if (user) {
         currentUser = user;
         const modalLogoutArea = document.getElementById('modalLogoutArea');
-        if (headerAuthRow) headerAuthRow.classList.add('hidden'); // ログイン中は上のログインボタン領域の隙間を消す
+        if (headerAuthRow) headerAuthRow.classList.add('hidden');
         if (modalLogoutArea) modalLogoutArea.classList.remove('hidden');
 
         subscribeCloudData(user.uid);
@@ -973,7 +973,7 @@
     let calendarCurrentMonth = new Date().getMonth();
     let toastTimeout = null;
 
-    window.userGeminiApiKey = localStorage.getItem('user_gemini_api_key'] || "";
+    window.userGeminiApiKey = localStorage.getItem('user_gemini_api_key') || "";
 
     window.userTargets = {
       calories: 2000,
@@ -1048,6 +1048,48 @@
 
     window.closeRecordActionModal = function() {
       const modal = document.getElementById('recordActionModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.openCalendarModal = function() {
+      const cur = new Date(selectedDateStr || getTodayString());
+      calendarCurrentYear = cur.getFullYear();
+      calendarCurrentMonth = cur.getMonth();
+      renderCalendarGrid();
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeCalendarModal = function() {
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    window.openTargetModal = function() {
+      const apiKeyEl = document.getElementById('inputGeminiApiKey');
+      const targetCalEl = document.getElementById('inputTargetCalories');
+      const targetPEl = document.getElementById('inputTargetProtein');
+      const targetFEl = document.getElementById('inputTargetFat');
+      const targetCEl = document.getElementById('inputTargetCarbs');
+      const showMascotEl = document.getElementById('inputShowMascot');
+      const darkModeEl = document.getElementById('inputDarkMode');
+
+      if (apiKeyEl) apiKeyEl.value = window.userGeminiApiKey || "";
+      if (targetCalEl) targetCalEl.value = window.userTargets.calories;
+      if (targetPEl) targetPEl.value = window.userTargets.protein;
+      if (targetFEl) targetFEl.value = window.userTargets.fat;
+      if (targetCEl) targetCEl.value = window.userTargets.carbs;
+      
+      if (showMascotEl) showMascotEl.checked = window.userSettings.showMascot !== false;
+      if (darkModeEl) darkModeEl.checked = !!window.userSettings.isDarkMode;
+      updateThemeButtonsUI();
+
+      const modal = document.getElementById('targetModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeTargetModal = function() {
+      const modal = document.getElementById('targetModal');
       if (modal) modal.classList.add('hidden');
     };
 
@@ -1250,20 +1292,6 @@
           </button>
         `;
       }).join('');
-    };
-
-    window.openCalendarModal = function() {
-      const cur = new Date(selectedDateStr || getTodayString());
-      calendarCurrentYear = cur.getFullYear();
-      calendarCurrentMonth = cur.getMonth();
-      renderCalendarGrid();
-      const modal = document.getElementById('calendarModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeCalendarModal = function() {
-      const modal = document.getElementById('calendarModal');
-      if (modal) modal.classList.add('hidden');
     };
 
     window.changeCalendarMonth = function(delta) {
@@ -1930,34 +1958,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       renderQuickFavoriteChips();
     };
 
-    window.openTargetModal = function() {
-      const apiKeyEl = document.getElementById('inputGeminiApiKey');
-      const targetCalEl = document.getElementById('inputTargetCalories');
-      const targetPEl = document.getElementById('inputTargetProtein');
-      const targetFEl = document.getElementById('inputTargetFat');
-      const targetCEl = document.getElementById('inputTargetCarbs');
-      const showMascotEl = document.getElementById('inputShowMascot');
-      const darkModeEl = document.getElementById('inputDarkMode');
-
-      if (apiKeyEl) apiKeyEl.value = window.userGeminiApiKey || "";
-      if (targetCalEl) targetCalEl.value = window.userTargets.calories;
-      if (targetPEl) targetPEl.value = window.userTargets.protein;
-      if (targetFEl) targetFEl.value = window.userTargets.fat;
-      if (targetCEl) targetCEl.value = window.userTargets.carbs;
-      
-      if (showMascotEl) showMascotEl.checked = window.userSettings.showMascot !== false;
-      if (darkModeEl) darkModeEl.checked = !!window.userSettings.isDarkMode;
-      updateThemeButtonsUI();
-
-      const modal = document.getElementById('targetModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeTargetModal = function() {
-      const modal = document.getElementById('targetModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
     window.saveTargetValues = function() {
       const apiKeyEl = document.getElementById('inputGeminiApiKey');
       const apiKeyVal = apiKeyEl ? apiKeyEl.value.trim() : "";
@@ -2286,4 +2286,4 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
   </script>
 </body>
-      </html>
+  </html>
