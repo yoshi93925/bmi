@@ -24,9 +24,12 @@
       --primary-contrast: #ffffff;
     }
 
-    body { overflow-x: hidden; touch-action: pan-y; }
-    /* 超過時はしっかり赤で塗りつぶし、文字を白にする */
-    .calendar-day-red { background-color: #e11d48 !important; color: #ffffff !important; font-weight: bold; border-radius: 9999px; }
+    body { overflow-x: hidden; touch-action: pan-y; background-color: #ffffff; }
+    body.theme-dark { background-color: #090d16 !important; }
+
+    /* 超過時は視認性の高いダーク系でしっかり塗りつぶし（赤系テーマと区別） */
+    .calendar-day-over { background-color: #1e293b !important; color: #f8fafc !important; font-weight: bold; border-radius: 9999px; }
+    body.theme-dark .calendar-day-over { background-color: #334155 !important; color: #ffffff !important; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
     /* 動的テーマカラー用ユーティリティ */
@@ -38,7 +41,6 @@
     .text-theme-dark { color: var(--primary-text) !important; }
     .text-theme-contrast { color: var(--primary-contrast) !important; }
 
-    /* 白テーマ専用のボタン枠線 */
     body[data-theme="white"] .bg-theme-main { border: 1px solid #cbd5e1; }
     body.theme-dark[data-theme="white"] .bg-theme-main { border: 1px solid #475569; }
 
@@ -70,12 +72,11 @@
 
     /* ====== ダークモード連動スタイル ====== */
     body.theme-dark {
-      background-color: #090d16 !important;
       color: #f1f5f9 !important;
     }
     body.theme-dark #appContainer {
       background-color: #131b2e !important;
-      border-color: #1e293b !important;
+      border: none !important;
     }
     body.theme-dark .sticky {
       background-color: #131b2e !important;
@@ -108,7 +109,6 @@
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
-    /* 下部ナビゲーションのダークモード */
     body.theme-dark #bottomNav {
       background-color: #131b2e !important;
       border-color: #1e293b !important;
@@ -120,7 +120,6 @@
       color: var(--primary-color) !important;
     }
 
-    /* ダークモード時のモーダル背景やカード内の文字視認性向上 */
     body.theme-dark .bg-slate-900\/60 {
       background-color: rgba(2, 6, 23, 0.8) !important;
     }
@@ -186,7 +185,7 @@
 
     .summary-transition { transition: opacity 0.15s ease-in-out; }
 
-    /* ====== もちもち白玉マスコット スタイル ====== */
+    /* ====== もちもち白玉マスコット ＆ 吹き出しスタイル ====== */
     .shiratama-container {
       flex-shrink: 0;
       user-select: none;
@@ -234,18 +233,53 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
+    /* キャラ吹き出しスタイル */
+    .speech-bubble {
+      position: relative;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #475569;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      max-width: 170px;
+      line-height: 1.35;
+    }
+    body.theme-dark .speech-bubble {
+      background: #1e293b;
+      border-color: #334155;
+      color: #e2e8f0;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-right: 6px solid #ffffff;
+    }
+    body.theme-dark .speech-bubble::after {
+      border-right-color: #1e293b;
+    }
+
     .theme-circle.active { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0f172a; transform: scale(1.1); }
     body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #ffffff; }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-2 md:p-6 pb-24 flex justify-center items-start text-slate-800">
+<body class="bg-white min-h-screen p-2 md:p-6 pb-24 flex justify-center items-start text-slate-800">
 
-  <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
+  <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl p-4 md:p-5 space-y-4 my-1 select-none transition-all relative">
     
     <!-- 上部固定エリア -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
-      <!-- ヘッダー（Googleログインエリアのみ保持） -->
+      <!-- ヘッダー（Googleログインエリア） -->
       <div class="flex justify-end items-center">
         <div id="authArea">
           <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
@@ -256,11 +290,11 @@
 
       <!-- 7日間の日付＆曜日タブナビゲーション -->
       <div>
-        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-center touch-pan-x cursor-grab"></div>
+        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200/80 text-center touch-pan-x cursor-grab"></div>
       </div>
 
       <!-- スクロール追従用 コンパクトサマリーバー -->
-      <div id="compactSummaryBar" class="hidden bg-blue-50/95 border border-blue-200/80 px-2 py-1.5 rounded-xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center">
+      <div id="compactSummaryBar" class="hidden bg-blue-50/95 border border-blue-200/80 px-2.5 py-2 rounded-2xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center shadow-2xs">
         <div>
           <div class="text-[9px] text-slate-500 font-bold leading-none">残りカロリー</div>
           <div id="compactRemCal" class="text-xs font-black leading-tight mt-0.5">0 kcal</div>
@@ -285,17 +319,23 @@
     <div id="mainContentArea" class="space-y-4">
 
       <!-- 通常時サマリーカード -->
-      <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3 rounded-2xl space-y-2.5 shadow-sm summary-transition">
-        <div id="summaryHeaderRow" class="flex items-center justify-between px-5 py-0.5">
-          <div id="shiratamaContainer" class="shiratama-container" onclick="tapShiratama()">
-            <div id="shiratama-body" class="shiratama-body">
-              <div id="shiratama-eye-l" class="shiratama-eye left"></div>
-              <div id="shiratama-eye-r" class="shiratama-eye right"></div>
-              <div id="shiratama-cheek-l" class="shiratama-cheek left"></div>
-              <div id="shiratama-cheek-r" class="shiratama-cheek right"></div>
-              <div id="shiratama-mouth" class="shiratama-mouth happy"></div>
-              <div id="shiratama-sweat" class="shiratama-sweat">💧</div>
+      <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3.5 rounded-3xl space-y-3 shadow-xs summary-transition">
+        <div id="summaryHeaderRow" class="flex items-center justify-between px-2 py-0.5">
+          
+          <!-- キャラ＆吹き出しエリア -->
+          <div id="mascotAndSpeechGroup" class="flex items-center space-x-2.5">
+            <div id="shiratamaContainer" class="shiratama-container" onclick="tapShiratama()">
+              <div id="shiratama-body" class="shiratama-body">
+                <div id="shiratama-eye-l" class="shiratama-eye left"></div>
+                <div id="shiratama-eye-r" class="shiratama-eye right"></div>
+                <div id="shiratama-cheek-l" class="shiratama-cheek left"></div>
+                <div id="shiratama-cheek-r" class="shiratama-cheek right"></div>
+                <div id="shiratama-mouth" class="shiratama-mouth happy"></div>
+                <div id="shiratama-sweat" class="shiratama-sweat">💧</div>
+              </div>
             </div>
+            <!-- 白玉ちゃんの吹き出しメッセージ -->
+            <div id="shiratamaBubble" class="speech-bubble">お腹すいたよ〜！何か食べてね！</div>
           </div>
 
           <div id="calorieTextGroup" class="flex flex-col justify-center text-right">
@@ -316,10 +356,10 @@
         </div>
         
         <!-- PFCカード3列 -->
-        <div class="grid grid-cols-3 gap-1.5 pt-1.5 border-t border-slate-200 text-center">
+        <div class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-200 text-center">
           
           <!-- タンパク質 -->
-          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+          <div class="bg-white p-2 rounded-2xl space-y-1 border border-slate-200/80 shadow-2xs">
             <div class="text-xs text-blue-600 font-bold leading-tight">タンパク質</div>
             <div class="font-bold font-mono leading-none">
               <span id="totalProtein" class="text-blue-600 text-sm">0</span>
@@ -332,7 +372,7 @@
           </div>
 
           <!-- 脂質 -->
-          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+          <div class="bg-white p-2 rounded-2xl space-y-1 border border-slate-200/80 shadow-2xs">
             <div class="text-xs text-amber-600 font-bold leading-tight">脂質</div>
             <div class="font-bold font-mono leading-none">
               <span id="totalFat" class="text-amber-600 text-sm">0</span>
@@ -345,7 +385,7 @@
           </div>
 
           <!-- 炭水化物 -->
-          <div class="bg-white p-1.5 rounded-xl space-y-1 border border-slate-200/80 shadow-2xs">
+          <div class="bg-white p-2 rounded-2xl space-y-1 border border-slate-200/80 shadow-2xs">
             <div class="text-xs text-emerald-600 font-bold leading-tight">炭水化物</div>
             <div class="font-bold font-mono leading-none">
               <span id="totalCarbs" class="text-emerald-600 text-sm">0</span>
@@ -361,20 +401,20 @@
       </div>
 
       <!-- 統合入力フォーム -->
-      <div id="addFoodSection" class="bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/80 shadow-sm scroll-mt-24">
+      <div id="addFoodSection" class="bg-slate-50 p-3.5 rounded-3xl border border-slate-200/80 shadow-xs scroll-mt-24 space-y-2.5">
         
-        <div class="flex justify-between items-center mb-0.5">
+        <div class="flex justify-between items-center">
           <label class="block text-xs font-bold text-slate-700">食事の追加</label>
           <div class="flex items-center space-x-2">
-            <span id="aiStatusBadge" class="hidden text-[10px] bg-theme-light text-theme-dark font-bold px-2 py-0.5 rounded-full">✨ AI解析完了</span>
-            <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-theme-light text-theme-dark font-bold px-2.5 py-1 rounded-xl transition border border-theme-light shadow-sm flex items-center gap-1 active:scale-95 hover:opacity-90">
+            <span id="aiStatusBadge" class="hidden text-[10px] bg-theme-light text-theme-dark font-bold px-2.5 py-0.5 rounded-full">✨ AI解析完了</span>
+            <button onclick="openSelectFavoriteModal()" class="text-[10px] bg-theme-light text-theme-dark font-bold px-2.5 py-1.5 rounded-xl transition border border-theme-light shadow-2xs flex items-center gap-1 active:scale-95 hover:opacity-90">
               リストから選ぶ
             </button>
           </div>
         </div>
 
         <!-- お気に入りピル型チップ -->
-        <div id="quickFavoriteChipsContainer" class="hidden -mx-1 px-1 mt-0.5 mb-1.5">
+        <div id="quickFavoriteChipsContainer" class="hidden -mx-1 px-1">
           <div id="quickFavoriteChips" class="pill-scroll-container"></div>
         </div>
 
@@ -384,15 +424,15 @@
         <div class="space-y-2.5">
           <div>
             <div class="flex items-center space-x-1.5">
-              <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-sm">
+              <input type="text" id="manualName" placeholder="例: 牛丼並盛り、プロテイン" class="flex-1 text-xs p-2.5 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-2xs">
               
-              <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm hover:opacity-90">
+              <button onclick="document.getElementById('albumInput').click()" title="アルバムから選択" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-2xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-2xs hover:opacity-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
               </button>
 
-              <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-sm hover:opacity-90">
+              <button onclick="document.getElementById('cameraInput').click()" title="カメラで撮影" class="bg-theme-light text-theme-dark border border-theme-light font-bold p-2.5 rounded-2xl flex items-center justify-center transition active:scale-95 shrink-0 shadow-2xs hover:opacity-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -401,7 +441,7 @@
             </div>
             
             <div id="previewContainer" class="hidden mt-2 relative">
-              <img id="imagePreview" class="max-h-32 mx-auto rounded-xl object-cover border border-slate-200">
+              <img id="imagePreview" class="max-h-32 mx-auto rounded-2xl object-cover border border-slate-200">
               <button onclick="clearPhotoPreview()" class="absolute top-1 right-1 bg-slate-800/80 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">×</button>
             </div>
           </div>
@@ -409,21 +449,21 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 mb-0.5">カロリー (kcal)</label>
-              <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+              <input type="number" id="manualCalories" placeholder="空欄でAI推定" class="w-full text-xs p-2.5 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-2xs">
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-500 mb-0.5">タンパク質 (g)</label>
-              <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+              <input type="number" id="manualProtein" placeholder="空欄でAI推定" class="w-full text-xs p-2.5 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-2xs">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 mb-0.5">脂質 (g)</label>
-              <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+              <input type="number" id="manualFat" placeholder="空欄でAI推定" class="w-full text-xs p-2.5 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-2xs">
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-500 mb-0.5">炭水化物 (g)</label>
-              <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+              <input type="number" id="manualCarbs" placeholder="空欄でAI推定" class="w-full text-xs p-2.5 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white shadow-2xs">
             </div>
           </div>
 
@@ -432,7 +472,7 @@
             <label for="addToListAlso" class="text-xs font-bold text-slate-600">リストにも追加する</label>
           </div>
 
-          <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-theme-main text-theme-contrast text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition shadow-sm active:scale-95">
+          <button id="manualAddBtn" onclick="addManualLog()" class="w-full bg-theme-main text-theme-contrast text-xs font-bold py-2.5 rounded-2xl hover:opacity-90 transition shadow-sm active:scale-95">
             ＋ 記録に追加する
           </button>
         </div>
@@ -451,7 +491,7 @@
     </div>
   </div>
 
-  <!-- 下部固定ボトムナビゲーションバー（ホーム、カレンダー、記録[＋丸囲み]、お気に入り、設定） -->
+  <!-- 下部固定ボトムナビゲーションバー -->
   <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 py-2 flex justify-around items-center z-40 shadow-lg">
     
     <!-- ホーム -->
@@ -474,7 +514,7 @@
       <span class="text-[10px] font-bold mt-0.5">カレンダー</span>
     </button>
 
-    <!-- 記録（YouTubeスタイル：丸で囲んだ＋マーク、文字なし） -->
+    <!-- 記録（＋丸囲み） -->
     <button onclick="navGoRecord()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="w-9 h-9 rounded-full bg-theme-main text-theme-contrast flex items-center justify-center shadow-md transition hover:opacity-90">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -483,7 +523,7 @@
       </div>
     </button>
 
-    <!-- お気に入り（マイリスト選択モーダルを開く） -->
+    <!-- お気に入り -->
     <button onclick="openSelectFavoriteModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -665,7 +705,7 @@
 
       <div class="flex justify-center space-x-4 text-[10px] text-slate-500 font-medium">
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-200 inline-block"></span> 適正・目標内</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
       </div>
 
       <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
@@ -1126,7 +1166,7 @@
         if (isSelected) {
           activeClass = "bg-theme-main text-theme-contrast font-bold shadow-md scale-105";
         } else if (isOver) {
-          activeClass = "calendar-day-red shadow-sm";
+          activeClass = "calendar-day-over shadow-sm";
         }
 
         html += `
@@ -1221,7 +1261,7 @@
 
         if (dayLogs.length > 0) {
           const isOver = checkIsDayOver(dateStr);
-          colorClass = isOver ? "calendar-day-red shadow-sm" : "calendar-day-green shadow-sm";
+          colorClass = isOver ? "calendar-day-over shadow-sm" : "calendar-day-green shadow-sm";
         }
 
         const isSelected = dateStr === selectedDateStr ? "ring-2 ring-slate-400 font-bold" : "";
@@ -1629,7 +1669,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         const canMoveDown = isPinnedItem && pinnedIndex < pinnedItems.length - 1;
 
         return `
-          <div class="flex justify-between items-start bg-slate-50 hover:bg-theme-light p-3 rounded-xl border border-slate-200 transition gap-2">
+          <div class="flex justify-between items-start bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition gap-2">
             <div class="flex items-start space-x-2 flex-1 min-w-0 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
               <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5 mt-0.5" title="TOP優先に登録/解除">
                 ${item.isPinned ? '⭐' : '☆'}
@@ -2022,6 +2062,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       const cheekR = document.getElementById('shiratama-cheek-r');
       const mouth = document.getElementById('shiratama-mouth');
       const sweat = document.getElementById('shiratama-sweat');
+      const bubble = document.getElementById('shiratamaBubble');
 
       if (!eyeL || !targetCal) return;
 
@@ -2037,8 +2078,10 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
 
       if (ratio <= 0.3) {
         if (mouth) mouth.className = 'shiratama-mouth hungry';
+        if (bubble) bubble.textContent = "お腹すいたよ〜！何か食べてね！";
       } else if (ratio <= 1.0) {
         if (mouth) mouth.className = 'shiratama-mouth happy';
+        if (bubble) bubble.textContent = "いい感じのペースだね✨がんばろう！";
       } else {
         if (eyeL) eyeL.className = 'shiratama-eye left sick';
         if (eyeR) eyeR.className = 'shiratama-eye right sick';
@@ -2048,6 +2091,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         if (cheekR) cheekR.className = 'shiratama-cheek right sick';
         if (mouth) mouth.className = 'shiratama-mouth sick';
         if (sweat) sweat.classList.add('active');
+        if (bubble) bubble.textContent = "うっ…食べ過ぎちゃったかも…💦";
       }
     }
 
@@ -2063,14 +2107,16 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (targetFDisp) targetFDisp.textContent = targets.fat;
       if (targetCDisp) targetCDisp.textContent = targets.carbs;
 
-      const mascotContainer = document.getElementById('shiratamaContainer');
-      if (mascotContainer) {
+      const mascotGroup = document.getElementById('mascotAndSpeechGroup');
+      if (mascotGroup) {
         if (window.userSettings && window.userSettings.showMascot === false) {
-          mascotContainer.style.visibility = 'hidden';
-          mascotContainer.style.opacity = '0';
+          mascotGroup.style.visibility = 'hidden';
+          mascotGroup.style.opacity = '0';
+          mascotGroup.style.display = 'none';
         } else {
-          mascotContainer.style.visibility = 'visible';
-          mascotContainer.style.opacity = '1';
+          mascotGroup.style.visibility = 'visible';
+          mascotGroup.style.opacity = '1';
+          mascotGroup.style.display = 'flex';
         }
       }
 
@@ -2177,17 +2223,16 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         }
 
         logListEl.innerHTML = filteredLogs.map(item => `
-          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-300 transition">
+          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition">
             <div class="flex-1 pr-2 cursor-pointer" onclick="openEditModal(${item.id})" title="タップして編集">
               <div class="font-bold text-slate-800 flex items-center space-x-1 text-xs">
                 <span>${item.foodName}</span>
-                <span class="text-[10px] text-slate-400">✏️</span>
               </div>
               <div class="text-[10px] text-slate-400 mt-0.5">P:${item.protein}g / F:${item.fat}g / C:${item.carbs}g</div>
             </div>
             <div class="flex items-center space-x-2">
               <span class="font-bold text-slate-700 text-xs">${item.calories} <span class="text-[9px] font-normal text-slate-400">kcal</span></span>
-              <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-theme-main text-theme-contrast font-bold px-2 py-1 rounded-xl text-[10px] transition active:scale-95 shadow-sm hover:opacity-90">
+              <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-theme-main text-theme-contrast font-bold px-2.5 py-1.5 rounded-xl text-[10px] transition active:scale-95 shadow-2xs hover:opacity-90">
                 +1回
               </button>
               <button onclick="deleteLog(${item.id})" title="削除" class="text-slate-300 hover:text-rose-500 font-bold px-1 text-sm transition">
