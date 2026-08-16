@@ -25,11 +25,11 @@
     }
 
     body { overflow-x: hidden; touch-action: pan-y; background-color: #ffffff; }
-    body.theme-dark { background-color: #090d16 !important; }
+    body.theme-dark { background-color: #090d16 !important; color: #f1f5f9 !important; }
 
-    /* 超過時は視認性の高いダーク系でしっかり塗りつぶし（赤系テーマと区別） */
-    .calendar-day-over { background-color: #1e293b !important; color: #f8fafc !important; font-weight: bold; border-radius: 9999px; }
-    body.theme-dark .calendar-day-over { background-color: #334155 !important; color: #ffffff !important; }
+    /* 超過時は赤色の縁取り（アウトライン）＋太字で目立たせる */
+    .calendar-day-over { border: 2px solid #ef4444 !important; color: #ef4444 !important; font-weight: bold; border-radius: 9999px; }
+    body.theme-dark .calendar-day-over { border: 2px solid #f87171 !important; color: #f87171 !important; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
     /* 動的テーマカラー用ユーティリティ */
@@ -70,37 +70,34 @@
       max-width: 140px;
     }
 
-    /* ====== ダークモード連動スタイル ====== */
-    body.theme-dark {
-      color: #f1f5f9 !important;
-    }
+    /* ====== ダークモード連動スタイル（外枠なし・シームレス） ====== */
     body.theme-dark #appContainer {
-      background-color: #131b2e !important;
+      background-color: #090d16 !important;
       border: none !important;
     }
     body.theme-dark .sticky {
-      background-color: #131b2e !important;
+      background-color: #090d16 !important;
       border-color: #1e293b !important;
     }
     body.theme-dark #weekDaysContainer {
-      background-color: #090d16 !important;
+      background-color: #131b2e !important;
       border-color: #1e293b !important;
     }
     body.theme-dark #fullSummaryCard,
     body.theme-dark .bg-slate-50 {
-      background-color: #0c1322 !important;
+      background-color: #131b2e !important;
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
     body.theme-dark #compactSummaryBar {
-      background-color: #0f172a !important;
+      background-color: #131b2e !important;
       border-color: #1e293b !important;
       color: #f8fafc !important;
     }
     body.theme-dark input[type="text"],
     body.theme-dark input[type="number"],
     body.theme-dark input[type="password"] {
-      background-color: #131b2e !important;
+      background-color: #090d16 !important;
       border-color: #334155 !important;
       color: #f8fafc !important;
     }
@@ -128,26 +125,11 @@
     body.theme-dark #editFavoriteModal > div,
     body.theme-dark #calendarModal > div,
     body.theme-dark #favoriteModal > div,
-    body.theme-dark #editModal > div {
+    body.theme-dark #editModal > div,
+    body.theme-dark #recordActionModal > div {
       background-color: #131b2e !important;
       border: 1px solid #1e293b !important;
       color: #f1f5f9 !important;
-    }
-    body.theme-dark #calendarModal button.bg-slate-100,
-    body.theme-dark #selectFavoriteModal button.bg-slate-100,
-    body.theme-dark #favoriteModal button.bg-slate-100,
-    body.theme-dark #editModal button.bg-slate-100,
-    body.theme-dark #editFavoriteModal button.bg-slate-100 {
-      background-color: #1e293b !important;
-      color: #f1f5f9 !important;
-      border: 1px solid #334155 !important;
-    }
-    body.theme-dark #calendarModal button.bg-slate-100:hover,
-    body.theme-dark #selectFavoriteModal button.bg-slate-100:hover,
-    body.theme-dark #favoriteModal button.bg-slate-100:hover,
-    body.theme-dark #editModal button.bg-slate-100:hover,
-    body.theme-dark #editFavoriteModal button.bg-slate-100:hover {
-      background-color: #334155 !important;
     }
 
     body.theme-dark .text-slate-800,
@@ -185,7 +167,7 @@
 
     .summary-transition { transition: opacity 0.15s ease-in-out; }
 
-    /* ====== もちもち白玉マスコット ＆ 吹き出しスタイル ====== */
+    /* ====== もちもち白玉マスコット ＆ 縦長スリム吹き出しスタイル ====== */
     .shiratama-container {
       flex-shrink: 0;
       user-select: none;
@@ -233,19 +215,20 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
-    /* キャラ吹き出しスタイル */
+    /* キャラ吹き出しスタイル（横幅を狭く、縦長に2〜3行対応） */
     .speech-bubble {
       position: relative;
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 6px 10px;
-      font-size: 11px;
+      border-radius: 14px;
+      padding: 6px 8px;
+      font-size: 10.5px;
       font-weight: 500;
       color: #475569;
       box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-      max-width: 170px;
+      width: 110px;
       line-height: 1.35;
+      word-break: break-all;
     }
     body.theme-dark .speech-bubble {
       background: #1e293b;
@@ -279,8 +262,8 @@
     <!-- 上部固定エリア -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
-      <!-- ヘッダー（Googleログインエリア） -->
-      <div class="flex justify-end items-center">
+      <!-- ヘッダー（Googleログイン時、ログイン中は非表示またはスッキリさせるためラッパー制御） -->
+      <div id="headerAuthRow" class="flex justify-end items-center">
         <div id="authArea">
           <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
             <span>Googleログイン</span>
@@ -323,7 +306,7 @@
         <div id="summaryHeaderRow" class="flex items-center justify-between px-2 py-0.5">
           
           <!-- キャラ＆吹き出しエリア -->
-          <div id="mascotAndSpeechGroup" class="flex items-center space-x-2.5">
+          <div id="mascotAndSpeechGroup" class="flex items-center space-x-2">
             <div id="shiratamaContainer" class="shiratama-container" onclick="tapShiratama()">
               <div id="shiratama-body" class="shiratama-body">
                 <div id="shiratama-eye-l" class="shiratama-eye left"></div>
@@ -334,7 +317,7 @@
                 <div id="shiratama-sweat" class="shiratama-sweat">💧</div>
               </div>
             </div>
-            <!-- 白玉ちゃんの吹き出しメッセージ -->
+            <!-- 白玉ちゃんの縦長スリム吹き出しメッセージ -->
             <div id="shiratamaBubble" class="speech-bubble">お腹すいたよ〜！何か食べてね！</div>
           </div>
 
@@ -514,8 +497,8 @@
       <span class="text-[10px] font-bold mt-0.5">カレンダー</span>
     </button>
 
-    <!-- 記録（＋丸囲み） -->
-    <button onclick="navGoRecord()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+    <!-- 記録（＋丸囲み：タップでポップアップ選択メニューを開く） -->
+    <button onclick="openRecordActionModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="w-9 h-9 rounded-full bg-theme-main text-theme-contrast flex items-center justify-center shadow-md transition hover:opacity-90">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
@@ -544,6 +527,55 @@
       <span class="text-[10px] font-bold mt-0.5">設定</span>
     </button>
   </nav>
+
+  <!-- 記録選択ポップアップモーダル（写真・カメラ・手動記録） -->
+  <div id="recordActionModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-end sm:items-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 mb-16 sm:mb-0">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="text-sm font-bold text-slate-800">📸 食事の記録方法を選ぶ</h3>
+        <button onclick="closeRecordActionModal()" class="text-slate-400 font-bold hover:text-slate-600 text-lg">×</button>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button onclick="closeRecordActionModal(); document.getElementById('albumInput').click();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
+          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-800">アルバムから写真を選択</div>
+            <div class="text-[10px] text-slate-400">保存した食事画像からAI解析</div>
+          </div>
+        </button>
+
+        <button onclick="closeRecordActionModal(); document.getElementById('cameraInput').click();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
+          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-800">カメラで撮影して記録</div>
+            <div class="text-[10px] text-slate-400">その場で撮影してAI解析</div>
+          </div>
+        </button>
+
+        <button onclick="closeRecordActionModal(); navGoRecord();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
+          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="font-bold text-xs text-slate-800">テキスト・手動で記録</div>
+            <div class="text-[10px] text-slate-400">料理名を入力して記録する</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 「今日へ戻る」ボタン -->
   <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-20 right-5 bg-slate-900/90 hover:bg-slate-900 text-theme-contrast font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
@@ -705,7 +737,7 @@
 
       <div class="flex justify-center space-x-4 text-[10px] text-slate-500 font-medium">
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-200 inline-block"></span> 適正・目標内</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> 脂質/炭水化物/カロリー超過</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-red-500 inline-block"></span> 超過</span>
       </div>
 
       <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
@@ -834,19 +866,18 @@
     };
 
     onAuthStateChanged(auth, (user) => {
+      const headerAuthRow = document.getElementById('headerAuthRow');
       if (user) {
         currentUser = user;
-        const loginBtn = document.getElementById('loginBtn');
         const modalLogoutArea = document.getElementById('modalLogoutArea');
-        if (loginBtn) loginBtn.classList.add('hidden');
+        if (headerAuthRow) headerAuthRow.classList.add('hidden'); // ログイン中は上のログインボタン領域の隙間を消す
         if (modalLogoutArea) modalLogoutArea.classList.remove('hidden');
 
         subscribeCloudData(user.uid);
       } else {
         currentUser = null;
-        const loginBtn = document.getElementById('loginBtn');
         const modalLogoutArea = document.getElementById('modalLogoutArea');
-        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (headerAuthRow) headerAuthRow.classList.remove('hidden');
         if (modalLogoutArea) modalLogoutArea.classList.add('hidden');
       }
     });
@@ -942,7 +973,7 @@
     let calendarCurrentMonth = new Date().getMonth();
     let toastTimeout = null;
 
-    window.userGeminiApiKey = localStorage.getItem('user_gemini_api_key') || "";
+    window.userGeminiApiKey = localStorage.getItem('user_gemini_api_key'] || "";
 
     window.userTargets = {
       calories: 2000,
@@ -1008,6 +1039,16 @@
         const inputEl = document.getElementById('manualName');
         if (inputEl) setTimeout(() => inputEl.focus(), 300);
       }
+    };
+
+    window.openRecordActionModal = function() {
+      const modal = document.getElementById('recordActionModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closeRecordActionModal = function() {
+      const modal = document.getElementById('recordActionModal');
+      if (modal) modal.classList.add('hidden');
     };
 
     window.tapShiratama = function() {
@@ -2081,7 +2122,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         if (bubble) bubble.textContent = "お腹すいたよ〜！何か食べてね！";
       } else if (ratio <= 1.0) {
         if (mouth) mouth.className = 'shiratama-mouth happy';
-        if (bubble) bubble.textContent = "いい感じのペースだね✨がんばろう！";
+        if (bubble) bubble.textContent = "いいペースだね✨がんばろう！";
       } else {
         if (eyeL) eyeL.className = 'shiratama-eye left sick';
         if (eyeR) eyeR.className = 'shiratama-eye right sick';
