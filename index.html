@@ -27,9 +27,9 @@
     body { overflow-x: hidden; touch-action: pan-y; background-color: #ffffff; }
     body.theme-dark { background-color: #090d16 !important; color: #f1f5f9 !important; }
 
-    /* 超過時は赤色の縁取り（アウトライン）＋太字で目立たせる */
-    .calendar-day-over { border: 2px solid #ef4444 !important; color: #ef4444 !important; font-weight: bold; border-radius: 9999px; }
-    body.theme-dark .calendar-day-over { border: 2px solid #f87171 !important; color: #f87171 !important; }
+    /* 超過時はガッツリ赤の外枠 ＋ 淡い赤の塗りつぶし */
+    .calendar-day-over { border: 2px solid #ef4444 !important; background-color: #fee2e2 !important; color: #991b1b !important; font-weight: bold; border-radius: 9999px; }
+    body.theme-dark .calendar-day-over { border: 2px solid #f87171 !important; background-color: #450a0a !important; color: #fca5a5 !important; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
     /* 動的テーマカラー用ユーティリティ */
@@ -89,14 +89,10 @@
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
-    body.theme-dark #compactSummaryBar {
-      background-color: #131b2e !important;
-      border-color: #1e293b !important;
-      color: #f8fafc !important;
-    }
     body.theme-dark input[type="text"],
     body.theme-dark input[type="number"],
-    body.theme-dark input[type="password"] {
+    body.theme-dark input[type="password"],
+    body.theme-dark input[type="date"] {
       background-color: #090d16 !important;
       border-color: #334155 !important;
       color: #f8fafc !important;
@@ -271,13 +267,13 @@
         </div>
       </div>
 
-      <!-- 7日間の日付＆曜日タブナビゲーション -->
+      <!-- 7日間の日付＆曜日タブナビゲーション（土台にテーマカラーのうっすら淡い色） -->
       <div>
-        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200/80 text-center touch-pan-x cursor-grab"></div>
+        <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 p-1 rounded-2xl border text-center touch-pan-x cursor-grab" style="background-color: var(--primary-light); opacity: 0.95; border-color: var(--primary-border);"></div>
       </div>
 
-      <!-- スクロール追従用 コンパクトサマリーバー -->
-      <div id="compactSummaryBar" class="hidden bg-blue-50/95 border border-blue-200/80 px-2.5 py-2 rounded-2xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center shadow-2xs">
+      <!-- スクロール追従用 コンパクトサマリーバー（テーマカラーのうっすら淡い色） -->
+      <div id="compactSummaryBar" class="hidden px-2.5 py-2 rounded-2xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center shadow-2xs border" style="background-color: var(--primary-light); border-color: var(--primary-border);">
         <div>
           <div class="text-[9px] text-slate-500 font-bold leading-none">残りカロリー</div>
           <div id="compactRemCal" class="text-xs font-black leading-tight mt-0.5">0 kcal</div>
@@ -528,50 +524,35 @@
     </button>
   </nav>
 
-  <!-- 記録選択ポップアップモーダル（写真・カメラ・手動記録） -->
-  <div id="recordActionModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-end sm:items-center p-4 z-50">
-    <div class="bg-white rounded-3xl shadow-2xl p-5 max-w-xs w-full space-y-3 mb-16 sm:mb-0">
+  <!-- 記録選択ポップアップ（文字なし・アイコンのみ横並び） -->
+  <div id="recordActionModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4 text-center">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="text-sm font-bold text-slate-800">📸 食事の記録方法を選ぶ</h3>
+        <h3 class="text-sm font-bold text-slate-800">食事の記録</h3>
         <button onclick="closeRecordActionModal()" class="text-slate-400 font-bold hover:text-slate-600 text-lg">×</button>
       </div>
 
-      <div class="space-y-2 pt-1">
-        <button onclick="closeRecordActionModal(); document.getElementById('albumInput').click();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
-          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-800">アルバムから写真を選択</div>
-            <div class="text-[10px] text-slate-400">保存した食事画像からAI解析</div>
-          </div>
+      <div class="flex justify-center items-center space-x-4 py-2">
+        <!-- アルバム写真 -->
+        <button onclick="closeRecordActionModal(); document.getElementById('albumInput').click();" title="アルバムから選択" class="w-14 h-14 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center transition active:scale-95 shadow-2xs">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
         </button>
 
-        <button onclick="closeRecordActionModal(); document.getElementById('cameraInput').click();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
-          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-800">カメラで撮影して記録</div>
-            <div class="text-[10px] text-slate-400">その場で撮影してAI解析</div>
-          </div>
+        <!-- カメラ撮影 -->
+        <button onclick="closeRecordActionModal(); document.getElementById('cameraInput').click();" title="カメラで撮影" class="w-14 h-14 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center transition active:scale-95 shadow-2xs">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
         </button>
 
-        <button onclick="closeRecordActionModal(); navGoRecord();" class="w-full flex items-center space-x-3 bg-slate-50 hover:bg-theme-light p-3 rounded-2xl border border-slate-200 transition text-left active:scale-95">
-          <div class="bg-theme-light text-theme-main p-2 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </div>
-          <div>
-            <div class="font-bold text-xs text-slate-800">テキスト・手動で記録</div>
-            <div class="text-[10px] text-slate-400">料理名を入力して記録する</div>
-          </div>
+        <!-- 手動入力 -->
+        <button onclick="closeRecordActionModal(); navGoRecord();" title="テキスト・手動で記録" class="w-14 h-14 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center transition active:scale-95 shadow-2xs">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
         </button>
       </div>
     </div>
@@ -737,7 +718,7 @@
 
       <div class="flex justify-center space-x-4 text-[10px] text-slate-500 font-medium">
         <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-200 inline-block"></span> 適正・目標内</span>
-        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-red-500 inline-block"></span> 超過</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-red-500 bg-red-100 inline-block"></span> 超過</span>
       </div>
 
       <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400">
@@ -777,10 +758,14 @@
     </div>
   </div>
 
-  <!-- 食事ログ編集モーダル -->
+  <!-- 食事ログ編集モーダル（日付変更機能付き） -->
   <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-6 max-w-xs w-full space-y-4">
       <h3 class="text-base font-bold text-slate-800 border-b pb-2">記録の編集</h3>
+      <div>
+        <label class="block text-xs font-bold text-slate-600 mb-1">日付</label>
+        <input type="date" id="editDate" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 bg-white">
+      </div>
       <div>
         <label class="block text-xs font-bold text-slate-600 mb-1">料理名・食品名</label>
         <input type="text" id="editName" class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400">
@@ -1048,48 +1033,6 @@
 
     window.closeRecordActionModal = function() {
       const modal = document.getElementById('recordActionModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.openCalendarModal = function() {
-      const cur = new Date(selectedDateStr || getTodayString());
-      calendarCurrentYear = cur.getFullYear();
-      calendarCurrentMonth = cur.getMonth();
-      renderCalendarGrid();
-      const modal = document.getElementById('calendarModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeCalendarModal = function() {
-      const modal = document.getElementById('calendarModal');
-      if (modal) modal.classList.add('hidden');
-    };
-
-    window.openTargetModal = function() {
-      const apiKeyEl = document.getElementById('inputGeminiApiKey');
-      const targetCalEl = document.getElementById('inputTargetCalories');
-      const targetPEl = document.getElementById('inputTargetProtein');
-      const targetFEl = document.getElementById('inputTargetFat');
-      const targetCEl = document.getElementById('inputTargetCarbs');
-      const showMascotEl = document.getElementById('inputShowMascot');
-      const darkModeEl = document.getElementById('inputDarkMode');
-
-      if (apiKeyEl) apiKeyEl.value = window.userGeminiApiKey || "";
-      if (targetCalEl) targetCalEl.value = window.userTargets.calories;
-      if (targetPEl) targetPEl.value = window.userTargets.protein;
-      if (targetFEl) targetFEl.value = window.userTargets.fat;
-      if (targetCEl) targetCEl.value = window.userTargets.carbs;
-      
-      if (showMascotEl) showMascotEl.checked = window.userSettings.showMascot !== false;
-      if (darkModeEl) darkModeEl.checked = !!window.userSettings.isDarkMode;
-      updateThemeButtonsUI();
-
-      const modal = document.getElementById('targetModal');
-      if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closeTargetModal = function() {
-      const modal = document.getElementById('targetModal');
       if (modal) modal.classList.add('hidden');
     };
 
@@ -2016,6 +1959,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (!item) return;
 
       editingLogId = id;
+      document.getElementById('editDate').value = item.date || selectedDateStr;
       document.getElementById('editName').value = item.foodName || "";
       document.getElementById('editCalories').value = item.calories || 0;
       document.getElementById('editProtein').value = item.protein || 0;
@@ -2035,6 +1979,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     window.saveEditedLog = function() {
       if (!editingLogId) return;
 
+      const newDate = document.getElementById('editDate').value;
       const name = document.getElementById('editName').value.trim();
       const cal = parseFloat(document.getElementById('editCalories').value) || 0;
       const p = parseFloat(document.getElementById('editProtein').value) || 0;
@@ -2051,6 +1996,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         if (item && item.id === editingLogId) {
           return {
             ...item,
+            date: newDate || item.date,
             foodName: name,
             calories: cal,
             protein: p,
@@ -2065,6 +2011,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       updateUI();
       renderWeekDays();
       closeEditModal();
+      showToast('✅ 記録を更新しました');
     };
 
     window.duplicateLog = function(id) {
@@ -2273,7 +2220,7 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
             </div>
             <div class="flex items-center space-x-2">
               <span class="font-bold text-slate-700 text-xs">${item.calories} <span class="text-[9px] font-normal text-slate-400">kcal</span></span>
-              <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-theme-main text-theme-contrast font-bold px-2.5 py-1.5 rounded-xl text-[10px] transition active:scale-95 shadow-2xs hover:opacity-90">
+              <button onclick="duplicateLog(${item.id})" title="同じものをもう1回食べた" class="bg-white text-slate-700 border border-slate-200 font-bold px-2.5 py-1.5 rounded-xl text-[10px] transition active:scale-95 shadow-2xs hover:bg-slate-50">
                 +1回
               </button>
               <button onclick="deleteLog(${item.id})" title="削除" class="text-slate-300 hover:text-rose-500 font-bold px-1 text-sm transition">
@@ -2286,4 +2233,4 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
   </script>
 </body>
-  </html>
+            </html>
