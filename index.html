@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>AIカロリーチェッカー＆食事管理</title>
+  <title>カロミール</title>
 
   <!-- PWA & 全画面化設定 -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" id="metaThemeColor" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" id="metaStatusBar" content="default">
-  <meta name="apple-mobile-web-app-title" content="食事管理">
+  <meta name="apple-mobile-web-app-title" content="カロミール">
   <link rel="apple-touch-icon" href="icon.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -42,7 +42,7 @@
     body[data-theme="white"] .bg-theme-main { border: 1px solid #cbd5e1; }
     body.theme-dark[data-theme="white"] .bg-theme-main { border: 1px solid #475569; }
 
-    /* ====== お気に入り（クイックチップ）用スタイル（文字数に合わせて自動可変） ====== */
+    /* ====== お気に入り（クイックチップ）用スタイル ====== */
     .pill-scroll-container {
       display: flex;
       gap: 6px;
@@ -65,6 +65,7 @@
       padding-right: 12px;
       flex-shrink: 0;
       white-space: nowrap;
+      max-width: 140px;
     }
 
     /* ====== ダークモード連動スタイル ====== */
@@ -90,11 +91,6 @@
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
-    body.theme-dark #settingBtn {
-      background-color: #1e293b !important;
-      border-color: #334155 !important;
-      color: #94a3b8 !important;
-    }
     body.theme-dark #compactSummaryBar {
       background-color: #0f172a !important;
       border-color: #1e293b !important;
@@ -112,7 +108,49 @@
       border-color: #1e293b !important;
       color: #f1f5f9 !important;
     }
-    /* TOPのカロリーやたんぱく質などの設定値・ラベルの色調整 */
+    /* 下部ナビゲーションのダークモード */
+    body.theme-dark #bottomNav {
+      background-color: #131b2e !important;
+      border-color: #1e293b !important;
+    }
+    body.theme-dark .bottom-nav-item {
+      color: #94a3b8 !important;
+    }
+    body.theme-dark .bottom-nav-item.active {
+      color: var(--primary-color) !important;
+    }
+
+    /* ダークモード時のモーダル背景やカード内の文字視認性向上 */
+    body.theme-dark .bg-slate-900\/60 {
+      background-color: rgba(2, 6, 23, 0.8) !important;
+    }
+    body.theme-dark #targetModal > div,
+    body.theme-dark #selectFavoriteModal > div,
+    body.theme-dark #editFavoriteModal > div,
+    body.theme-dark #calendarModal > div,
+    body.theme-dark #favoriteModal > div,
+    body.theme-dark #editModal > div {
+      background-color: #131b2e !important;
+      border: 1px solid #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.theme-dark #calendarModal button.bg-slate-100,
+    body.theme-dark #selectFavoriteModal button.bg-slate-100,
+    body.theme-dark #favoriteModal button.bg-slate-100,
+    body.theme-dark #editModal button.bg-slate-100,
+    body.theme-dark #editFavoriteModal button.bg-slate-100 {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border: 1px solid #334155 !important;
+    }
+    body.theme-dark #calendarModal button.bg-slate-100:hover,
+    body.theme-dark #selectFavoriteModal button.bg-slate-100:hover,
+    body.theme-dark #favoriteModal button.bg-slate-100:hover,
+    body.theme-dark #editModal button.bg-slate-100:hover,
+    body.theme-dark #editFavoriteModal button.bg-slate-100:hover {
+      background-color: #334155 !important;
+    }
+
     body.theme-dark .text-slate-800,
     body.theme-dark .text-slate-700,
     body.theme-dark .text-slate-600 {
@@ -196,38 +234,22 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
-    /* ダークモード時のテーマカラー選択中の白丸修正：黒枠/リングを明示 */
     .theme-circle.active { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0f172a; transform: scale(1.1); }
     body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #ffffff; }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-2 md:p-6 flex justify-center items-start text-slate-800">
+<body class="bg-slate-100 min-h-screen p-2 md:p-6 pb-24 flex justify-center items-start text-slate-800">
 
   <div id="appContainer" class="max-w-md w-full bg-white rounded-3xl shadow-xl p-4 md:p-5 space-y-4 my-1 select-none border border-slate-200/60 transition-all relative">
     
     <!-- 上部固定エリア -->
     <div class="sticky top-0 bg-white z-30 pt-1 pb-1.5 -mx-4 px-4 md:-mx-5 md:px-5 space-y-2 border-b border-slate-100/80 shadow-xs">
       
-      <!-- ヘッダー -->
-      <div class="flex justify-between items-center">
-        <button onclick="openCalendarModal()" title="カレンダー" class="p-1.5 rounded-xl bg-theme-light text-theme-dark border border-theme-light transition active:scale-95 shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-        </button>
-
-        <div class="flex items-center space-x-2">
-          <div id="authArea">
-            <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
-              <span>Googleログイン</span>
-            </button>
-          </div>
-
-          <button id="settingBtn" onclick="openTargetModal()" title="設定" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition active:scale-95 shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
+      <!-- ヘッダー（Googleログインエリアのみ保持） -->
+      <div class="flex justify-end items-center">
+        <div id="authArea">
+          <button id="loginBtn" onclick="loginWithGoogle()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-xl transition shadow-sm flex items-center gap-1 active:scale-95">
+            <span>Googleログイン</span>
           </button>
         </div>
       </div>
@@ -339,7 +361,7 @@
       </div>
 
       <!-- 統合入力フォーム -->
-      <div class="bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div id="addFoodSection" class="bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/80 shadow-sm scroll-mt-24">
         
         <div class="flex justify-between items-center mb-0.5">
           <label class="block text-xs font-bold text-slate-700">食事の追加</label>
@@ -351,7 +373,7 @@
           </div>
         </div>
 
-        <!-- お気に入りピル型チップ（文字数に合わせて自動可変） -->
+        <!-- お気に入りピル型チップ -->
         <div id="quickFavoriteChipsContainer" class="hidden -mx-1 px-1 mt-0.5 mb-1.5">
           <div id="quickFavoriteChips" class="pill-scroll-container"></div>
         </div>
@@ -429,8 +451,62 @@
     </div>
   </div>
 
+  <!-- 下部固定ボトムナビゲーションバー（ホーム、カレンダー、記録[＋丸囲み]、お気に入り、設定） -->
+  <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 py-2 flex justify-around items-center z-40 shadow-lg">
+    
+    <!-- ホーム -->
+    <button onclick="navGoHome()" class="bottom-nav-item active flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+      <div class="nav-bg p-1.5 rounded-xl bg-theme-light text-theme-main transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+      </div>
+      <span class="text-[10px] font-bold mt-0.5 text-theme-main">ホーム</span>
+    </button>
+
+    <!-- カレンダー -->
+    <button onclick="openCalendarModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+      <div class="nav-bg p-1.5 rounded-xl transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <span class="text-[10px] font-bold mt-0.5">カレンダー</span>
+    </button>
+
+    <!-- 記録（YouTubeスタイル：丸で囲んだ＋マーク、文字なし） -->
+    <button onclick="navGoRecord()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+      <div class="w-9 h-9 rounded-full bg-theme-main text-theme-contrast flex items-center justify-center shadow-md transition hover:opacity-90">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </div>
+    </button>
+
+    <!-- お気に入り（マイリスト選択モーダルを開く） -->
+    <button onclick="openSelectFavoriteModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+      <div class="nav-bg p-1.5 rounded-xl transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+        </svg>
+      </div>
+      <span class="text-[10px] font-bold mt-0.5">お気に入り</span>
+    </button>
+
+    <!-- 設定 -->
+    <button onclick="openTargetModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
+      <div class="nav-bg p-1.5 rounded-xl transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+      </div>
+      <span class="text-[10px] font-bold mt-0.5">設定</span>
+    </button>
+  </nav>
+
   <!-- 「今日へ戻る」ボタン -->
-  <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-5 right-5 bg-slate-900/90 hover:bg-slate-900 text-theme-contrast font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
+  <button id="backToTodayBtn" onclick="goToToday()" class="hidden fixed bottom-20 right-5 bg-slate-900/90 hover:bg-slate-900 text-theme-contrast font-bold px-3.5 py-2 rounded-full shadow-xl text-xs transition-all duration-200 flex items-center space-x-1.5 border border-slate-700/50 z-40 active:scale-95">
     <svg class="w-4 h-4 text-theme-main" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
     </svg>
@@ -438,7 +514,7 @@
   </button>
 
   <!-- トースト通知ポップアップ -->
-  <div id="toastNotification" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center space-x-2 border border-slate-700/60 pointer-events-none">
+  <div id="toastNotification" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white font-bold text-xs px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center space-x-2 border border-slate-700/60 pointer-events-none">
     <span id="toastMessage">✅ 記録を追加しました</span>
   </div>
 
@@ -505,8 +581,8 @@
       </div>
 
       <div class="flex space-x-2 pt-1">
-        <button onclick="closeTargetModal()" class="flex-1 bg-white text-black border border-slate-300 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition shadow-xs">キャンセル</button>
-        <button onclick="saveTargetValues()" class="flex-1 bg-white text-black border border-slate-300 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition shadow-xs">設定を保存</button>
+        <button onclick="closeTargetModal()" class="flex-1 bg-white text-slate-800 border border-slate-300 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 transition shadow-xs">キャンセル</button>
+        <button onclick="saveTargetValues()" class="flex-1 bg-white text-slate-800 border border-slate-300 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 transition shadow-xs">設定を保存</button>
       </div>
     </div>
   </div>
@@ -528,7 +604,7 @@
 
       <div id="selectFavoriteList" class="space-y-1.5 overflow-y-auto flex-1 pr-1 text-xs"></div>
 
-      <button onclick="closeSelectFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
+      <button onclick="closeSelectFavoriteModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-200 transition">閉じる</button>
     </div>
   </div>
 
@@ -565,8 +641,8 @@
         </div>
       </div>
       <div class="flex space-x-2 pt-2">
-        <button onclick="closeEditFavoriteModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl">キャンセル</button>
-        <button onclick="saveEditedFavoriteItem()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl shadow-sm hover:opacity-90">保存</button>
+        <button onclick="closeEditFavoriteModal()" class="flex-1 bg-white text-slate-800 border border-slate-300 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 transition">キャンセル</button>
+        <button onclick="saveEditedFavoriteItem()" class="flex-1 bg-white text-slate-800 border border-slate-300 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 transition">保存</button>
       </div>
     </div>
   </div>
@@ -598,7 +674,7 @@
 
       <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-center text-xs"></div>
 
-      <button onclick="closeCalendarModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">閉じる</button>
+      <button onclick="closeCalendarModal()" class="w-full bg-slate-100 text-slate-600 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-200 transition">閉じる</button>
     </div>
   </div>
 
@@ -658,8 +734,8 @@
         </div>
       </div>
       <div class="flex space-x-2 pt-2">
-        <button onclick="closeEditModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2 rounded-xl hover:bg-slate-200 transition">キャンセル</button>
-        <button onclick="saveEditedLog()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2 rounded-xl hover:opacity-90 transition shadow-sm">保存する</button>
+        <button onclick="closeEditModal()" class="flex-1 bg-white text-slate-800 border border-slate-300 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 transition">キャンセル</button>
+        <button onclick="saveEditedLog()" class="flex-1 bg-theme-main text-theme-contrast text-xs font-bold py-2.5 rounded-xl hover:opacity-90 transition shadow-sm">保存する</button>
       </div>
     </div>
   </div>
@@ -881,6 +957,19 @@
       }
     });
 
+    window.navGoHome = function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.navGoRecord = function() {
+      const el = document.getElementById('addFoodSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        const inputEl = document.getElementById('manualName');
+        if (inputEl) setTimeout(() => inputEl.focus(), 300);
+      }
+    };
+
     window.tapShiratama = function() {
       const bodyEl = document.getElementById('shiratama-body');
       if (!bodyEl) return;
@@ -1076,7 +1165,7 @@
         const displayName = (item.shortName && item.shortName.trim() !== '') ? item.shortName.trim() : item.foodName;
         return `
           <button onclick="addFavoriteToLog(${item.id})" title="${item.foodName}" class="pill-quick-chip font-bold bg-white text-slate-700 border border-slate-200/90 shadow-2xs hover:border-slate-400 active:scale-95 transition-all duration-150 text-[11px]">
-            <span>${displayName}</span>
+            <span class="truncate">${displayName}</span>
           </button>
         `;
       }).join('');
@@ -1540,21 +1629,21 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         const canMoveDown = isPinnedItem && pinnedIndex < pinnedItems.length - 1;
 
         return `
-          <div class="flex justify-between items-center bg-slate-50 hover:bg-theme-light p-2.5 rounded-xl border border-slate-200 transition">
-            <div class="flex items-center space-x-2 flex-1 min-w-0 pr-2 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
-              <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5" title="TOP優先に登録/解除">
+          <div class="flex justify-between items-start bg-slate-50 hover:bg-theme-light p-3 rounded-xl border border-slate-200 transition gap-2">
+            <div class="flex items-start space-x-2 flex-1 min-w-0 cursor-pointer" onclick="addFavoriteToLog(${item.id}); closeSelectFavoriteModal();">
+              <button onclick="event.stopPropagation(); toggleFavoritePin(${item.id}); renderSelectFavoriteList();" class="text-base shrink-0 p-0.5 mt-0.5" title="TOP優先に登録/解除">
                 ${item.isPinned ? '⭐' : '☆'}
               </button>
-              <div class="truncate">
-                <div class="font-bold text-slate-800 text-xs truncate">
+              <div class="flex-1 min-w-0">
+                <div class="font-bold text-slate-800 text-xs break-words whitespace-normal leading-relaxed">
                   ${item.foodName}
-                  ${(item.shortName && item.shortName !== item.foodName) ? `<span class="text-[10px] text-slate-400 font-normal ml-1">(TOP表示: ${item.shortName})</span>` : ''}
+                  ${(item.shortName && item.shortName !== item.foodName) ? `<span class="text-[10px] text-slate-400 font-normal ml-1 inline-block">(TOP表示: ${item.shortName})</span>` : ''}
                 </div>
-                <div class="text-[10px] text-slate-400 mt-0.5">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
+                <div class="text-[10px] text-slate-400 mt-1">${item.calories}kcal / P:${item.protein}g F:${item.fat}g C:${item.carbs}g</div>
               </div>
             </div>
             
-            <div class="flex items-center space-x-1 shrink-0">
+            <div class="flex items-center space-x-1 shrink-0 pt-0.5">
               ${isPinnedItem && rawQuery === "" ? `
                 <div class="flex flex-col space-y-0.5 mr-1">
                   <button onclick="event.stopPropagation(); moveFavoriteOrder(${item.id}, -1);" ${!canMoveUp ? 'disabled class="opacity-25 cursor-not-allowed"' : 'class="hover:text-slate-900 active:scale-90"'} title="上へ移動" class="text-[9px] font-bold px-1 bg-slate-200/80 rounded">▲</button>
@@ -2111,4 +2200,4 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
   </script>
 </body>
-</html>
+  </html>
