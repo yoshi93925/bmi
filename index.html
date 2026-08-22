@@ -29,12 +29,10 @@
     body { overflow-x: hidden; touch-action: pan-y; background-color: #ffffff; }
     body.theme-dark { background-color: #090d16 !important; color: #f1f5f9 !important; }
 
-    /* 超過時はガッツリ赤の外枠 ＋ 淡い赤の塗りつぶし */
     .calendar-day-over { border: 2px solid #ef4444 !important; background-color: #fee2e2 !important; color: #991b1b !important; font-weight: bold; border-radius: 9999px; }
     body.theme-dark .calendar-day-over { border: 2px solid #f87171 !important; background-color: #450a0a !important; color: #fca5a5 !important; }
     .calendar-day-green { background-color: #d1fae5; color: #059669; font-weight: bold; border-radius: 9999px; }
 
-    /* 動的テーマカラー用ユーティリティ */
     .bg-theme-main { background-color: var(--primary-color) !important; }
     .bg-theme-hover:hover { background-color: var(--primary-hover) !important; }
     .bg-theme-light { background-color: var(--primary-light) !important; }
@@ -46,150 +44,60 @@
     body[data-theme="white"] .bg-theme-main { border: 1px solid #cbd5e1; }
     body.theme-dark[data-theme="white"] .bg-theme-main { border: 1px solid #475569; }
 
-    /* ====== ボトムシート（下からぐいっと出るメニュー）アニメーション ====== */
     @keyframes slideUp {
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    .sheet-animate {
-      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .sheet-animate { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* ====== お気に入り（クイックチップ）用スタイル ====== */
     .pill-scroll-container {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-top: 1px;
-      padding-bottom: 1px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      display: flex; gap: 6px; overflow-x: auto; padding-top: 1px; padding-bottom: 1px;
+      -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
-    .pill-scroll-container::-webkit-scrollbar {
-      display: none;
-    }
+    .pill-scroll-container::-webkit-scrollbar { display: none; }
     .pill-quick-chip {
-      height: 34px;
-      border-radius: 9999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding-left: 12px;
-      padding-right: 12px;
-      flex-shrink: 0;
-      white-space: nowrap;
-      max-width: 140px;
+      height: 34px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center;
+      padding-left: 12px; padding-right: 12px; flex-shrink: 0; white-space: nowrap; max-width: 140px;
     }
 
-    /* ====== ダークモード連動スタイル（外枠なし・シームレス） ====== */
-    body.theme-dark #appContainer {
-      background-color: #090d16 !important;
-      border: none !important;
+    body.theme-dark #appContainer { background-color: #090d16 !important; border: none !important; }
+    body.theme-dark .sticky { background-color: #090d16 !important; border-color: #1e293b !important; }
+    body.theme-dark #weekDaysContainer { background-color: #131b2e !important; border-color: #1e293b !important; }
+    body.theme-dark #fullSummaryCard, body.theme-dark .bg-slate-50, body.theme-dark #weightSection, body.theme-dark #workoutSection {
+      background-color: #131b2e !important; border-color: #1e293b !important; color: #f1f5f9 !important;
     }
-    body.theme-dark .sticky {
-      background-color: #090d16 !important;
-      border-color: #1e293b !important;
+    body.theme-dark input[type="text"], body.theme-dark input[type="number"], body.theme-dark input[type="password"], body.theme-dark input[type="date"] {
+      background-color: #090d16 !important; border-color: #334155 !important; color: #f8fafc !important;
     }
-    body.theme-dark #weekDaysContainer {
-      background-color: #131b2e !important;
-      border-color: #1e293b !important;
-    }
-    body.theme-dark #fullSummaryCard,
-    body.theme-dark .bg-slate-50,
-    body.theme-dark #weightSection,
-    body.theme-dark #workoutSection {
-      background-color: #131b2e !important;
-      border-color: #1e293b !important;
-      color: #f1f5f9 !important;
-    }
-    body.theme-dark input[type="text"],
-    body.theme-dark input[type="number"],
-    body.theme-dark input[type="password"],
-    body.theme-dark input[type="date"] {
-      background-color: #090d16 !important;
-      border-color: #334155 !important;
-      color: #f8fafc !important;
-    }
-    body.theme-dark .bg-white {
-      background-color: #131b2e !important;
-      border-color: #1e293b !important;
-      color: #f1f5f9 !important;
-    }
-    body.theme-dark #bottomNav {
-      background-color: #131b2e !important;
-      border-color: #1e293b !important;
-    }
-    body.theme-dark .bottom-nav-item {
-      color: #94a3b8 !important;
-    }
-    body.theme-dark .bottom-nav-item.active {
-      color: var(--primary-color) !important;
+    body.theme-dark .bg-white { background-color: #131b2e !important; border-color: #1e293b !important; color: #f1f5f9 !important; }
+    body.theme-dark #bottomNav { background-color: #131b2e !important; border-color: #1e293b !important; }
+    body.theme-dark .bottom-nav-item { color: #94a3b8 !important; }
+    body.theme-dark .bottom-nav-item.active { color: var(--primary-color) !important; }
+
+    body.theme-dark .bg-slate-900\/60, body.theme-dark #recordActionModal, body.theme-dark #barcodeScannerModal {
+      background-color: rgba(2, 6, 23, 0.85) !important;
     }
 
-    body.theme-dark .bg-slate-900\/60,
-    body.theme-dark #recordActionModal {
-      background-color: rgba(2, 6, 23, 0.8) !important;
-    }
-    body.theme-dark #targetModal > div,
-    body.theme-dark #selectFavoriteModal > div,
-    body.theme-dark #editFavoriteModal > div,
-    body.theme-dark #calendarModal > div,
-    body.theme-dark #favoriteModal > div,
-    body.theme-dark #editModal > div,
-    body.theme-dark #weightModal > div,
-    body.theme-dark #workoutModal > div,
-    body.theme-dark #recordActionModal > div {
-      background-color: #131b2e !important;
-      border: 1px solid #1e293b !important;
-      color: #f1f5f9 !important;
-    }
+    body.theme-dark .text-slate-800, body.theme-dark .text-slate-700, body.theme-dark .text-slate-600 { color: #ffffff !important; }
+    body.theme-dark .text-slate-500, body.theme-dark .text-slate-400 { color: #cbd5e1 !important; }
+    body:not(.theme-dark) .text-slate-800, body:not(.theme-dark) .text-slate-700, body:not(.theme-dark) .text-slate-600 { color: #000000 !important; }
 
-    body.theme-dark .text-slate-800,
-    body.theme-dark .text-slate-700,
-    body.theme-dark .text-slate-600 {
-      color: #ffffff !important;
-    }
-    body.theme-dark .text-slate-500,
-    body.theme-dark .text-slate-400 {
-      color: #cbd5e1 !important;
-    }
-    body:not(.theme-dark) .text-slate-800,
-    body:not(.theme-dark) .text-slate-700,
-    body:not(.theme-dark) .text-slate-600 {
-      color: #000000 !important;
-    }
-
-    /* 左右スワイプアニメーション */
     .slide-left { animation: slideLeft 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
     .slide-right { animation: slideRight 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
     @keyframes slideLeft { 0% { transform: translateX(20px); opacity: 0.6; } 100% { transform: translateX(0); opacity: 1; } }
     @keyframes slideRight { 0% { transform: translateX(-20px); opacity: 0.6; } 100% { transform: translateX(0); opacity: 1; } }
 
-    /* トースト通知アニメーション */
     .toast-show { animation: toastIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
     @keyframes toastIn { 0% { opacity: 0; transform: translate(-50%, 20px); } 100% { opacity: 1; transform: translate(-50%, 0); } }
 
     .summary-transition { transition: opacity 0.15s ease-in-out; }
 
-    /* ====== もちもち白玉マスコット ＆ 縦長スリム吹き出しスタイル ====== */
-    .shiratama-container {
-      flex-shrink: 0;
-      user-select: none;
-      transition: opacity 0.2s ease;
-      cursor: pointer;
-    }
+    .shiratama-container { flex-shrink: 0; user-select: none; transition: opacity 0.2s ease; cursor: pointer; }
     .shiratama-body {
-      position: relative;
-      width: 52px;
-      height: 52px;
+      position: relative; width: 52px; height: 52px;
       background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-      border-radius: 50%;
-      border: 1.5px solid #e2e8f0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 0.15s ease;
+      border-radius: 50%; border: 1.5px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      display: flex; justify-content: center; align-items: center; transition: transform 0.15s ease;
     }
     body.theme-dark .shiratama-body { border: 1.5px solid #475569; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
     .shiratama-body.jump { animation: shiratamaJump 0.3s ease; }
@@ -219,41 +127,17 @@
     .shiratama-sweat { position: absolute; top: -5px; right: -3px; font-size: 11px; display: none; }
     .shiratama-sweat.active { display: block; }
 
-    /* キャラ吹き出しスタイル */
     .speech-bubble {
-      position: relative;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 6px 8px;
-      font-size: 10.5px;
-      font-weight: 500;
-      color: #475569;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-      width: 110px;
-      line-height: 1.35;
-      word-break: break-all;
+      position: relative; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;
+      padding: 6px 8px; font-size: 10.5px; font-weight: 500; color: #475569;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03); width: 110px; line-height: 1.35; word-break: break-all;
     }
-    body.theme-dark .speech-bubble {
-      background: #1e293b;
-      border-color: #334155;
-      color: #e2e8f0;
-    }
+    body.theme-dark .speech-bubble { background: #1e293b; border-color: #334155; color: #e2e8f0; }
     .speech-bubble::after {
-      content: '';
-      position: absolute;
-      left: -6px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-top: 5px solid transparent;
-      border-bottom: 5px solid transparent;
-      border-right: 6px solid #ffffff;
+      content: ''; position: absolute; left: -6px; top: 50%; transform: translateY(-50%);
+      width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-right: 6px solid #ffffff;
     }
-    body.theme-dark .speech-bubble::after {
-      border-right-color: #1e293b;
-    }
+    body.theme-dark .speech-bubble::after { border-right-color: #1e293b; }
 
     .theme-circle.active { box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0f172a; transform: scale(1.1); }
     body.theme-dark .theme-circle.active { box-shadow: 0 0 0 2px #1e293b, 0 0 0 4px #ffffff; }
@@ -406,12 +290,8 @@
             <div id="quickFavoriteChips" class="pill-scroll-container"></div>
           </div>
 
-          <!-- 入力用の隠しファイル要素 (シャッター音防止の工夫付き) -->
           <input type="file" id="albumInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
-          <!-- カメラ撮影用 (capture属性付き) -->
           <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="analyzePhotoAndFillForm(event)">
-          <!-- バーコードスキャン用カメラ (環境カメラ指定) -->
-          <input type="file" id="barcodeInput" accept="image/*" capture="environment" class="hidden" onchange="scanBarcodeAndFillForm(event)">
 
           <div class="space-y-2.5">
             <div>
@@ -591,13 +471,13 @@
     </button>
   </nav>
 
-  <!-- 記録選択ポップアップ（下からぐいっと競り上がるボトムシート形式・アイコンのみ3つ） -->
+  <!-- 記録選択ポップアップ（下からぐいっと競り上がるボトムシート・アイコン3つのみ） -->
   <div id="recordActionModal" onclick="closeRecordActionModal()" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-end justify-center">
-    <div onclick="event.stopPropagation()" class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl p-6 pb-10 flex flex-col items-center space-y-4 border-t border-slate-200 sheet-animate">
+    <div onclick="event.stopPropagation()" class="bg-white w-full max-w-md rounded-t-3xl shadow-2xl p-6 pb-12 flex flex-col items-center space-y-4 border-t border-slate-200 sheet-animate">
       <div class="w-12 h-1.5 bg-slate-300 rounded-full mb-1"></div>
       
       <div class="flex items-center justify-center space-x-6 w-full py-2">
-        <!-- 1. 食事撮影ボタン（シャッター音防止仕様） -->
+        <!-- 1. 食事撮影ボタン -->
         <button onclick="closeRecordActionModal(); triggerSilentCamera();" title="食事を撮影" class="flex flex-col items-center group active:scale-95 transition">
           <div class="w-16 h-16 rounded-2xl bg-theme-light text-theme-main border border-theme-light flex items-center justify-center shadow-sm group-hover:opacity-90">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -605,17 +485,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
           </div>
-          <span class="text-[11px] font-bold text-slate-700 mt-1.5">食事を撮影</span>
         </button>
 
-        <!-- 2. バーコードスキャンボタン -->
-        <button onclick="closeRecordActionModal(); triggerBarcodeScan();" title="バーコードスキャン" class="flex flex-col items-center group active:scale-95 transition">
+        <!-- 2. バーコードスキャン（かざすだけ） -->
+        <button onclick="closeRecordActionModal(); triggerBarcodeScan();" title="バーコードをスキャン" class="flex flex-col items-center group active:scale-95 transition">
           <div class="w-16 h-16 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center shadow-sm group-hover:opacity-90">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4m-8-8v16m-4-12v8m8-8v8"></path>
             </svg>
           </div>
-          <span class="text-[11px] font-bold text-slate-700 mt-1.5">バーコード</span>
         </button>
 
         <!-- 3. 手動で追加ボタン -->
@@ -625,7 +503,6 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
           </div>
-          <span class="text-[11px] font-bold text-slate-700 mt-1.5">手動で追加</span>
         </button>
       </div>
     </div>
@@ -1144,88 +1021,6 @@
       }
     });
 
-    // シャッター音に配慮した撮影トリガー（連続高速キャプチャ設定など）
-    window.triggerSilentCamera = function() {
-      const camInput = document.getElementById('cameraInput');
-      if (camInput) {
-        // 余計なサウンドトリガーを防ぐため属性を付与
-        camInput.click();
-      }
-    };
-
-    window.triggerBarcodeScan = function() {
-      const barInput = document.getElementById('barcodeInput');
-      if (barInput) {
-        barInput.click();
-      }
-    };
-
-    // バーコード撮影・読み取り簡易ハンドラ（AI解析経由で食品特定）
-    window.scanBarcodeAndFillForm = async function(event) {
-      const activeKey = getActiveGeminiApiKey();
-      if (!activeKey) return;
-
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const manualAddBtn = document.getElementById('manualAddBtn');
-      const manualLoading = document.getElementById('manualLoading');
-      const loadingText = document.getElementById('loadingText');
-      const aiStatusBadge = document.getElementById('aiStatusBadge');
-
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        base64Image = e.target.result.split(',')[1];
-        if (manualAddBtn) manualAddBtn.disabled = true;
-        if (loadingText) loadingText.textContent = "バーコード/商品をスキャン解析中...";
-        if (manualLoading) manualLoading.classList.remove('hidden');
-
-        const promptText = `添付された画像（バーコードまたは商品パッケージ）から食品を特定し、以下のJSON形式のみで出力してください。数値は数字のみ（単位なし）。
-{
-  "foodName": "食品名",
-  "calories": 数値(kcal),
-  "protein": 数値(g),
-  "fat": 数値(g),
-  "carbs": 数値(g)
-}`;
-
-        try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { text: promptText },
-                  { inlineData: { mimeType: "image/jpeg", data: base64Image } }
-                ]
-              }]
-            })
-          });
-          const data = await response.json();
-          const rawText = data.candidates[0].content.parts[0].text;
-          const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-          const parsed = JSON.parse(cleanJson);
-
-          document.getElementById('manualName').value = parsed.foodName || "";
-          document.getElementById('manualCalories').value = parsed.calories || "";
-          document.getElementById('manualProtein').value = parsed.protein || "";
-          document.getElementById('manualFat').value = parsed.fat || "";
-          document.getElementById('manualCarbs').value = parsed.carbs || "";
-
-          if (aiStatusBadge) aiStatusBadge.classList.remove('hidden');
-          showToast('✨ バーコードから商品を特定しました');
-        } catch (err) {
-          alert('商品の特定に失敗しました。手動で入力してください。');
-        } finally {
-          if (manualLoading) manualLoading.classList.add('hidden');
-          if (manualAddBtn) manualAddBtn.disabled = false;
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
     // 画面ビュー切り替え (home, weight, workout)
     window.switchTab = function(tabName) {
       const homeView = document.getElementById('homeView');
@@ -1624,6 +1419,81 @@
       return apiKey.trim();
     }
 
+    window.triggerSilentCamera = function() {
+      const camInput = document.getElementById('cameraInput');
+      if (camInput) camInput.click();
+    };
+
+    window.triggerBarcodeScan = function() {
+      const barInput = document.getElementById('barcodeInput');
+      if (barInput) barInput.click();
+    };
+
+    window.scanBarcodeAndFillForm = async function(event) {
+      const activeKey = getActiveGeminiApiKey();
+      if (!activeKey) return;
+
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const manualAddBtn = document.getElementById('manualAddBtn');
+      const manualLoading = document.getElementById('manualLoading');
+      const loadingText = document.getElementById('loadingText');
+      const aiStatusBadge = document.getElementById('aiStatusBadge');
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        base64Image = e.target.result.split(',')[1];
+        if (manualAddBtn) manualAddBtn.disabled = true;
+        if (loadingText) loadingText.textContent = "バーコード/商品をスキャン解析中...";
+        if (manualLoading) manualLoading.classList.remove('hidden');
+
+        const promptText = `添付された画像（バーコードまたは商品パッケージ）から食品を特定し、以下のJSON形式のみで出力してください。数値は数字のみ（単位なし）。
+{
+  "foodName": "食品名",
+  "calories": 数値(kcal),
+  "protein": 数値(g),
+  "fat": 数値(g),
+  "carbs": 数値(g)
+}`;
+
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: promptText },
+                  { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+                ]
+              }]
+            })
+          });
+          const data = await response.json();
+          const rawText = data.candidates[0].content.parts[0].text;
+          const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          const parsed = JSON.parse(cleanJson);
+
+          document.getElementById('manualName').value = parsed.foodName || "";
+          document.getElementById('manualCalories').value = parsed.calories || "";
+          document.getElementById('manualProtein').value = parsed.protein || "";
+          document.getElementById('manualFat').value = parsed.fat || "";
+          document.getElementById('manualCarbs').value = parsed.carbs || "";
+
+          if (aiStatusBadge) aiStatusBadge.classList.remove('hidden');
+          showToast('✨ バーコードから商品を特定しました');
+        } catch (err) {
+          alert('商品の特定に失敗しました。手動で入力してください。');
+        } finally {
+          if (manualLoading) manualLoading.classList.add('hidden');
+          if (manualAddBtn) manualAddBtn.disabled = false;
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+
     window.analyzePhotoAndFillForm = async function(event) {
       const activeKey = getActiveGeminiApiKey();
       if (!activeKey) return;
@@ -1901,7 +1771,6 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
       if (window.syncDataToCloud) window.syncDataToCloud();
     }
 
-    // 体重・運動のローカルロード・セーブ
     function loadWeightAndWorkoutLogs() {
       const wSaved = localStorage.getItem('weightLogs_v1');
       if (wSaved) { try { window.weightLogs = JSON.parse(wSaved); } catch(e){} }
@@ -1989,10 +1858,9 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
         }
       }
 
-      // Chart.js グラフ描画
       const ctx = document.getElementById('weightChart');
       if (ctx) {
-        const labels = weights.map(w => w.date.slice(5)); // MM-DD
+        const labels = weights.map(w => w.date.slice(5));
         const dataVals = weights.map(w => w.weight);
 
         if (weightChartInstance) {
@@ -2715,4 +2583,4 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
   </script>
 </body>
-      </html>
+                  </html>
