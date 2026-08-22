@@ -74,8 +74,19 @@
     body.theme-dark .bottom-nav-item { color: #94a3b8 !important; }
     body.theme-dark .bottom-nav-item.active { color: var(--primary-color) !important; }
 
-    body.theme-dark .bg-slate-900\/60, body.theme-dark #recordActionModal, body.theme-dark #barcodeScannerModal {
+    body.theme-dark .bg-slate-900\/60, body.theme-dark #recordActionModal {
       background-color: rgba(2, 6, 23, 0.85) !important;
+    }
+    body.theme-dark #targetModal > div,
+    body.theme-dark #selectFavoriteModal > div,
+    body.theme-dark #editFavoriteModal > div,
+    body.theme-dark #calendarModal > div,
+    body.theme-dark #favoriteModal > div,
+    body.theme-dark #editModal > div,
+    body.theme-dark #weightModal > div,
+    body.theme-dark #workoutModal > div,
+    body.theme-dark #recordActionModal > div {
+      background-color: #131b2e !important; border: 1px solid #1e293b !important; color: #f1f5f9 !important;
     }
 
     body.theme-dark .text-slate-800, body.theme-dark .text-slate-700, body.theme-dark .text-slate-600 { color: #ffffff !important; }
@@ -159,12 +170,12 @@
         </div>
       </div>
 
-      <!-- 7日間の日付＆曜日タブナビゲーション（土台にテーマカラーのうっすら淡い色） -->
+      <!-- 7日間の日付＆曜日タブナビゲーション -->
       <div>
         <div id="weekDaysContainer" class="grid grid-cols-7 gap-1 p-1 rounded-2xl border text-center touch-pan-x cursor-grab" style="background-color: var(--primary-light); opacity: 0.95; border-color: var(--primary-border);"></div>
       </div>
 
-      <!-- スクロール追従用 コンパクトサマリーバー（テーマカラーのうっすら淡い色） -->
+      <!-- スクロール追従用 コンパクトサマリーバー -->
       <div id="compactSummaryBar" class="hidden px-2.5 py-2 rounded-2xl grid grid-cols-4 gap-1 text-center font-mono summary-transition items-center shadow-2xs border" style="background-color: var(--primary-light); border-color: var(--primary-border);">
         <div>
           <div class="text-[9px] text-slate-500 font-bold leading-none">残りカロリー</div>
@@ -195,7 +206,7 @@
         <div id="fullSummaryCard" class="bg-slate-50 border border-slate-200 p-3.5 rounded-3xl space-y-3 shadow-xs summary-transition">
           <div id="summaryHeaderRow" class="flex items-center justify-between px-2 py-0.5">
             
-            <!-- キャラ＆吹き出しエリア（背景にうっすら淡いテーマカラー） -->
+            <!-- キャラ＆吹き出しエリア -->
             <div id="mascotAndSpeechGroup" class="flex items-center space-x-2 p-1.5 rounded-2xl border" style="background-color: var(--primary-light); border-color: var(--primary-border);">
               <div id="shiratamaContainer" class="shiratama-container" onclick="tapShiratama()">
                 <div id="shiratama-body" class="shiratama-body">
@@ -207,7 +218,6 @@
                   <div id="shiratama-sweat" class="shiratama-sweat">💧</div>
                 </div>
               </div>
-              <!-- 白玉ちゃんの縦長スリム吹き出しメッセージ -->
               <div id="shiratamaBubble" class="speech-bubble">お腹すいたよ〜！何か食べてね！</div>
             </div>
 
@@ -290,8 +300,11 @@
             <div id="quickFavoriteChips" class="pill-scroll-container"></div>
           </div>
 
+          <!-- 入力ファイル用要素 -->
           <input type="file" id="albumInput" accept="image/*" class="hidden" onchange="analyzePhotoAndFillForm(event)">
           <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="analyzePhotoAndFillForm(event)">
+          <!-- バーコードスキャン用（リアライズ対応） -->
+          <input type="file" id="barcodeInput" accept="image/*" capture="environment" class="hidden" onchange="scanBarcodeAndFillForm(event)">
 
           <div class="space-y-2.5">
             <div>
@@ -373,19 +386,16 @@
         <div id="weightSection" class="bg-slate-50 border border-slate-200 p-4 rounded-3xl space-y-3 shadow-xs">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">⚖️ 体重・体脂肪の記録</h3>
           
-          <!-- グラフ表示エリア -->
           <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
             <canvas id="weightChart" class="w-full h-48"></canvas>
           </div>
 
-          <!-- 体重一覧・削除リスト -->
           <div class="space-y-2 pt-2">
             <div class="text-xs font-bold text-slate-700">最近の記録</div>
             <div id="weightLogList" class="space-y-1.5 max-h-48 overflow-y-auto text-xs text-slate-600"></div>
           </div>
         </div>
 
-        <!-- 体重用フローティングボタン（右下） -->
         <button onclick="openWeightModal()" class="fixed bottom-20 right-5 w-14 h-14 rounded-full bg-theme-main text-theme-contrast shadow-2xl flex items-center justify-center z-30 transition hover:scale-105 active:scale-95">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
@@ -398,14 +408,12 @@
         <div id="workoutSection" class="bg-slate-50 border border-slate-200 p-4 rounded-3xl space-y-3 shadow-xs">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">🏃‍♂️ 運動・トレーニング記録</h3>
           
-          <!-- 運動一覧リスト -->
           <div class="space-y-2 pt-1">
             <div class="text-xs font-bold text-slate-700">今日の運動ログ</div>
             <div id="workoutLogList" class="space-y-1.5 max-h-64 overflow-y-auto text-xs text-slate-600"></div>
           </div>
         </div>
 
-        <!-- 運動用フローティングボタン（右下） -->
         <button onclick="openWorkoutModal()" class="fixed bottom-20 right-5 w-14 h-14 rounded-full bg-theme-main text-theme-contrast shadow-2xl flex items-center justify-center z-30 transition hover:scale-105 active:scale-95">
           <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
@@ -416,10 +424,9 @@
     </div>
   </div>
 
-  <!-- 下部固定ボトムナビゲーションバー（ホーム、カレンダー、体重、運動、設定） -->
+  <!-- 下部固定ボトムナビゲーションバー -->
   <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-4 py-2 flex justify-around items-center z-40 shadow-lg">
     
-    <!-- ホーム -->
     <button onclick="switchTab('home')" id="nav-btn-home" class="bottom-nav-item active flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl bg-theme-light text-theme-main transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -429,7 +436,6 @@
       <span class="text-[10px] font-bold mt-0.5 text-theme-main">ホーム</span>
     </button>
 
-    <!-- カレンダー -->
     <button onclick="openCalendarModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,7 +445,6 @@
       <span class="text-[10px] font-bold mt-0.5">カレンダー</span>
     </button>
 
-    <!-- 体重 -->
     <button onclick="switchTab('weight')" id="nav-btn-weight" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -449,7 +454,6 @@
       <span class="text-[10px] font-bold mt-0.5">体重</span>
     </button>
 
-    <!-- 運動 -->
     <button onclick="switchTab('workout')" id="nav-btn-workout" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -459,7 +463,6 @@
       <span class="text-[10px] font-bold mt-0.5">運動</span>
     </button>
 
-    <!-- 設定 -->
     <button onclick="openTargetModal()" class="bottom-nav-item flex-1 flex flex-col items-center py-1 rounded-2xl transition active:scale-95 text-slate-500">
       <div class="nav-bg p-1.5 rounded-xl transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,7 +480,7 @@
       <div class="w-12 h-1.5 bg-slate-300 rounded-full mb-1"></div>
       
       <div class="flex items-center justify-center space-x-6 w-full py-2">
-        <!-- 1. 食事撮影ボタン -->
+        <!-- 1. 食事撮影 -->
         <button onclick="closeRecordActionModal(); triggerSilentCamera();" title="食事を撮影" class="flex flex-col items-center group active:scale-95 transition">
           <div class="w-16 h-16 rounded-2xl bg-theme-light text-theme-main border border-theme-light flex items-center justify-center shadow-sm group-hover:opacity-90">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -487,7 +490,7 @@
           </div>
         </button>
 
-        <!-- 2. バーコードスキャン（かざすだけ） -->
+        <!-- 2. バーコードスキャン -->
         <button onclick="closeRecordActionModal(); triggerBarcodeScan();" title="バーコードをスキャン" class="flex flex-col items-center group active:scale-95 transition">
           <div class="w-16 h-16 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center shadow-sm group-hover:opacity-90">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -496,7 +499,7 @@
           </div>
         </button>
 
-        <!-- 3. 手動で追加ボタン -->
+        <!-- 3. 手動で追加 -->
         <button onclick="closeRecordActionModal(); navGoRecord();" title="手動で追加" class="flex flex-col items-center group active:scale-95 transition">
           <div class="w-16 h-16 rounded-2xl bg-slate-100 hover:bg-theme-light text-slate-700 hover:text-theme-main border border-slate-200 flex items-center justify-center shadow-sm group-hover:opacity-90">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1021,7 +1024,6 @@
       }
     });
 
-    // 画面ビュー切り替え (home, weight, workout)
     window.switchTab = function(tabName) {
       const homeView = document.getElementById('homeView');
       const weightView = document.getElementById('weightView');
@@ -1089,7 +1091,6 @@
       if (modal) modal.classList.add('hidden');
     };
 
-    // 体重・運動モーダル開閉
     window.openWeightModal = function() {
       const dateEl = document.getElementById('inputWeightDate');
       if (dateEl) dateEl.value = selectedDateStr;
@@ -2583,4 +2584,4 @@ calories: ${cal}, protein: ${p}, fat: ${f}, carbs: ${c}
     };
   </script>
 </body>
-                  </html>
+                </html>
